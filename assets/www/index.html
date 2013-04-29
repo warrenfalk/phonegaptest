@@ -9,6 +9,9 @@
         <script type="text/javascript" src="js/handlebars.js"></script>
         <title>Check In</title>
         <style type="text/css">
+        body {
+        	overflow:hidden;
+        }
         #head {
         	background-color: white;
         	text-align: center;
@@ -16,19 +19,44 @@
         	font-size: 22px;
         	padding: 11px;
         }
+        .page {
+        	position: absolute;
+        	top: 0;
+        	left: 0;
+        	width: 100%;
+        	height: 100%;
+        	-webkit-transform: translate3d(0, 0, 0);
+        	transform: translate3d(0, 0, 0);
+        }
+        .page.left {
+		    -webkit-transform: translate3d(-100%, 0, 0);
+		    transform: translate3d(-100%, 0, 0);
+        }
+        .page.center {
+		    -webkit-transform: translate3d(0, 0, 0);
+		    transform: translate3d(0, 0, 0);
+        }
+        .page.right {
+		    -webkit-transform: translate3d(100%, 0, 0);
+		    transform: translate3d(100%, 0, 0);
+        }
+        .page.transition {
+        	-webkit-transition-duration: .25s;
+        	transition-duration: .25s;
+        }
         #search {
         	height: 44px;
         	padding: 3px 10px;
         	background-color: #4096ee;
         	text-align: center;
-        	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4096ee), to(#6baef2));
-			background: -webkit-linear-gradient(top, #6baef2, #4096ee);
-			background: -moz-linear-gradient(top, #6baef2, #4096ee);
-			background: -ms-linear-gradient(top, #6baef2, #4096ee);
-			background: -o-linear-gradient(top, #6baef2, #4096ee);
-			background: linear-gradient(top, #6baef2, #4096ee);
-			border-top: solid 1px #8dc1f5;
-			border-bottom: solid 1px #0d4d8f;
+        	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4f6c8b), to(#bbc9db));
+			background: -webkit-linear-gradient(top, #bbc9db, #4f6c8b);
+			background: -moz-linear-gradient(top, #bbc9db, #4f6c8b);
+			background: -ms-linear-gradient(top, #bbc9db, #4f6c8b);
+			background: -o-linear-gradient(top, #bbc9db, #4f6c8b);
+			background: linear-gradient(top, #bbc9db, #4f6c8b);
+			border-top: solid 1px #cfdceb;
+			border-bottom: solid 1px #3e5974;
         }
         #sorters {
         	position: relative;
@@ -102,10 +130,14 @@
         	background-color: white;
         	border-left: solid 5px #c0c0c0;
         }
+        .record:hover {
+        	background-color: #4096ee;
+        }
+        .record.highlight {
+        	background-color: #4096ee;
+        }
         .record .data {
         	position: relative;
-        	margin-left: 60px;
-        	border-left: solid 1px #c0c0c0;
         	height: 59px;
         }
         .record .data .locname {
@@ -121,34 +153,56 @@
         	top: 32px;
         	color: #134a82;
         }
+        .record .data .dist {
+        	font-size: 13px;
+        	color: #134a82;
+        	font-weight: bold;
+        	padding-right: 1.5em;
+        }
         .record .data .ponum {
         	position: absolute;
-        	right: 8px;
-        	top: 8px;
-        	font-size: 18px;
+        	right: 30px;
+        	top: 14px;
+        	font-size: 22px;
         	margin: 3px;
+        }
+        .record .rtarrow {
+        	position: absolute;
+        	right: 8px;
+        	top: 19px;
+        	background: url(img/rtarrow.svg);
+        }
+        .rtarrow {
+        	width: 16px;
+        	height: 23px;
         }
         </style>
     </head>
     <body">
-    	<div id="head">WHERE ARE YOU?</div>
-    	<div id="search">
-    		<input id="searchbox" value="enter PO number"/>
-    	</div>
-    	<div id="sorters">
-	    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
-	    	<div id="sort_by_dist" class="sortbox sortbox_current">sort by distance<div class="arrow"></div></div>
+    	<div id="home" class="page center">
+	    	<div id="head">WHERE ARE YOU?</div>
+	    	<div id="search">
+	    		<input id="searchbox" value="enter PO number"/>
+	    	</div>
+	    	<div id="sorters">
+		    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
+		    	<div id="sort_by_dist" class="sortbox sortbox_current">sort by distance<div class="arrow"></div></div>
+		    </div>
+		    <div id="records">
+		    </div>
 	    </div>
-	    <div id="records">
+	    <div id="right" class="page right">
+	    	<div style="font-size: 100px">Right</div>
 	    </div>
     	<script id="record-template" type="text/x-handlebars-template">
-	    	<div class="record">
-	    		<div class="data">
-		    		<div class="locname">{{name}}</div>
-		    		<div class="locaddr">{{address}}</div>
-		    		<div class="ponum">PO:{{ponumber}}</div>
-		    	</div>
-	    	</div>
+            <div class="record">
+            	<div class="data">
+            		<div class="locname">{{name}}</div>
+            		<div class="locaddr"><span class="dist">({{distance}})</span> {{address}}</div>
+            		<div class="ponum">PO:{{ponumber}}</div>
+            		<div class="rtarrow"></div>
+            	</div>
+            </div>
     	</script>
         <script type="text/javascript" src="cordova-2.6.0.js"></script>
     	<script type="text/javascript">
@@ -158,25 +212,33 @@
     		}
     		function addrecord(record) {
     			if (!record.hasOwnProperty('name'))
-    				record = { name: record[0], address: record[1], ponumber: record[2] };
+    				record = { name: record[0], address: record[1], distance: record[2], ponumber: record[3] };
 		    	var source = $("#record-template").html();
 		    	var template = Handlebars.compile(source);
 		    	var html = template(record);
-		    	$("#records").append(html);
+		    	var $rec = $($.parseHTML(html));
+		    	$("#records").append($rec);
+		    	$rec.click(function() {
+		    		$(this).addClass('highlight');
+		    		var $r= $('#right');
+		    		$r.attr('class', 'page right');
+		    		$r.attr('class', 'page transition center');
+		    		$('#home').attr('class', 'page transition left');
+		    	});
 		    }
 		    addrecords([
-		    	['Walmart #925',    '999 Elm Street',   '12345678'],
-		    	['Walmart #123',    '999 Elm Street',   '23456789'],
-		    	['Walmart #098',    '999 Elm Street',   '34567891'],
-		    	['Kohl\'s #925',    '999 Elm Street',   '45678912'],
-		    	['Kohl\'s #123',    '999 Elm Street',   '56789123'],
-		    	['Home Depot #925', '999 Elm Street',   '67891234'],
-		    	['Home Depot #123', '999 Elm Street',   '78912345'],
-		    	['Kroger #925',     '999 Elm Street',   '89123456'],
-		    	['PNC Bank #125',   '999 Elm Street',   '12345678'],
-		    	['PNC Bank #925',   '999 Elm Street',   '12345678'],
-		    	['Walmart #925',    '999 Elm Street',   '12345678'],
-		    	['Walmart #925',    '999 Elm Street',   '12345678'],
+		    	['Walmart #925',    '999 Elm Street',   '0.3 mi',  '12345678'],
+		    	['Walmart #123',    '999 Elm Street',   '3.4 mi',  '23456789'],
+		    	['Walmart #098',    '999 Elm Street',   '4.1 mi',  '34567891'],
+		    	['Kohl\'s #925',    '999 Elm Street',   '9.0 mi',  '45678912'],
+		    	['Kohl\'s #123',    '999 Elm Street',   '13.1 mi',  '56789123'],
+		    	['Home Depot #925', '999 Elm Street',   '14.0 mi',  '67891234'],
+		    	['Home Depot #123', '999 Elm Street',   '15.0 mi',  '78912345'],
+		    	['Kroger #925',     '999 Elm Street',   '17.1 mi',  '89123456'],
+		    	['PNC Bank #125',   '999 Elm Street',   '20.9 mi',  '12345678'],
+		    	['PNC Bank #925',   '999 Elm Street',   '21.2 mi',  '12345678'],
+		    	['Walmart #925',    '999 Elm Street',   '29.0 mi',  '12345678'],
+		    	['Walmart #925',    '999 Elm Street',   '29.0 mi',  '12345678'],
 		    	]);
     	</script>
     	<!--
