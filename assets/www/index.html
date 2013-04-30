@@ -45,10 +45,12 @@
         	transition-duration: .25s;
         }
         #search {
+        	text-align: center;
+        }
+        .topbar {
         	height: 44px;
         	padding: 3px 10px;
         	background-color: #4096ee;
-        	text-align: center;
         	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4f6c8b), to(#bbc9db));
 			background: -webkit-linear-gradient(top, #bbc9db, #4f6c8b);
 			background: -moz-linear-gradient(top, #bbc9db, #4f6c8b);
@@ -57,6 +59,26 @@
 			background: linear-gradient(top, #bbc9db, #4f6c8b);
 			border-top: solid 1px #cfdceb;
 			border-bottom: solid 1px #3e5974;
+        }
+        .ibtn {
+        	padding: 0 15px;
+        	border: none;
+        	margin: 0;
+        	height: 34px;
+        	font-size: 14px;
+        	color: white;
+        	background-color: transparent;
+        	background-image: url(img/btnleft.svg), url(img/btnmid.svg), url(img/btnright.svg);
+        	background-clip: padding-box, content-box, padding-box;
+        	background-position: left top, left top, right top;
+        	background-repeat: no-repeat, repeat-x, no-repeat;
+        }
+        .ibtn:active {
+        	background-position: left 100%, left 100%, right 100%;
+        }
+        .ibtn.left {
+        	padding: 0 15px 0 20px;
+        	background-image: url(img/btnleftarr.svg), url(img/btnmid.svg), url(img/btnright.svg);
         }
         #sorters {
         	position: relative;
@@ -182,7 +204,7 @@
     <body">
     	<div id="home" class="page center">
 	    	<div id="head">WHERE ARE YOU?</div>
-	    	<div id="search">
+	    	<div id="search" class="topbar">
 	    		<input id="searchbox" class="prompt" value="enter PO number"/>
 	    	</div>
 	    	<div id="sorters">
@@ -193,7 +215,9 @@
 		    </div>
 	    </div>
 	    <div id="right" class="page right">
-	    	<div style="font-size: 100px">Right</div>
+	    	<div class="topbar">
+	    		<button class="ibtn left" id="detail_cancel">Cancel</button>
+	    	</div>
 	    </div>
     	<script id="record-template" type="text/x-handlebars-template">
         	<div class="data">
@@ -210,6 +234,15 @@
     			jQuery.fn.touchstart = jQuery.fn.mousedown;
     		if (!jQuery.fn.touchstart)
     			jQuery.fn.touchstart = function(data, fn) { return arguments.length > 0 ? this.on('touchstart', null, data, fn) : this.trigger('touchstart'); }
+    			
+    		
+    		// Wire up details cancel button
+    		$("#detail_cancel").click(function() {
+		   		var $r= $('#right');
+	    		$r.attr('class', 'page center');
+	    		$r.attr('class', 'page transition right');
+	    		$('#home').attr('class', 'page transition center');
+    		});
     		
     		
     		// Setup Search Box
