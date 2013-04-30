@@ -125,6 +125,7 @@
         	left: 0;
         	top: 132px;
         	overflow: auto;
+        	padding-bottom: 30px;
         }
         .record {
         	height: 60px;
@@ -208,7 +209,6 @@
     			jQuery.fn.touchstart = jQuery.fn.mousedown;
     		if (!jQuery.fn.touchstart)
     			jQuery.fn.touchstart = function(data, fn) { return arguments.length > 0 ? this.on('touchstart', null, data, fn) : this.trigger('touchstart'); }
-    		alert('ontouchstart' in document.createElement('div'));
     		
     		
     		// Setup Search Box
