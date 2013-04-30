@@ -130,11 +130,8 @@
         	background-color: white;
         	border-left: solid 5px #c0c0c0;
         }
-        .record:hover {
-        	background-color: #4096ee;
-        }
         .record.highlight {
-        	background-color: #4096ee;
+        	background-color: #8cc0f5;
         }
         .record .data {
         	position: relative;
@@ -195,14 +192,12 @@
 	    	<div style="font-size: 100px">Right</div>
 	    </div>
     	<script id="record-template" type="text/x-handlebars-template">
-            <div class="record">
-            	<div class="data">
-            		<div class="locname">{{name}}</div>
-            		<div class="locaddr"><span class="dist">({{distance}})</span> {{address}}</div>
-            		<div class="ponum">PO:{{ponumber}}</div>
-            		<div class="rtarrow"></div>
-            	</div>
-            </div>
+        	<div class="data">
+        		<div class="locname">{{name}}</div>
+        		<div class="locaddr"><span class="dist">({{distance}})</span> {{address}}</div>
+        		<div class="ponum">PO:{{ponumber}}</div>
+        		<div class="rtarrow"></div>
+        	</div>
     	</script>
         <script type="text/javascript" src="cordova-2.6.0.js"></script>
     	<script type="text/javascript">
@@ -210,21 +205,40 @@
     			for (var i = 0; i < records.length; i++)
     				addrecord(records[i]);
     		}
+    		var $currec;
     		function addrecord(record) {
+    			// convert record from array if necessary
     			if (!record.hasOwnProperty('name'))
     				record = { name: record[0], address: record[1], distance: record[2], ponumber: record[3] };
+    			
+    			// construct record from template
 		    	var source = $("#record-template").html();
 		    	var template = Handlebars.compile(source);
 		    	var html = template(record);
-		    	var $rec = $($.parseHTML(html));
-		    	$("#records").append($rec);
+		    	var $rec = $('<div class="record"/>').append(html);
+		    	var $recs = $("#records");
+		    	$recs.append($rec);
+		    	
+		    	// setup events for record element
 		    	$rec.click(function() {
-		    		$(this).addClass('highlight');
+		    		$rec.addClass('highlight');
 		    		var $r= $('#right');
 		    		$r.attr('class', 'page right');
 		    		$r.attr('class', 'page transition center');
 		    		$('#home').attr('class', 'page transition left');
 		    	});
+		    	var enter = function() {
+		    		$currec = $rec;
+		    		setTimeout(function () { if ($currec == $rec) $currec.addClass('highlight'); }, 200);
+		    	}
+		    	var exit = function() {
+		    		$rec.removeClass('highlight');
+		    	}
+		    	$recs.scroll(function() { $currec.removeClass('highlight'); $currec = null });
+		    	$rec.get(0).addEventListener('touchstart', enter);
+		    	$rec.get(0).addEventListener('touchend', exit);
+		    	$rec.mousedown(enter);
+		    	$rec.mouseout(exit);
 		    }
 		    addrecords([
 		    	['Walmart #925',    '999 Elm Street',   '0.3 mi',  '12345678'],
