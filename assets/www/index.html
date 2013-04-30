@@ -70,9 +70,11 @@
         	border-bottom: solid 1px #8dc1f5;
         	border-radius: 12px;
         	padding: 2px 2px 2px 30px;
-        	color: #888888;
         	font-size: 20px;
         	width: 220px;
+        }
+        #searchbox.prompt {
+        	color: #888888;
         }
         .sortbox {
         	position: relative;
@@ -179,11 +181,11 @@
     	<div id="home" class="page center">
 	    	<div id="head">WHERE ARE YOU?</div>
 	    	<div id="search">
-	    		<input id="searchbox" value="enter PO number"/>
+	    		<input id="searchbox" class="prompt" value="enter PO number"/>
 	    	</div>
 	    	<div id="sorters">
 		    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
-		    	<div id="sort_by_dist" class="sortbox sortbox_current">sort by distance<div class="arrow"></div></div>
+		    	<div id="sort_by_dist" class="sortbox">sort by distance<div class="arrow"></div></div>
 		    </div>
 		    <div id="records">
 		    </div>
@@ -201,11 +203,54 @@
     	</script>
         <script type="text/javascript" src="cordova-2.6.0.js"></script>
     	<script type="text/javascript">
+    		// Extend jquery for PhoneGap
+    		if (!('ontouchstart' in document.createElement('div')))
+    			jQuery.fn.touchstart = jQuery.fn.mousedown;
+    		if (!jQuery.fn.touchstart)
+    			jQuery.fn.touchstart = function(data, fn) { return arguments.length > 0 ? this.on('touchstart', null, data, fn) : this.trigger('touchstart'); }
+    		alert('ontouchstart' in document.createElement('div'));
+    		
+    		
+    		// Setup Search Box
+    		$searchbox = $("#searchbox");
+    		$searchbox.focus(function() {
+    			if (!this.unempty)
+    				this.value = "";
+				$searchbox.removeClass("prompt");
+    		});
+    		$searchbox.change(function() {
+    			this.unempty = this.value != "";
+    		});
+    		$searchbox.blur(function() {
+    			if (!this.unempty) {
+    				this.value = "enter PO number";
+    				$searchbox.addClass("prompt");
+    			}
+    		});
+    		
+    	
+    		// Setup sorters
+    		var $currentSort = null;
+    		function selectSort(sorter) {
+    			if ($currentSort != null)
+    				$currentSort.removeClass("sortbox_current");
+    			$currentSort = $("#" + sorter);
+    			$currentSort.addClass("sortbox_current");
+    		}
+    		// Select sort-by-distance as default
+    		selectSort("sort_by_dist");
+    		// Setup event handler for changing sort
+    		$(".sortbox").touchstart(function() {
+    			selectSort(this.id);
+    		});
+    		
+    		
+    		// Setup PO Records
     		function addrecords(records) {
     			for (var i = 0; i < records.length; i++)
     				addrecord(records[i]);
     		}
-    		var $currec;
+    		var $currentRecord;
     		function addrecord(record) {
     			// convert record from array if necessary
     			if (!record.hasOwnProperty('name'))
@@ -219,7 +264,7 @@
 		    	var $recs = $("#records");
 		    	$recs.append($rec);
 		    	
-		    	// setup events for record element
+		    	// Setup Events For PO Records
 		    	$rec.click(function() {
 		    		$rec.addClass('highlight');
 		    		var $r= $('#right');
@@ -227,14 +272,21 @@
 		    		$r.attr('class', 'page transition center');
 		    		$('#home').attr('class', 'page transition left');
 		    	});
+		    	// highligting is tricky because we want to do it on touchstart but only if not
+		    	// scrolling, so we delay the effect a bit, then cancel it (even before it starts)
+		    	// if we detect scrolling 
 		    	var enter = function() {
-		    		$currec = $rec;
-		    		setTimeout(function () { if ($currec == $rec) $currec.addClass('highlight'); }, 200);
+		    		$currentRecord = $rec;
+		    		setTimeout(function () { if ($currentRecord == $rec) $currentRecord.addClass('highlight'); }, 200);
 		    	}
 		    	var exit = function() {
 		    		$rec.removeClass('highlight');
 		    	}
-		    	$recs.scroll(function() { $currec.removeClass('highlight'); $currec = null });
+		    	$recs.scroll(function() { 
+		    		if ($currentRecord != null)
+		    			$currentRecord.removeClass('highlight');
+		    		$currentRecord = null;
+		    	});
 		    	$rec.get(0).addEventListener('touchstart', enter);
 		    	$rec.get(0).addEventListener('touchend', exit);
 		    	$rec.mousedown(enter);
