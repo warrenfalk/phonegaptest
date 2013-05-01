@@ -7,33 +7,37 @@
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <script type="text/javascript" src="js/jquery.js"></script>
         <script type="text/javascript" src="js/handlebars.js"></script>
+        <script type="text/javascript" src="js/screens.js"></script>
         <title>Check In</title>
     </head>
     <body>
-    	<div id="page"></div>
+    	<div id="page">
+    	</div>
     	
-    	<script id="page_locationlist" type="text/x-handlebars-template">
-		    <div id="records" style="padding-top:132px">
-		    </div>
-			<div id="heading">
-		    	<div id="head">WHERE ARE YOU?</div>
-		    	<div id="search" class="topbar">
-		    		<input id="searchbox" class="prompt" value="enter PO number"/>
-		    	</div>
-		    	<div id="sorters">
-			    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
-			    	<div id="sort_by_dist" class="sortbox">sort by distance<div class="arrow"></div></div>
+    	<script id="screen_locations" type="text/x-handlebars-template">
+    		<div id="locations">
+			    <div id="records">
 			    </div>
-		    </div>
+				<div id="heading">
+			    	<div id="head">WHERE ARE YOU?</div>
+			    	<div id="search" class="topbar">
+			    		<input id="searchbox" class="prompt" value="enter PO number"/>
+			    	</div>
+			    	<div id="sorters">
+				    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
+				    	<div id="sort_by_dist" class="sortbox">sort by distance<div class="arrow"></div></div>
+				    </div>
+			    </div>
+			</div>
     	</script>
     	
-    	<script id="page_servicedetails" type="text/x-handlebars-template">
+    	<script id="screen_details" type="text/x-handlebars-template">
 	    	<div class="topbar">
 	    		<button class="ibtn left" id="detail_cancel">Cancel</button>
 	    	</div>
     	</script>
     	
-    	<script id="record-template" type="text/x-handlebars-template">
+    	<script id="location-template" type="text/x-handlebars-template">
         	<div class="data">
         		<div class="locname">{{name}}</div>
         		<div class="locaddr">{{address}}</div>
@@ -45,118 +49,92 @@
     	
         <script type="text/javascript" src="cordova-2.6.0.js"></script>
     	<script type="text/javascript">
-    		// Set up main page
-    		$page = $("#page");
-	    	var pageTemplate = Handlebars.compile($("#page_locationlist").html());
-     		$page.append(pageTemplate([]));    			
-    		
-    		
-    		// Wire up details cancel button
-    		$("#detail_cancel").click(function() {
-		   		var $r= $('#right');
-	    		$r.attr('class', 'page center');
-	    		$r.attr('class', 'page transition right');
-	    		$('#home').attr('class', 'page transition center');
+	    	this.Screens.define({
+	    		locations: {
+	    			initialize: function() {
+						// Setup Search Box
+						$searchbox = $("#searchbox");
+						$searchbox.focus(function() {
+							if (!this.unempty)
+								this.value = "";
+							$searchbox.removeClass("prompt");
+						});
+						$searchbox.change(function() {
+							this.unempty = this.value != "";
+						});
+						$searchbox.blur(function() {
+							if (!this.unempty) {
+								this.value = "enter PO number";
+								$searchbox.addClass("prompt");
+							}
+						});
+						
+						
+						// Setup sorters
+						var $currentSort = null;
+						function selectSort(sorter) {
+							if ($currentSort != null)
+								$currentSort.removeClass("sortbox_current");
+							$currentSort = $("#" + sorter);
+							$currentSort.addClass("sortbox_current");
+						}
+						// Select sort-by-distance as default
+						selectSort("sort_by_dist");
+						// Setup event handler for changing sort
+						$(".sortbox").touchstart(function() {
+							selectSort(this.id);
+						});
+						
+						
+						// Request data
+						// show loading indicator
+						$div = $('#records');
+						$div.append('<div class="loading" id="loadwait">retrieving locations...</div>');
+						$('#loadwait').hide();
+						$('#loadwait').fadeIn();
+						
+						
+						setTimeout(function() {
+							// mocked data
+							data = [
+						    	['Walmart #925',    '999 Elm Street',   '0.3 mi',  '12345678'],
+						    	['Walmart #123',    '999 Elm Street',   '3.4 mi',  '23456789'],
+						    	['Walmart #098',    '999 Elm Street',   '4.1 mi',  '34567891'],
+						    	['Kohl\'s #925',    '999 Elm Street',   '9.0 mi',  '45678912'],
+						    	['Kohl\'s #123',    '999 Elm Street',   '13.1 mi',  '56789123'],
+						    	['Home Depot #925', '999 Elm Street',   '14.0 mi',  '67891234'],
+						    	['Home Depot #123', '999 Elm Street',   '15.0 mi',  '78912345'],
+						    	['Kroger #925',     '999 Elm Street',   '17.1 mi',  '89123456'],
+						    	['PNC Bank #125',   '999 Elm Street',   '20.9 mi',  '12345678'],
+						    	['PNC Bank #925',   '999 Elm Street',   '21.2 mi',  '12345678'],
+						    	['Walmart #925',    '999 Elm Street',   '29.0 mi',  '12345678'],
+						    	['Walmart #925',    '999 Elm Street',   '29.0 mi',  '12345678'],
+						    ];
+						    	
+						    $('#records .loading').fadeOut();
+								
+							var locationTemplate = Handlebars.compile($('#location-template').html());
+							var $locations = $("#records");
+						    
+						    $.each(data, function(i, location) {
+						    	// convert record from array if necessary
+						    	if (!location.hasOwnProperty('name'))
+    								location = { name: location[0], address: location[1], distance: location[2], ponumber: location[3] };
+    							
+								// construct row from template
+								var $location = $('<div class="record"/>').append(locationTemplate(location));
+								$locations.append($location);
+								
+						    });
+						    
+						}, 1000);
+    				}
+				},
+				details: {
+				},
     		});
-    		
-    		
-    		// Setup Search Box
-    		$searchbox = $("#searchbox");
-    		$searchbox.focus(function() {
-    			if (!this.unempty)
-    				this.value = "";
-				$searchbox.removeClass("prompt");
-    		});
-    		$searchbox.change(function() {
-    			this.unempty = this.value != "";
-    		});
-    		$searchbox.blur(function() {
-    			if (!this.unempty) {
-    				this.value = "enter PO number";
-    				$searchbox.addClass("prompt");
-    			}
-    		});
-    		
-    	
-    		// Setup sorters
-    		var $currentSort = null;
-    		function selectSort(sorter) {
-    			if ($currentSort != null)
-    				$currentSort.removeClass("sortbox_current");
-    			$currentSort = $("#" + sorter);
-    			$currentSort.addClass("sortbox_current");
-    		}
-    		// Select sort-by-distance as default
-    		selectSort("sort_by_dist");
-    		// Setup event handler for changing sort
-    		$(".sortbox").touchstart(function() {
-    			selectSort(this.id);
-    		});
-    		
-    		
-    		// Setup PO Records
-    		function addrecords(records) {
-    			for (var i = 0; i < records.length; i++)
-    				addrecord(records[i]);
-    		}
-    		var $currentRecord;
-	    	var source = $("#record-template").html();
-	    	var template = Handlebars.compile(source);
-    		function addrecord(record) {
-    			// convert record from array if necessary
-    			if (!record.hasOwnProperty('name'))
-    				record = { name: record[0], address: record[1], distance: record[2], ponumber: record[3] };
-    			
-    			// construct record from template
-		    	var html = template(record);
-		    	var $rec = $('<div class="record"/>').append(html);
-		    	var $recs = $("#records");
-		    	$recs.append($rec);
-		    	
-		    	// Setup Events For PO Records
-		    	$rec.click(function() {
-		    		$rec.addClass('highlight');
-		    		$page.attr('class', 'page center');
-		    		setTimeout(function() {
-		    		$page.attr('class', 'page transition left hide');
-		    		}, 10);
-		    	});
-		    	// highligting is tricky because we want to do it on touchstart but only if not
-		    	// scrolling, so we delay the effect a bit, then cancel it (even before it starts)
-		    	// if we detect scrolling 
-		    	var enter = function() {
-		    		$currentRecord = $rec;
-		    		var top = document.body.scrollTop;
-		    		setTimeout(function () { if ($currentRecord == $rec && document.body.scrollTop == top) $currentRecord.addClass('highlight'); }, 100);
-		    	}
-		    	var exit = function() {
-		    		$rec.removeClass('highlight');
-		    	}
-		    	$rec.touchstart(enter);
-		    	$rec.touchend(exit);
-		    	$rec.mousedown(enter);
-		    	$rec.mouseup(exit);
-		    	$rec.mouseout(exit);
-		    }
-		    $(document).scroll(function() { 
-	    		if ($currentRecord != null)
-	    			$currentRecord.removeClass('highlight');
-	    		$currentRecord = null;
-	    	});
-		    addrecords([
-		    	['Walmart #925',    '999 Elm Street',   '0.3 mi',  '12345678'],
-		    	['Walmart #123',    '999 Elm Street',   '3.4 mi',  '23456789'],
-		    	['Walmart #098',    '999 Elm Street',   '4.1 mi',  '34567891'],
-		    	['Kohl\'s #925',    '999 Elm Street',   '9.0 mi',  '45678912'],
-		    	['Kohl\'s #123',    '999 Elm Street',   '13.1 mi',  '56789123'],
-		    	['Home Depot #925', '999 Elm Street',   '14.0 mi',  '67891234'],
-		    	['Home Depot #123', '999 Elm Street',   '15.0 mi',  '78912345'],
-		    	['Kroger #925',     '999 Elm Street',   '17.1 mi',  '89123456'],
-		    	['PNC Bank #125',   '999 Elm Street',   '20.9 mi',  '12345678'],
-		    	['PNC Bank #925',   '999 Elm Street',   '21.2 mi',  '12345678'],
-		    	['Walmart #925',    '999 Elm Street',   '29.0 mi',  '12345678'],
-		    	['Walmart #925',    '999 Elm Street',   '29.0 mi',  '12345678'],
-		    	]);
+	    	
+	    	Screens.push('locations');
     	</script>
     	<!--
         <script type="text/javascript" src="js/index.js"></script>
