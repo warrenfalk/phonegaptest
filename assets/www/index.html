@@ -10,7 +10,13 @@
         <title>Check In</title>
         <style type="text/css">
         body {
-        	overflow:hidden;
+        	height: 100%;
+        }
+        #heading {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width:100%;        
         }
         #head {
         	background-color: white;
@@ -137,16 +143,7 @@
 			background: -o-linear-gradient(top, #6baef2, #4096ee);
 			background: linear-gradient(top, #6baef2, #4096ee);
         }
-        body {
-        	height: 100%;
-        }
         #records {
-        	position: absolute;
-        	bottom: 0;
-        	right: 0;
-        	left: 0;
-        	top: 132px;
-        	overflow: auto;
         	padding-bottom: 30px;
         }
         .record {
@@ -201,24 +198,30 @@
         }
         </style>
     </head>
-    <body">
-    	<div id="home" class="page center">
-	    	<div id="head">WHERE ARE YOU?</div>
-	    	<div id="search" class="topbar">
-	    		<input id="searchbox" class="prompt" value="enter PO number"/>
-	    	</div>
-	    	<div id="sorters">
-		    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
-		    	<div id="sort_by_dist" class="sortbox">sort by distance<div class="arrow"></div></div>
+    <body>
+    	<div id="page"></div>
+    	
+    	<script id="page_locationlist" type="text/x-handlebars-template">
+		    <div id="records" style="padding-top:132px">
 		    </div>
-		    <div id="records">
+			<div id="heading">
+		    	<div id="head">WHERE ARE YOU?</div>
+		    	<div id="search" class="topbar">
+		    		<input id="searchbox" class="prompt" value="enter PO number"/>
+		    	</div>
+		    	<div id="sorters">
+			    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
+			    	<div id="sort_by_dist" class="sortbox">sort by distance<div class="arrow"></div></div>
+			    </div>
 		    </div>
-	    </div>
-	    <div id="right" class="page right">
+    	</script>
+    	
+    	<script id="page_servicedetails" type="text/x-handlebars-template">
 	    	<div class="topbar">
 	    		<button class="ibtn left" id="detail_cancel">Cancel</button>
 	    	</div>
-	    </div>
+    	</script>
+    	
     	<script id="record-template" type="text/x-handlebars-template">
         	<div class="data">
         		<div class="locname">{{name}}</div>
@@ -227,6 +230,7 @@
         		<div class="rtarrow"></div>
         	</div>
     	</script>
+    	
         <script type="text/javascript" src="cordova-2.6.0.js"></script>
     	<script type="text/javascript">
     		// Extend jquery for PhoneGap
@@ -239,7 +243,12 @@
 	    			jQuery.fn[name] = function(data, fn) { return arguments.length > 0 ? this.on(name, null, data, fn) : this.trigger(name); }
     			});
     		}
-    			
+    		
+    		// Set up main page
+    		$page = $("#page");
+	    	var pageTemplate = Handlebars.compile($("#page_locationlist").html());
+     		$page.append(pageTemplate([]));    			
+    		
     		
     		// Wire up details cancel button
     		$("#detail_cancel").click(function() {
@@ -290,14 +299,14 @@
     				addrecord(records[i]);
     		}
     		var $currentRecord;
+	    	var source = $("#record-template").html();
+	    	var template = Handlebars.compile(source);
     		function addrecord(record) {
     			// convert record from array if necessary
     			if (!record.hasOwnProperty('name'))
     				record = { name: record[0], address: record[1], distance: record[2], ponumber: record[3] };
     			
     			// construct record from template
-		    	var source = $("#record-template").html();
-		    	var template = Handlebars.compile(source);
 		    	var html = template(record);
 		    	var $rec = $('<div class="record"/>').append(html);
 		    	var $recs = $("#records");
@@ -316,21 +325,23 @@
 		    	// if we detect scrolling 
 		    	var enter = function() {
 		    		$currentRecord = $rec;
-		    		setTimeout(function () { if ($currentRecord == $rec) $currentRecord.addClass('highlight'); }, 200);
+		    		var top = document.body.scrollTop;
+		    		setTimeout(function () { if ($currentRecord == $rec && document.body.scrollTop == top) $currentRecord.addClass('highlight'); }, 100);
 		    	}
 		    	var exit = function() {
 		    		$rec.removeClass('highlight');
 		    	}
-		    	$recs.scroll(function() { 
-		    		if ($currentRecord != null)
-		    			$currentRecord.removeClass('highlight');
-		    		$currentRecord = null;
-		    	});
 		    	$rec.touchstart(enter);
 		    	$rec.touchend(exit);
 		    	$rec.mousedown(enter);
+		    	$rec.mouseup(exit);
 		    	$rec.mouseout(exit);
 		    }
+		    $(document).scroll(function() { 
+	    		if ($currentRecord != null)
+	    			$currentRecord.removeClass('highlight');
+	    		$currentRecord = null;
+	    	});
 		    addrecords([
 		    	['Walmart #925',    '999 Elm Street',   '0.3 mi',  '12345678'],
 		    	['Walmart #123',    '999 Elm Street',   '3.4 mi',  '23456789'],
