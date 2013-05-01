@@ -237,17 +237,6 @@
     	
         <script type="text/javascript" src="cordova-2.6.0.js"></script>
     	<script type="text/javascript">
-    		// Extend jquery for PhoneGap
-    		if (!('ontouchstart' in document.createElement('div'))) {
-    			jQuery.fn.touchstart = jQuery.fn.mousedown;
-    			jQuery.fn.touchend = jQuery.fn.mouseup;
-    		}
-    		if (!jQuery.fn.touchstart) {
-    			$.each("touchstart touchend".split(" "), function(i, name) {
-	    			jQuery.fn[name] = function(data, fn) { return arguments.length > 0 ? this.on(name, null, data, fn) : this.trigger(name); }
-    			});
-    		}
-    		
     		// Set up main page
     		$page = $("#page");
 	    	var pageTemplate = Handlebars.compile($("#page_locationlist").html());
