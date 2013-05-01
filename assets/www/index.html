@@ -47,8 +47,8 @@
 		    transform: translate3d(100%, 0, 0);
         }
         .page.transition {
-        	-webkit-transition-duration: .25s;
-        	transition-duration: .25s;
+        	-webkit-transition-duration: .20s;
+        	transition-duration: .20s;
         }
         #search {
         	text-align: center;
@@ -163,17 +163,20 @@
         .record .data .locname {
         	position: absolute;
         	left: 8px;
-        	top: 8px;
+        	top: 9px;
         	font-size: 18px;
         }
         .record .data .locaddr {
         	position: absolute;
         	font-size: 13px;
         	left: 8px;
-        	top: 32px;
+        	top: 34px;
         	color: #134a82;
         }
         .record .data .dist {
+        	position: absolute;
+        	right: 30px;
+        	top: 34px;
         	font-size: 13px;
         	color: #134a82;
         	font-weight: bold;
@@ -182,7 +185,7 @@
         .record .data .ponum {
         	position: absolute;
         	right: 30px;
-        	top: 14px;
+        	top: 2px;
         	font-size: 22px;
         	margin: 3px;
         }
@@ -225,8 +228,9 @@
     	<script id="record-template" type="text/x-handlebars-template">
         	<div class="data">
         		<div class="locname">{{name}}</div>
-        		<div class="locaddr"><span class="dist">({{distance}})</span> {{address}}</div>
+        		<div class="locaddr">{{address}}</div>
         		<div class="ponum">PO:{{ponumber}}</div>
+        		<div class="dist">({{distance}})</div>
         		<div class="rtarrow"></div>
         	</div>
     	</script>
@@ -315,10 +319,10 @@
 		    	// Setup Events For PO Records
 		    	$rec.click(function() {
 		    		$rec.addClass('highlight');
-		    		var $r= $('#right');
-		    		$r.attr('class', 'page right');
-		    		$r.attr('class', 'page transition center');
-		    		$('#home').attr('class', 'page transition left');
+		    		$page.attr('class', 'page center');
+		    		setTimeout(function() {
+		    		$page.attr('class', 'page transition left hide');
+		    		}, 10);
 		    	});
 		    	// highligting is tricky because we want to do it on touchstart but only if not
 		    	// scrolling, so we delay the effect a bit, then cancel it (even before it starts)
