@@ -7,6 +7,8 @@
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <script type="text/javascript" src="js/jquery.js"></script>
         <script type="text/javascript" src="js/handlebars.js"></script>
+        <script type="text/javascript" src="js/ui.js"></script>
+        <script type="text/javascript" src="js/fixture.js"></script>
         <script type="text/javascript" src="js/screens.js"></script>
         <title>Check In</title>
     </head>
@@ -33,108 +35,45 @@
     	
     	<script id="screen_details" type="text/x-handlebars-template">
 	    	<div class="topbar">
-	    		<button class="ibtn left" id="detail_cancel">Cancel</button>
+	    		<div class="left"><button class="ibtn left" id="detail_cancel">Cancel</button></div>
+	    		<div class="title">Verify Service</div>
 	    	</div>
+    		<div id="details">
+				<div class="podata">
+					<div class="ponum"><span class="name">PO:</span><span class="value">{{number}}</span></div>
+					{{#with loc}}
+						<div class="location">
+							<span class="name">Location:</span>
+							<div class="locname value">{{name}}</div>
+							<div class="locaddr value">{{address}}</div>
+						</div>
+					{{/with}}
+					<div class="servicetype">Service: <span class="value">{{type}}</span></div>
+				</div>
+				<div class="actions">
+					<button class="bigbtn checkin">CHECK IN</button>
+				</div>
+        	</div>
     	</script>
     	
     	<script id="location-template" type="text/x-handlebars-template">
         	<div class="data">
         		<div class="locname">{{name}}</div>
         		<div class="locaddr">{{address}}</div>
-        		<div class="ponum">PO:{{ponumber}}</div>
         		<div class="dist">({{distance}})</div>
-        		<div class="rtarrow"></div>
+        		<div class="ponum">
+        			{{#hasMultiple pos}}
+        				<span class="multiple">(multiple)</span>
+        			{{else}}
+	        			<span class="poprefix">PO:</span><span class="number">{{pos.0.number}}</span>
+        			{{/hasMultiple}}
+        		</div>
+      			<div class="rtarrow"></div>
         	</div>
     	</script>
     	
         <script type="text/javascript" src="cordova-2.6.0.js"></script>
-    	<script type="text/javascript">
-	    	this.Screens.define({
-	    		locations: {
-	    			initialize: function() {
-						// Setup Search Box
-						$searchbox = $("#searchbox");
-						$searchbox.focus(function() {
-							if (!this.unempty)
-								this.value = "";
-							$searchbox.removeClass("prompt");
-						});
-						$searchbox.change(function() {
-							this.unempty = this.value != "";
-						});
-						$searchbox.blur(function() {
-							if (!this.unempty) {
-								this.value = "enter PO number";
-								$searchbox.addClass("prompt");
-							}
-						});
-						
-						
-						// Setup sorters
-						var $currentSort = null;
-						function selectSort(sorter) {
-							if ($currentSort != null)
-								$currentSort.removeClass("sortbox_current");
-							$currentSort = $("#" + sorter);
-							$currentSort.addClass("sortbox_current");
-						}
-						// Select sort-by-distance as default
-						selectSort("sort_by_dist");
-						// Setup event handler for changing sort
-						$(".sortbox").touchstart(function() {
-							selectSort(this.id);
-						});
-						
-						
-						// Request data
-						// show loading indicator
-						$div = $('#records');
-						$div.append('<div class="loading" id="loadwait">retrieving locations...</div>');
-						$('#loadwait').hide();
-						$('#loadwait').fadeIn();
-						
-						
-						setTimeout(function() {
-							// mocked data
-							data = [
-						    	['Walmart #925',    '999 Elm Street',   '0.3 mi',  '12345678'],
-						    	['Walmart #123',    '999 Elm Street',   '3.4 mi',  '23456789'],
-						    	['Walmart #098',    '999 Elm Street',   '4.1 mi',  '34567891'],
-						    	['Kohl\'s #925',    '999 Elm Street',   '9.0 mi',  '45678912'],
-						    	['Kohl\'s #123',    '999 Elm Street',   '13.1 mi',  '56789123'],
-						    	['Home Depot #925', '999 Elm Street',   '14.0 mi',  '67891234'],
-						    	['Home Depot #123', '999 Elm Street',   '15.0 mi',  '78912345'],
-						    	['Kroger #925',     '999 Elm Street',   '17.1 mi',  '89123456'],
-						    	['PNC Bank #125',   '999 Elm Street',   '20.9 mi',  '12345678'],
-						    	['PNC Bank #925',   '999 Elm Street',   '21.2 mi',  '12345678'],
-						    	['Walmart #925',    '999 Elm Street',   '29.0 mi',  '12345678'],
-						    	['Walmart #925',    '999 Elm Street',   '29.0 mi',  '12345678'],
-						    ];
-						    	
-						    $('#records .loading').fadeOut();
-								
-							var locationTemplate = Handlebars.compile($('#location-template').html());
-							var $locations = $("#records");
-						    
-						    $.each(data, function(i, location) {
-						    	// convert record from array if necessary
-						    	if (!location.hasOwnProperty('name'))
-    								location = { name: location[0], address: location[1], distance: location[2], ponumber: location[3] };
-    							
-								// construct row from template
-								var $location = $('<div class="record"/>').append(locationTemplate(location));
-								$locations.append($location);
-								
-						    });
-						    
-						}, 1000);
-    				}
-				},
-				details: {
-				},
-    		});
-	    	
-	    	Screens.push('locations');
+    	<script type="text/javascript" src="js/index.js">
     	</script>
     	<!--
         <script type="text/javascript" src="js/index.js"></script>

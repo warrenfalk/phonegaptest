@@ -40,7 +40,8 @@ body {
 	width:100%;        
 }
 #head {
-	background-color: white;
+	background: #e9e7ea url(../img/graybar.svg);
+	border-bottom: solid 1px #b9b9b9;
 	text-align: center;
 	height: 44px;
 	font-size: 22px;
@@ -86,6 +87,17 @@ body {
 	background: linear-gradient(top, #bbc9db, #4f6c8b);
 	border-top: solid 1px #cfdceb;
 	border-bottom: solid 1px #3e5974;
+}
+.topbar .title {
+	position: absolute;
+	top: 9px;
+	width: 50%;
+	left: 25%;
+	right: 25%;
+	text-align: center;
+	color: white;
+	font-size: 20px;
+	text-shadow: -1px -1px #4f6c8b;
 }
 .ibtn {
 	padding: 0 15px;
@@ -234,6 +246,20 @@ body {
 	font-size: 22px;
 	margin: 3px;
 }
+.record .data .poprefix {
+	color: #808080;
+}
+.record .data .ponum .number {
+	font-weight: bold;
+}
+.record .data .multiple {
+	color: #505050;
+}
+@media screen and (max-width:330px) {
+	.record .data .poprefix {
+		display: none;
+	}
+}
 .record .rtarrow {
 	position: absolute;
 	right: 8px;
@@ -243,6 +269,65 @@ body {
 .rtarrow {
 	width: 16px;
 	height: 23px;
+}
+#details .podata {
+	position: relative;
+	padding: 27px;
+	font-size: 18px;
+}
+#details .podata .ponum {
+	text-align: right;
+	font-size: 28px;
+	font-weight: bold;
+}
+#details .podata .location {
+	margin-top: 18px;
+}
+#details .podata .location .locname {
+	font-weight: bold;
+}
+#details .podata .servicetype {
+	margin-top: 18px;
+}
+#details .actions {
+	position: fixed;
+	width: 100%;
+	bottom: 44px;
+}
+.value {
+	color: blue;
+}
+.actions {
+	text-align: center;
+}
+.actions .bigbtn {
+	height: 100px;
+	width: 258px;
+	background: url(../img/checkin.svg), url(../img/bigbtn.svg);
+	background-repeat: no-repeat, no-repeat;
+	background-position: 33px 32px, 0 0;
+	border: none;
+	color: white;
+	font-size: 28px;
+	padding-left: 33px;
+	padding: 0 0 0 33px;
+}
+.actions .bigbtn:active {
+	background: url(../img/checkin.svg), url(../img/bigbtn.svg);
+	background-repeat: no-repeat, no-repeat;
+	background-position: 33px 33px, 0 100%;
+	padding: 2px 0 0 33px;
+}
+
+#error {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	background: #ecf0a4 url('../img/error.svg') no-repeat 4px 4px;
+	color: black;
+	padding: 8px 5px 5px 62px;
+	border-top: solid 1px #959c1a;
+	min-height: 62px;
 }
 
 

@@ -9,7 +9,7 @@ this.Screens = {
 			screen = this._screens[screen];
 		var template = Handlebars.compile($('#' + screen.template).html());
 		if (this._top)
-			this._top.hide();
+			this._top.$element.hide();
 		screen.$element = $("<div/>");
 		this._stack.push(this._top = screen);
 		screen.$element.append(template(data));
@@ -29,10 +29,16 @@ this.Screens = {
 	
 	define: function(screens) {
 		for (name in screens) {
-			screen = screens[name];
+			var screen = screens[name];
 			screen.name = name;
 			screen.template = screen.template || 'screen_' + screen.name;
 			this._screens[name] = screen;
 		}
+	},
+	
+	showError: function(error) {
+		$errdiv = $('<div id="error"/>');
+		$errdiv.text("Error: " + error.stack);
+		$("#page").append($errdiv);
 	}
 };
