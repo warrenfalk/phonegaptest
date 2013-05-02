@@ -15,7 +15,7 @@ this.Screens = {
 		screen.$element.append(template(data));
 		$("#page").append(screen.$element);
 		if (screen.initialize)
-			screen.initialize(screen.$element);
+			screen.initialize(screen.$element, data);
 	},
 	
 	pop: function() {
@@ -40,5 +40,21 @@ this.Screens = {
 		$errdiv = $('<div id="error"/>');
 		$errdiv.text("Error: " + error.stack);
 		$("#page").append($errdiv);
-	}
+	},
+	
+	makeList: function(recordTemplate, recordClass, parentElement, data, clickHandler) {
+		if (typeof recordTemplate == 'string')
+			recordTemplate = Handlebars.compile($('#' + recordTemplate).html());
+		
+		var $parentElement = $('#' + parentElement);
+	    
+	    $.each(data, function(i, record) {
+			// construct row from template
+			var $record = $('<div class="' + recordClass + ' record"/>').append(recordTemplate(record));
+			$parentElement.append($record);
+			
+			$record.click(function() { clickHandler(record); });
+	    });
+		
+	} 
 };

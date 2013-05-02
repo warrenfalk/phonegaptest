@@ -7,7 +7,6 @@
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <script type="text/javascript" src="js/jquery.js"></script>
         <script type="text/javascript" src="js/handlebars.js"></script>
-        <script type="text/javascript" src="js/ui.js"></script>
         <script type="text/javascript" src="js/fixture.js"></script>
         <script type="text/javascript" src="js/screens.js"></script>
         <title>Check In</title>
@@ -40,7 +39,7 @@
 	    	</div>
     		<div id="details">
 				<div class="podata">
-					<div class="ponum"><span class="name">PO:</span><span class="value">{{number}}</span></div>
+					<div class="ponum"><span class="name">PO:</span><span class="value">{{po.number}}</span></div>
 					{{#with loc}}
 						<div class="location">
 							<span class="name">Location:</span>
@@ -50,7 +49,7 @@
 							</div>
 						</div>
 					{{/with}}
-					<div class="servicetype">Service: <span class="value">{{type}}</span></div>
+					<div class="servicetype"><span class="name">Service:</span> <span class="value">{{po.type}}</span></div>
 				</div>
 				<div class="actions">
 					<button class="bigbtn checkin">CHECK IN</button>
@@ -58,7 +57,18 @@
         	</div>
     	</script>
     	
-    	<script id="location-template" type="text/x-handlebars-template">
+    	<script id="screen_polist" type="text/x-handlebars-template">
+    		<div id="polist" class="list">
+    		</div>
+    		<div id="heading">
+	    		<div class="ibar">
+    				<div class="left"><button class="ibtn left" id="polist_cancel">Cancel</button></div>
+    				<div class="title">Select PO</div>
+    			</div>
+    		</div>
+    	</script>
+    	
+    	<script id="location_record" type="text/x-handlebars-template">
         	<div class="data">
         		<div class="locname">{{name}}</div>
         		<div class="locaddr">{{address}}</div>
@@ -72,6 +82,11 @@
         		</div>
       			<div class="rtarrow"></div>
         	</div>
+    	</script>
+    	
+    	<script id="po_record" type="text/x-handlebars-template">
+			<div class="po"><span class="poprefix">PO:</span> <span class="number">{{number}}</span></div>
+    		<div class="type">{{type}}</div>
     	</script>
     	
         <script type="text/javascript" src="cordova-2.6.0.js"></script>

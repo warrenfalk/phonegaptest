@@ -35,28 +35,17 @@ Screens.define({
 			});
 			
 			
-			// Setup location click handler
-			var locationSelect = function(location) {
-				location.pos[0].loc = location;
-				Screens.push('details', location.pos[0]);
-			}
-			
-			
 			// Receive location data
 			var receiveLocations = function(data) {
 			    $('#records .loading').fadeOut();
-					
-				var locationTemplate = Handlebars.compile($('#location-template').html());
-				var $locations = $("#records");
-			    
-			    $.each(data, function(i, location) {
-					// construct row from template
-					var $location = $('<div class="record"/>').append(locationTemplate(location));
-					$locations.append($location);
-					
-					$location.touchstart(ui.highlight);
-					$location.click(function() { locationSelect(location); });
-			    });
+
+			    var list = Screens.makeList('location_record', 'locrecord', 'records', data, function (location) {
+					// for locations with multiple POs, push the PO selector screen
+					if (location.pos.length > 1)
+						Screens.push('polist', location);
+					else
+						Screens.push('details', { loc: location, po: location.pos[0] });
+			    })
 			};
 			
 			
@@ -86,6 +75,17 @@ Screens.define({
 			});
 		}
 	},
+	polist: {
+		initialize: function(element, data) {
+			$("#polist_cancel").click(function() {
+				Screens.pop();
+			});
+			
+		    var list = Screens.makeList('po_record', 'porecord', 'polist', data.pos, function (po) {
+		    	Screens.push('details', { loc: data, po: po })
+		    })
+		}
+	}
 });
 
 Screens.push('locations');

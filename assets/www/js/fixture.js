@@ -24,6 +24,22 @@ this.Fixtures.getLocationData = function() {
 	     {
 	       'number':'67556780',
 	       'type':'Lot Sweeping'
+	     },
+	     {
+	       'number':'23456',
+	       'type':'Landscaping'
+	     },
+	     {
+	       'number':'67556782',
+	       'type':'Lot Sweeping'
+	     },
+	     {
+	       'number':'98768',
+	       'type':'Landscaping'
+	     },
+	     {
+	       'number':'67556900',
+	       'type':'Lot Sweeping'
 	     }
 	   ]
 	 },

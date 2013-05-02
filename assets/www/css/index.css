@@ -186,6 +186,27 @@ body {
 	padding-top: 132px;
 	padding-bottom: 30px;
 }
+.list {
+	padding-top: 44px;
+	padding-bottom: 30px;
+}
+.porecord {
+	position: relative;
+	height: 44px;
+}
+.porecord .po {
+	position: absolute;
+	left: 7px;
+	top: 11px;
+	font-size: 18px;
+}
+.porecord .type {
+	position: absolute;
+	right: 20px;
+	top: 12px;
+	font-size: 15px;
+	min-width: 33%;
+}
 #records.isloading {
 }
 #records .loading {
@@ -204,34 +225,36 @@ body {
 	background-color: white;
 	opacity: 2;
 }
-.record {
+.locrecord {
 	height: 60px;
+}
+.record {
+	position: relative;
 	border-bottom: solid 1px #c0c0c0;
 	background-color: white;
 	border-left: solid 5px #c0c0c0;
 }
-.record.highlight {
+.record.highlight, .record:active {
 	background-color: #8cc0f5;
 	border-left: solid 5px #4096ee;
 }
-.record .data {
-	position: relative;
+.locrecord .data {
 	height: 59px;
 }
-.record .data .locname {
+.locrecord .data .locname {
 	position: absolute;
 	left: 8px;
 	top: 9px;
 	font-size: 18px;
 }
-.record .data .locaddr {
+.locrecord .data .locaddr {
 	position: absolute;
 	font-size: 13px;
 	left: 8px;
 	top: 34px;
 	color: #134a82;
 }
-.record .data .dist {
+.locrecord .data .dist {
 	position: absolute;
 	right: 30px;
 	top: 34px;
@@ -240,14 +263,14 @@ body {
 	font-weight: bold;
 	padding-right: 1.5em;
 }
-.record .data .ponum {
+.locrecord .data .ponum {
 	position: absolute;
 	right: 30px;
 	top: 2px;
 	font-size: 22px;
 	margin: 3px;
 }
-.record .data .poprefix {
+.poprefix {
 	color: #808080;
 }
 .record .data .ponum .number {
@@ -304,8 +327,13 @@ body {
 	width: 100%;
 	bottom: 44px;
 }
+.name {
+	color: #134a82;
+	font-weight: normal;
+}
 .value {
-	color: #0053b6;
+	color: black;
+	font-weight: bold;
 }
 .actions {
 	text-align: center;
