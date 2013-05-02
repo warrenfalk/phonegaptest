@@ -75,7 +75,7 @@ body {
 #search {
 	text-align: center;
 }
-.topbar {
+.ibar {
 	height: 44px;
 	padding: 3px 10px;
 	background-color: #4096ee;
@@ -88,7 +88,7 @@ body {
 	border-top: solid 1px #cfdceb;
 	border-bottom: solid 1px #3e5974;
 }
-.topbar .title {
+.ibar .title {
 	position: absolute;
 	top: 9px;
 	width: 50%;
@@ -96,15 +96,16 @@ body {
 	right: 25%;
 	text-align: center;
 	color: white;
-	font-size: 20px;
+	font-size: 18px;
+	font-weight: bold;
 	text-shadow: -1px -1px #4f6c8b;
 }
 .ibtn {
 	padding: 0 15px;
 	border: none;
-	margin: 0;
-	height: 34px;
-	font-size: 14px;
+	margin: 1px;
+	height: 32px;
+	font-size: 12px;
 	color: white;
 	background-color: transparent;
 	background-image: url(../img/btnleft.svg), url(../img/btnmid.svg), url(../img/btnright.svg);
