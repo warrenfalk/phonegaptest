@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget xmlns = "http://www.w3.org/ns/widgets"
+        xmlns:gap = "http://phonegap.com/ns/1.0"
+        id        = "com.divisionsinc.InPosition"
+        versionCode="10" 
+        version   = "1.0.0">
+        <name>In Position</name>
+        <description>Divisions Inc. Service Verification Application</description>
+        <author href="http://www.divisionsinc.com/" email="wfalk@divisionsinc.com">Warren Falk</author>
+        <preference name="orientation" value="portrait"/>
+</widget>
