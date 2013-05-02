@@ -287,6 +287,15 @@ body {
 #details .podata .location .locname {
 	font-weight: bold;
 }
+#details .podata .location .name {
+	display: none;
+}
+#details .podata .location .value {
+	padding-left: 35px;
+	font-weight: bold;
+	min-height: 44px;
+	background: url('../img/pin.svg') no-repeat;
+}
 #details .podata .servicetype {
 	margin-top: 18px;
 }
@@ -296,7 +305,7 @@ body {
 	bottom: 44px;
 }
 .value {
-	color: blue;
+	color: #0053b6;
 }
 .actions {
 	text-align: center;

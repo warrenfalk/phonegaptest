@@ -9,14 +9,35 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
+   width="30"
+   height="44"
    id="svg4960"
    version="1.1"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="pin.svg">
   <defs
-     id="defs4962" />
+     id="defs4962">
+    <filter
+       inkscape:collect="always"
+       id="filter3763">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.25166615"
+         id="feGaussianBlur3765" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3801"
+       x="-0.26880771"
+       width="1.5376154"
+       y="-0.50535847"
+       height="2.0107169">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.3293989"
+         id="feGaussianBlur3803" />
+    </filter>
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -24,17 +45,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.9195959"
-     inkscape:cx="48.149031"
-     inkscape:cy="19.689609"
+     inkscape:zoom="3.959798"
+     inkscape:cx="25.711093"
+     inkscape:cy="4.6629916"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1920"
-     inkscape:window-height="1058"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-width="708"
+     inkscape:window-height="514"
+     inkscape:window-x="551"
+     inkscape:window-y="195"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata4965">
     <rdf:RDF>
@@ -43,7 +64,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -51,11 +72,24 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-988.36218)">
+     transform="translate(0,-1008.3622)">
+    <path
+       sodipodi:type="arc"
+       style="opacity:0.16749998999999999;fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter3801)"
+       id="path3767"
+       sodipodi:cx="13.258252"
+       sodipodi:cy="32.256977"
+       sodipodi:rx="5.9346461"
+       sodipodi:ry="3.1567268"
+       d="M 19.192898,32.256977 A 5.9346461,3.1567268 0 1 1 19.18835,32.13341"
+       transform="matrix(0.76447062,0,0,0.76447062,3.1227079,1014.697)"
+       sodipodi:start="0"
+       sodipodi:end="6.2440314"
+       sodipodi:open="true" />
     <path
        inkscape:connector-curvature="0"
-       style="fill:#193659;fill-opacity:1;stroke:none"
-       d="m 32.304246,988.94189 c -11.262744,0 -20.458265,8.88616 -20.458265,19.74671 0,4.1441 0.0636,7.4761 3.598992,13.5182 5.733728,9.7993 16.45496,28.2231 16.45496,28.2231 0,0 9.138938,-16.5612 15.794378,-27.4269 4.478687,-7.3119 4.56685,-9.4131 4.56685,-13.9101 0,-11.26277 -8.694172,-20.15101 -19.956915,-20.15101 z m -0.177898,7.27766 c 7.026645,0 12.792361,5.54475 13.067413,12.56605 l 0.01615,0.5175 c 0,7.2259 -5.857683,13.0836 -13.083585,13.0836 -7.225902,0 -13.083585,-5.8577 -13.083585,-13.0836 0,-7.2259 5.857683,-13.08355 13.083585,-13.08355 z"
+       style="fill:#0f335d;fill-opacity:1;stroke:none"
+       d="m 13.304918,1011.6433 c -4.8221579,0 -8.7592315,3.8046 -8.7592315,8.4546 0,1.7743 0.02723,3.2009 1.5409131,5.7878 2.4549026,4.1956 7.0452114,12.0838 7.0452114,12.0838 0,0 3.912847,-7.0907 6.762382,-11.7429 1.917556,-3.1306 1.955303,-4.0302 1.955303,-5.9556 0,-4.8222 -3.722421,-8.6277 -8.544578,-8.6277 z m -0.07617,3.116 c 3.008468,0 5.477066,2.3739 5.59483,5.3801 l 0.0069,0.2216 c 0,3.0938 -2.507973,5.6018 -5.601753,5.6018 -3.093779,0 -5.6017527,-2.508 -5.6017527,-5.6018 0,-3.0938 2.5079737,-5.6017 5.6017527,-5.6017 z"
        id="path4432"
        sodipodi:nodetypes="zsscsszsccssss" />
   </g>
