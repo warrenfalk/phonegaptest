@@ -38,7 +38,7 @@ Screens.define({
 			// Receive location data
 			var receiveLocations = function(data) {
 			    $('#records .loading').fadeOut();
-
+			    
 			    var list = Screens.makeList('location_record', 'locrecord', 'records', data, function (location) {
 					// for locations with multiple POs, push the PO selector screen
 					if (location.pos.length > 1)

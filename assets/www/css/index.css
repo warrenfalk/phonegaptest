@@ -39,13 +39,13 @@ body {
 	left: 0;
 	width:100%;        
 }
-#head {
+.silverbar {
 	background: #e9e7ea url(../img/graybar.svg);
 	border-bottom: solid 1px #b9b9b9;
 	text-align: center;
 	height: 44px;
 	font-size: 22px;
-	padding: 11px;
+	padding: 4px 10px;
 }
 .page {
 	position: absolute;
@@ -92,14 +92,15 @@ body {
 .ibar .title {
 	position: absolute;
 	top: 9px;
-	width: 50%;
-	left: 25%;
-	right: 25%;
+	min-width: 64%;
+	left: 18%;
+	right: 18%;
 	text-align: center;
 	color: white;
 	font-size: 18px;
 	font-weight: bold;
 	text-shadow: 0px -1px #4f6c8b;
+	white-space: no-wrap;
 }
 .ibar .right {
 	position: absolute;
@@ -305,6 +306,9 @@ body {
 	font-size: 22px;
 	margin: 3px;
 }
+.closed {
+	background-color: #b0b0b0;
+}
 .poprefix {
 	color: #808080;
 }
@@ -312,6 +316,7 @@ body {
 	font-weight: bold;
 }
 .record .data .multiple {
+	font-size: 80%;
 	color: #505050;
 }
 @media screen and (max-width:330px) {

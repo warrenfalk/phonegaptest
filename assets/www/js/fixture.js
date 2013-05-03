@@ -9,7 +9,8 @@ this.Fixtures.getLocationData = function() {
 	     {
 	       'number':'12345678',
 	       'type':'Landscaping',
-	       'due':'2013-05-06'
+	       'due':'2013-05-06',
+	       'status': 'closed'
 	     }
 	   ]
 	 },
@@ -21,12 +22,14 @@ this.Fixtures.getLocationData = function() {
 	     {
 	       'number':'23456789',
 	       'type':'Landscaping',
-	       'due':'2013-05-06'
+	       'due':'2013-05-06',
+	       'status': 'closed'
 	     },
 	     {
 	       'number':'67556780',
 	       'type':'Lot Sweeping',
-	       'due':'2013-05-06'
+	       'due':'2013-05-06',
+	       'status': 'checkin'
 	     },
 	     {
 	       'number':'23456',

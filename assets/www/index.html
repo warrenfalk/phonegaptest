@@ -21,12 +21,14 @@
 			    <div id="records">
 			    </div>
 				<div id="heading">
-			    	<div id="head">WHERE ARE YOU?</div>
-			    	<div id="search" class="ibar">
-			    		<input id="searchbox" class="prompt" value="enter PO number"/>
+			    	<div class="ibar large">
+						<div class="title">What's your position?</div>
 						<div class="right">
 							<button class="ibtnsq"><img src="img/refresh.svg"/></button>
 						</div>
+					</div>
+			    	<div id="search" class="silverbar">
+			    		<input id="searchbox" class="prompt" value="enter PO number"/>
 			    	</div>
 			    	<div id="sorters">
 				    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
@@ -73,13 +75,13 @@
     	</script>
     	
     	<script id="location_record" type="text/x-handlebars-template">
-        	<div class="data">
+        	<div class="data {{status}}">
         		<div class="locname">{{name}}</div>
         		<div class="locaddr">{{address}}</div>
         		<div class="dist">({{distance}})</div>
         		<div class="ponum">
         			{{#hasMultiple pos}}
-        				<span class="multiple">({{pos.length}} POs)</span>
+        				<span class="multiple">[ {{pos.length}} POs ]</span>
         			{{else}}
 	        			<span class="poprefix">PO:</span><span class="number">{{pos.0.number}}</span>
         			{{/hasMultiple}}
