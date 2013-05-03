@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="16"
-   height="23"
+   width="12.745168"
+   height="19.056557"
    id="svg4292"
    version="1.1"
    inkscape:version="0.48.4 r9939"
@@ -29,7 +29,7 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.9590209"
+     inkscape:zoom="5.6756276"
      inkscape:cx="2.721024"
      inkscape:cy="19.380017"
      inkscape:current-layer="layer1"
@@ -40,7 +40,11 @@
      inkscape:window-height="534"
      inkscape:window-x="330"
      inkscape:window-y="201"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="0"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <metadata
      id="metadata4297">
     <rdf:RDF>
@@ -49,7 +53,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -57,13 +61,13 @@
      id="layer1"
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     transform="translate(0,-9)">
+     transform="translate(0,-12.943443)">
     <path
        style="fill:#818181;fill-opacity:1;stroke:none"
-       d="M 0,12.280209 3.6514479,9.06722 15.337615,20.496789 3.6514479,32 0,28.713368 8.0336235,20.496789 0,12.280209"
+       d="M 0,15.613355 3.0342603,12.943443 12.745168,22.441124 3.0342603,32 0,29.268892 6.6757367,22.441124 0,15.613355"
        id="path4819"
        inkscape:path-effect="#path-effect4821"
-       inkscape:original-d="M 0,12.280209 3.6514479,9.06722 15.337615,20.496789 3.6514479,32 0,28.713368 8.0336235,20.496789 z"
+       inkscape:original-d="M 0,15.613355 3.0342603,12.943443 12.745168,22.441124 3.0342603,32 0,29.268892 6.6757367,22.441124 z"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccc" />
   </g>

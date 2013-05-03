@@ -73,9 +73,10 @@ body {
 	transition-duration: .20s;
 }
 #search {
-	text-align: center;
+	text-align: left;
 }
 .ibar {
+	position: relative;
 	height: 44px;
 	padding: 3px 10px;
 	background-color: #4096ee;
@@ -98,27 +99,54 @@ body {
 	color: white;
 	font-size: 18px;
 	font-weight: bold;
-	text-shadow: -1px -1px #4f6c8b;
+	text-shadow: 0px -1px #4f6c8b;
+}
+.ibar .right {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+.ibtnsq {
+	background-color: transparent;
+	background-image: url(../img/ibtnsq.svg);
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	height: 30px;
+	width: 34px;
+	border: 0;
+	margin: 5px 7px;
+	padding: 0px;
+	overflow: hidden;
+	font-size: 11px;
+	font-weight: bold;
+	color: white;
+	text-shadow: 0px -1px #4f6c8b;
+	text-align: center;
+}
+.ibtnsq:active {
+	background-position: 0 100%;
 }
 .ibtn {
 	padding: 0 15px;
 	border: none;
 	margin: 1px;
-	height: 32px;
-	font-size: 12px;
+	height: 30px;
+	font-size: 11px;
+	font-weight: bold;
 	color: white;
 	background-color: transparent;
-	background-image: url(../img/btnleft.svg), url(../img/btnmid.svg), url(../img/btnright.svg);
+	background-image: url(../img/ibtnleft.svg), url(../img/ibtnmid.svg), url(../img/ibtnright.svg);
 	background-clip: padding-box, content-box, padding-box;
 	background-position: left top, left top, right top;
 	background-repeat: no-repeat, repeat-x, no-repeat;
+	text-shadow: 0px -1px #4f6c8b;
 }
 .ibtn:active {
 	background-position: left 100%, left 100%, right 100%;
 }
 .ibtn.left {
 	padding: 0 15px 0 20px;
-	background-image: url(../img/btnleftarr.svg), url(../img/btnmid.svg), url(../img/btnright.svg);
+	background-image: url(../img/ibtnleftarr.svg), url(../img/ibtnmid.svg), url(../img/ibtnright.svg);
 }
 #sorters {
 	position: relative;
@@ -298,8 +326,8 @@ body {
 	background: url(../img/rtarrow.svg);
 }
 .rtarrow {
-	width: 16px;
-	height: 23px;
+	width: 12px;
+	height: 19px;
 }
 #details .podata {
 	position: relative;
