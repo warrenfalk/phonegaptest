@@ -8,7 +8,8 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'12345678',
-	       'type':'Landscaping'
+	       'type':'Landscaping',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 },
@@ -19,27 +20,33 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'23456789',
-	       'type':'Landscaping'
+	       'type':'Landscaping',
+	       'due':'2013-05-06'
 	     },
 	     {
 	       'number':'67556780',
-	       'type':'Lot Sweeping'
+	       'type':'Lot Sweeping',
+	       'due':'2013-05-06'
 	     },
 	     {
 	       'number':'23456',
-	       'type':'Landscaping'
+	       'type':'Landscaping',
+	       'due':'2013-05-06'
 	     },
 	     {
 	       'number':'67556782',
-	       'type':'Lot Sweeping'
+	       'type':'Lot Sweeping',
+	       'due':'2013-05-06'
 	     },
 	     {
 	       'number':'98768',
-	       'type':'Landscaping'
+	       'type':'Landscaping',
+	       'due':'2013-05-06'
 	     },
 	     {
 	       'number':'67556900',
-	       'type':'Lot Sweeping'
+	       'type':'Lot Sweeping',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 },
@@ -50,7 +57,8 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'34567891',
-	       'type':'Lot Sweeping'
+	       'type':'Lot Sweeping',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 },
@@ -61,7 +69,8 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'45678912',
-	       'type':'Pressure Washing'
+	       'type':'Pressure Washing',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 },
@@ -72,7 +81,8 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'56789123',
-	       'type':'Landscaping'
+	       'type':'Landscaping',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 },
@@ -83,7 +93,8 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'67891234',
-	       'type':'Landscaping'
+	       'type':'Landscaping',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 },
@@ -94,7 +105,8 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'78912345',
-	       'type':'Pressure Washing'
+	       'type':'Pressure Washing',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 },
@@ -105,7 +117,8 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'89123456',
-	       'type':'Pressure Washing'
+	       'type':'Pressure Washing',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 },
@@ -116,7 +129,8 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'12345678',
-	       'type':'Landscaping'
+	       'type':'Landscaping',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 },
@@ -127,7 +141,8 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'12345678',
-	       'type':'Lot Sweeping'
+	       'type':'Lot Sweeping',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 },
@@ -138,7 +153,8 @@ this.Fixtures.getLocationData = function() {
 	   'pos':[
 	     {
 	       'number':'12345678',
-	       'type':'Landscaping'
+	       'type':'Landscaping',
+	       'due':'2013-05-06'
 	     }
 	   ]
 	 }

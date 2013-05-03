@@ -9,6 +9,7 @@
         <script type="text/javascript" src="js/handlebars.js"></script>
         <script type="text/javascript" src="js/fixture.js"></script>
         <script type="text/javascript" src="js/screens.js"></script>
+        <script type="text/javascript" src="js/moment.js"></script>
         <title>Check In</title>
     </head>
     <body>
@@ -75,7 +76,7 @@
         		<div class="dist">({{distance}})</div>
         		<div class="ponum">
         			{{#hasMultiple pos}}
-        				<span class="multiple">(multiple)</span>
+        				<span class="multiple">({{pos.length}} POs)</span>
         			{{else}}
 	        			<span class="poprefix">PO:</span><span class="number">{{pos.0.number}}</span>
         			{{/hasMultiple}}
@@ -87,19 +88,15 @@
     	<script id="po_record" type="text/x-handlebars-template">
 			<div class="po"><span class="poprefix">PO:</span> <span class="number">{{number}}</span></div>
     		<div class="type">{{type}}</div>
+    		<div class="due"><span class="name">due:</span> <span class="value">{{dateFormat due format="MM/DD"}}</span></div>
     	</script>
     	
         <script type="text/javascript" src="cordova-2.6.0.js"></script>
-    	<script type="text/javascript" src="js/index.js">
+    	<script type="text/javascript" src="js/index.js"></script>
+    	
+    	<script>
+    		Screens.init();
+    		Screens.push('locations');
     	</script>
-    	<!--
-        <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript">
-            app.initialize();
-        </script>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Please wait...</p>
-            </div>
-        -->
     </body>
 </html>

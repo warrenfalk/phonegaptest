@@ -56,5 +56,25 @@ this.Screens = {
 			$record.click(function() { clickHandler(record); });
 	    });
 		
-	} 
+	},
+	
+	init: function() {
+		document.addEventListener('deviceready', function() {
+			document.addEventListener('backbutton', function() {
+				var top = Screens._top;
+				if (!top) {
+					navigator.ap.exitApp();
+					return true;
+				}
+				if (!top.back) {
+					if (Screens._stack.length > 1)
+						Screens.pop();
+					return false;
+				}
+				top.back();
+				return false;
+			}, true);
+		}, false);
+	}
 };
+
