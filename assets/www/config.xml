@@ -6,6 +6,17 @@
         version   = "1.0.0">
         <name>In Position</name>
         <description>Divisions Inc. Service Verification Application</description>
+        
+        <icon src="icons/ios/inpos-ios-57.png" gap:platform="ios" width="57" height="57"/>
+        <icon src="icons/ios/inpos-ios-72.png" gap:platform="ios" width="72" height="72"/>
+        <icon src="icons/ios/inpos-ios-114.png" gap:platform="ios" width="114" height="114"/>
+        <icon src="icons/ios/inpos-ios-144.png" gap:platform="ios" width="144" height="144"/>
+        <icon src="icons/android/inpos-android-36.png" gap:platform="android" gap:density="ldpi" />
+		<icon src="icons/android/inpos-android-48.png" gap:platform="android" gap:density="mdpi" />
+		<icon src="icons/android/inpos-android-72.png" gap:platform="android" gap:density="hdpi" />
+		<icon src="icons/android/inpos-android-96.png" gap:platform="android" gap:density="xhdpi" />
+		<icon src="icons/android/inpos-android-144.png" gap:platform="android" gap:density="xxhdpi" />
+				
         <author href="http://www.divisionsinc.com/" email="wfalk@divisionsinc.com">Warren Falk</author>
         <preference name="orientation" value="portrait"/>
 </widget>
