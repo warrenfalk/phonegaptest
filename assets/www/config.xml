@@ -19,4 +19,6 @@
 				
         <author href="http://www.divisionsinc.com/" email="wfalk@divisionsinc.com">Warren Falk</author>
         <preference name="orientation" value="portrait"/>
+        
+        <gap:splash src="img/launch.png" gap:platform="ios" width="533" height="767"/>
 </widget>
