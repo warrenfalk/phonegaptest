@@ -245,7 +245,7 @@ body {
 }
 #records.isloading {
 }
-#records .loading {
+#recordsarea .loading {
 	position: absolute;
 	width: 50%;
 	margin: 45px 25%;
@@ -274,23 +274,23 @@ body {
 	background-color: #8cc0f5;
 	border-left: solid 5px #4096ee;
 }
-.locrecord .data {
+.locrecord {
 	height: 59px;
 }
-.locrecord .data .locname {
+.locrecord .locname {
 	position: absolute;
 	left: 8px;
 	top: 9px;
 	font-size: 18px;
 }
-.locrecord .data .locaddr {
+.locrecord .locaddr {
 	position: absolute;
 	font-size: 13px;
 	left: 8px;
 	top: 34px;
 	color: #134a82;
 }
-.locrecord .data .dist {
+.locrecord .dist {
 	position: absolute;
 	right: 30px;
 	top: 34px;
@@ -299,7 +299,7 @@ body {
 	font-weight: bold;
 	padding-right: 1.5em;
 }
-.locrecord .data .ponum {
+.locrecord .ponum {
 	position: absolute;
 	right: 30px;
 	top: 2px;
@@ -308,6 +308,9 @@ body {
 }
 .closed {
 	background-color: #c0c0c0;
+}
+.checkin {
+	background-color: #c0ffc0;
 }
 .poprefix {
 	color: #808080;
@@ -320,7 +323,7 @@ body {
 	color: #505050;
 }
 @media screen and (max-width:330px) {
-	.record .data .poprefix {
+	.locrecord .poprefix {
 		display: none;
 	}
 }

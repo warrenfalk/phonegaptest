@@ -3,20 +3,19 @@ this.Screens = {
 	_top: null,
 	_screens: {},
 	
-	push: function(screen, data) {
-		data = data || [];
+	push: function(screen, model) {
+		model = model || [];
 		if (typeof screen === 'string')
 			screen = this._screens[screen];
-		var template = Handlebars.compile($('#' + screen.template).html());
 		if (this._top)
 			this._top.$element.hide();
 		screen.$element = $("<div/>");
 		this._stack.push(this._top = screen);
-		screen.$element.append(template(data));
-		screen.data = data;
+		screen.$element.append($('#' + screen.template).html());
 		$("#page").append(screen.$element);
 		if (screen.initialize)
-			screen.initialize(screen.$element, data);
+			screen.initialize(screen.$element, model);
+		ko.applyBindings(model, screen.$element.get(0));
 	},
 	
 	pop: function() {

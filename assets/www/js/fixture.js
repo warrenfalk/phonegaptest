@@ -61,7 +61,8 @@ this.Fixtures.getLocationData = function() {
 	     {
 	       'number':'34567891',
 	       'type':'Lot Sweeping',
-	       'due':'2013-05-06'
+	       'due':'2013-05-06',
+	       'status':'checkin'
 	     }
 	   ]
 	 },

@@ -6,6 +6,7 @@
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/knockout.js"></script>
         <script type="text/javascript" src="js/handlebars.js"></script>
         <script type="text/javascript" src="js/fixture.js"></script>
         <script type="text/javascript" src="js/screens.js"></script>
@@ -16,10 +17,21 @@
     	<div id="page">
     	</div>
     	
-    	<script id="screen_locations" type="text/x-handlebars-template">
+    	<script id="screen_locations" type="text/x-page">
     		<div id="locations">
-			    <div id="records">
-			    </div>
+				<div id="recordsarea">
+			    	<div id="records" data-bind="foreach: location">
+		        		<div class="locrecord record data" data-bind="css: { closed : status() == 'closed', checkin : status() == 'checkin' }, click: select">
+        					<div class="locname" data-bind="text: name"></div>
+		        			<div class="locaddr" data-bind="text: address"></div>
+        					<div class="dist">(<span class="disttext" data-bind="text: distance"></span>)</div>
+        					<div class="ponum">
+								<span class="poprefix">PO:</span><span class="number" data-bind="text: pos()[0].number"></span>
+        					</div>
+      						<div class="rtarrow"></div>
+        				</div>
+				    </div>
+				</div>
 				<div id="heading">
 			    	<div class="ibar large">
 						<div class="title">What's your position?</div>
@@ -38,29 +50,27 @@
 			</div>
     	</script>
     	
-    	<script id="screen_details" type="text/x-handlebars-template">
+    	<script id="screen_details" type="text/x-page">
 	    	<div class="ibar">
 	    		<div class="left"><button class="ibtn left" id="detail_cancel">Cancel</button></div>
 	    		<div class="title">Verify Service</div>
 	    	</div>
     		<div id="details">
 				<div class="podata">
-					<div class="ponum"><span class="name">PO:</span><span class="value">{{po.number}}</span></div>
-					{{#with loc}}
-						<div class="location">
-							<span class="name">Location:</span>
-							<div class="value">
-								<div class="locname">{{name}}</div>
-								<div class="locaddr">{{address}}</div>
-							</div>
+					<div class="ponum"><span class="name">PO:</span><span class="value" data-bind="text: po.number"></span></div>
+					<div class="location">
+						<span class="name">Location:</span>
+						<div class="value">
+							<div class="locname" data-bind="text: loc.name"></div>
+							<div class="locaddr" data-bind="text: loc.address"></div>
 						</div>
-					{{/with}}
-					<div class="servicetype"><span class="name">Service:</span> <span class="value">{{po.type}}</span></div>
+					</div>
+					<div class="servicetype"><span class="name">Service:</span> <span class="value" data-bind="text: po.type"></span></div>
 				</div>
 				<div class="actions">
-					{{#unless po.status}} 
-					<button class="bigbtn checkin" id="checkin">CHECK IN</button>
-					{{/unless}}
+					<div data-bind="ifnot: po.status">
+						<button class="bigbtn checkin" id="checkin" data-bind="click: function() { po.checkin(); }">CHECK IN</button>
+					</div>
 				</div>
         	</div>
     	</script>
@@ -76,22 +86,6 @@
     		</div>
     	</script>
     	
-    	<script id="location_record" type="text/x-handlebars-template">
-        	<div class="data {{{getStatus pos}}}">
-        		<div class="locname">{{name}}</div>
-        		<div class="locaddr">{{address}}</div>
-        		<div class="dist">({{distance}})</div>
-        		<div class="ponum">
-        			{{#hasMultiple pos}}
-        				<span class="multiple">[ {{pos.length}} POs ]</span>
-        			{{else}}
-	        			<span class="poprefix">PO:</span><span class="number">{{pos.0.number}}</span>
-        			{{/hasMultiple}}
-        		</div>
-      			<div class="rtarrow"></div>
-        	</div>
-    	</script>
-    	
     	<script id="po_record" type="text/x-handlebars-template">
 			<div class="po"><span class="poprefix">PO:</span> <span class="number">{{number}}</span></div>
     		<div class="type">{{type}}</div>
@@ -100,10 +94,5 @@
     	
         <script type="text/javascript" src="cordova-2.6.0.js"></script>
     	<script type="text/javascript" src="js/index.js"></script>
-    	
-    	<script>
-    		Screens.init();
-    		Screens.push('locations');
-    	</script>
     </body>
 </html>
