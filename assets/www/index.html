@@ -58,7 +58,9 @@
 					<div class="servicetype"><span class="name">Service:</span> <span class="value">{{po.type}}</span></div>
 				</div>
 				<div class="actions">
-					<button class="bigbtn checkin">CHECK IN</button>
+					{{#unless po.status}} 
+					<button class="bigbtn checkin" id="checkin">CHECK IN</button>
+					{{/unless}}
 				</div>
         	</div>
     	</script>
@@ -75,7 +77,7 @@
     	</script>
     	
     	<script id="location_record" type="text/x-handlebars-template">
-        	<div class="data {{status}}">
+        	<div class="data {{{getStatus pos}}}">
         		<div class="locname">{{name}}</div>
         		<div class="locaddr">{{address}}</div>
         		<div class="dist">({{distance}})</div>

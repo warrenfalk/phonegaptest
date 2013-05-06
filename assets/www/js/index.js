@@ -70,34 +70,58 @@ Screens.define({
 	},
 	details: {
 		initialize: function() {
-			var back = this.back;
+			var screen = this;
+			
 			$("#detail_cancel").click(function() {
-				back();
+				screen.back();
+			});
+			
+			$("#checkin").click(function() {
+				screen.data.checkin();
+				screen = screen.back();
+				if (typeof screen.refresh == 'function')
+					screen.refresh();
 			});
 		},
 		back: function() {
-			Screens.pop();
+			return Screens.pop();
 		}
 	},
 	polist: {
 		initialize: function(element, data) {
-			var back = this.back;
+			var screen = this;
+			
 			$("#polist_cancel").click(function() {
-				back();
+				screen.back();
 			});
 			
 		    var list = Screens.makeList('po_record', 'porecord', 'polist', data.pos, function (po) {
-		    	Screens.push('details', { loc: data, po: po })
+		    	var details = {
+		    		loc: data,
+		    		po: po,
+		    		checkin: function() {
+		    			this.po.status = 'checkin';
+		    		}
+		    	};
+		    	Screens.push('details', details)
 		    })
 		},
 		back: function() {
-			Screens.pop();
+			return Screens.pop();
+		},
+		refresh: function() {
+			alert('refreshing');
 		}
 	}
 });
 
 Handlebars.registerHelper('hasMultiple', function(item, options) {
 	return (item.length && item.length > 1) ? options.fn(this) : options.inverse(this);
+});
+
+Handlebars.registerHelper('getStatus', function(item, options) {
+	if (item.length == 1)
+		return item[0].status;
 });
 
 //  format an ISO date using Moment.js

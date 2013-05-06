@@ -13,6 +13,7 @@ this.Screens = {
 		screen.$element = $("<div/>");
 		this._stack.push(this._top = screen);
 		screen.$element.append(template(data));
+		screen.data = data;
 		$("#page").append(screen.$element);
 		if (screen.initialize)
 			screen.initialize(screen.$element, data);
@@ -25,6 +26,7 @@ this.Screens = {
 		this._top.$element.remove();
 		this._top = this._stack[this._stack.length - 1];
 		this._top.$element.show();
+		return this._top;
 	},
 	
 	define: function(screens) {
