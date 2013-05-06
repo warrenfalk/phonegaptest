@@ -379,21 +379,23 @@ body {
 	text-align: center;
 }
 .actions .bigbtn {
-	height: 100px;
-	width: 258px;
-	background: url(../img/checkin.svg), url(../img/bigbtn.svg);
+	height: 89px;
+	width: 274px;
+	background: url(../img/checkin.svg), url(../img/greenbtn.svg);
 	background-repeat: no-repeat, no-repeat;
-	background-position: 33px 32px, 0 0;
+	background-position: 33px 24px, 0 0;
 	border: none;
 	color: white;
 	font-size: 28px;
 	padding-left: 33px;
 	padding: 0 0 0 33px;
+	text-shadow: 0px -1px #4f6c8b;
+	font-weight: bold;
 }
 .actions .bigbtn:active {
-	background: url(../img/checkin.svg), url(../img/bigbtn.svg);
+	background: url(../img/checkin.svg), url(../img/greenbtn.svg);
 	background-repeat: no-repeat, no-repeat;
-	background-position: 33px 33px, 0 100%;
+	background-position: 33px 25px, 0 100%;
 	padding: 2px 0 0 33px;
 }
 
