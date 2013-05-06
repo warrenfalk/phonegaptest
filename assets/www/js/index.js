@@ -1,11 +1,61 @@
-viewModel = {
-	location: ko.observableArray(),
+function ViewModel() {
+	var model = this; 
+	this.location = ko.observableArray();
+	this.selectionStack = [];
+	this.currentLocation = ko.observable();
+	this.currentPo = ko.observable();
 
-	receiveLocations: function(locations) {
+	this.receiveLocations = function(locations) {
 		this.map.locations(locations, this.location);
-	},
+	}
 	
-	map: {
+	this.selectLocation = function(location) {
+		model.currentLocation(location);
+		var pos = model.currentLocation().pos();
+		var poCount = pos.length; 
+		if (poCount == 1) {
+			model.selectPo(pos[0]);
+		}
+		else {
+			var screen = Screens.push('polist');
+			screen.cancel = function() {
+				model.currentLocation(null);
+			}
+		}
+	}
+	
+	this.checkin = function() {
+		model.currentPo().status('checkin');
+		model.currentPo(null);
+		var screen = Screens.pop();
+	}
+	
+	this.completeJob = function() {
+		model.currentPo().status('closed');
+		model.currentPo(null);
+		var screen = Screens.pop();
+	}
+	
+	this.requireAuth = function() {
+		model.currentPo().status('reqauth');
+		model.currentPo(null);
+		var screen = Screens.pop();
+	}
+	
+	this.cancel = function() {
+		var screen = Screens.pop();
+		screen.cancel();
+	}
+	
+	this.selectPo = function(po) {
+		model.currentPo(po);
+		var screen = Screens.push((po.status() == 'checkin') ? 'checkedin' : 'details');
+		screen.cancel = function() {
+			model.currentPo(null);
+		}
+	}
+	
+	this.map = {
 		locations: function(objin, objout) {
 			for (var i = 0; i < objin.length; i++) {
 				var location = this.location(objin[i]);
@@ -19,13 +69,7 @@ viewModel = {
 					name: objin.name,
 					address: objin.address,
 					distance: objin.distance,
-					select: function() {
-				    	var details = {
-				    		loc: this,
-				    		po: this.pos()[0],
-				    	};
-					    Screens.push('details', details);
-					},
+					selectedPo: ko.observable(),
 					pos: this.purchaseorders(objin.pos)
 				}
 				// computed observables
@@ -60,11 +104,12 @@ viewModel = {
 					number: objin.number,
 					type: objin.type,
 					due: objin.due,
+					notes: objin.notes,
 					status: ko.observable(objin.status),
-		    		checkin: function() {
-		    			this.status('checkin');
-		    			Screens.pop();
-		    		}
+					select: function() {
+						// TODO: using Screens, below, violates separation between viewmodel and view
+						Screens.push('details', this);
+					},
 				}
 			}
 			else {
@@ -72,12 +117,12 @@ viewModel = {
 			}
 			return objout;
 		}
-	},
+	};
 };
 
 Screens.define({
 	locations: {
-		initialize: function() {
+		initialize: function(e, model) {
 			// Setup Search Box
 			$searchbox = $("#searchbox");
 			$searchbox.focus(function() {
@@ -115,7 +160,7 @@ Screens.define({
 			// Receive location data
 			var receiveLocations = function(locations) {
 			    $('#recordsarea .loading').fadeOut();
-		    	viewModel.receiveLocations(locations);
+		    	model.receiveLocations(locations);
 			};
 			
 			// Request location data
@@ -137,6 +182,10 @@ Screens.define({
 			}, 400);
 		}
 	},
+	checkedin : {
+		initialize: function() {
+		},
+	},
 	details: {
 		initialize: function() {
 		},
@@ -146,29 +195,10 @@ Screens.define({
 	},
 	polist: {
 		initialize: function(element, data) {
-			var screen = this;
-			
-			$("#polist_cancel").click(function() {
-				screen.back();
-			});
-			
-		    var list = Screens.makeList('po_record', 'porecord', 'polist', data.pos, function (po) {
-		    	var details = {
-		    		loc: data,
-		    		po: po,
-		    		checkin: function() {
-		    			this.po.status = 'checkin';
-		    		}
-		    	};
-		    	Screens.push('details', details)
-		    })
 		},
 		back: function() {
 			return Screens.pop();
 		},
-		refresh: function() {
-			alert('refreshing');
-		}
 	}
 });
 
@@ -188,7 +218,7 @@ Handlebars.registerHelper('getStatus', function(item, options) {
 Handlebars.registerHelper('dateFormat', function(context, block) {
   if (window.moment) {
     var f = block.hash.format || "MMM Do, YYYY";
-    return moment(Date(context)).format(f);
+    return moment(Date(context)).format(block.hash.format || "MMM Do, YYYY");
   }else{
     return context;   //  moment plugin not available. return data as is.
   };
@@ -201,6 +231,6 @@ $(document).on('touchstart', function(e) {
 
 $(document).ready(function() {
 	Screens.init();
-	Screens.push('locations', viewModel);
+	Screens.push('locations', new ViewModel());
 });
 

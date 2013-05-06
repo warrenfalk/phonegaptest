@@ -4,28 +4,30 @@ this.Screens = {
 	_screens: {},
 	
 	push: function(screen, model) {
-		model = model || [];
+		model = model || (this._top ? this._top.model : null) || [];
 		if (typeof screen === 'string')
 			screen = this._screens[screen];
 		if (this._top)
 			this._top.$element.hide();
 		screen.$element = $("<div/>");
+		screen.model = model;
 		this._stack.push(this._top = screen);
 		screen.$element.append($('#' + screen.template).html());
 		$("#page").append(screen.$element);
 		if (screen.initialize)
 			screen.initialize(screen.$element, model);
 		ko.applyBindings(model, screen.$element.get(0));
+		return screen;
 	},
 	
 	pop: function() {
 		if (this._stack.length <= 1)
 			return;
-		this._top = this._stack.pop();
+		var old = this._top = this._stack.pop();
 		this._top.$element.remove();
 		this._top = this._stack[this._stack.length - 1];
 		this._top.$element.show();
-		return this._top;
+		return old;
 	},
 	
 	define: function(screens) {

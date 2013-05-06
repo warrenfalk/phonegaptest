@@ -21,7 +21,7 @@
     		<div id="locations">
 				<div id="recordsarea">
 			    	<div id="records" data-bind="foreach: location">
-		        		<div class="locrecord record data" data-bind="css: { closed : status() == 'closed', checkin : status() == 'checkin' }, click: select">
+		        		<div class="locrecord record data" data-bind="css: { closed : status() == 'closed', checkin : status() == 'checkin' }, click: $root.selectLocation">
         					<div class="locname" data-bind="text: name"></div>
 		        			<div class="locaddr" data-bind="text: address"></div>
         					<div class="dist">(<span class="disttext" data-bind="text: distance"></span>)</div>
@@ -52,44 +52,81 @@
     	
     	<script id="screen_details" type="text/x-page">
 	    	<div class="ibar">
-	    		<div class="left"><button class="ibtn left" id="detail_cancel">Cancel</button></div>
-	    		<div class="title">Verify Service</div>
+	    		<div class="left"><button class="ibtn left" id="detail_cancel" data-bind="click: $root.cancel">Cancel</button></div>
+	    		<div class="title">PO Details</div>
 	    	</div>
-    		<div id="details">
+    		<div id="details" data-bind="with: $root.currentPo">
 				<div class="podata">
-					<div class="ponum"><span class="name">PO:</span><span class="value" data-bind="text: po.number"></span></div>
-					<div class="location">
-						<span class="name">Location:</span>
-						<div class="value">
-							<div class="locname" data-bind="text: loc.name"></div>
-							<div class="locaddr" data-bind="text: loc.address"></div>
+					<section>
+						<div class="ponum"><span class="name">PO:</span><span class="value" data-bind="text: number"></span></div>
+						<div class="location" data-bind="with: $root.currentLocation">
+							<span class="name">Location:</span>
+							<div class="value">
+								<div class="locname" data-bind="text: name"></div>
+								<div class="locaddr" data-bind="text: address"></div>
+							</div>
 						</div>
-					</div>
-					<div class="servicetype"><span class="name">Service:</span> <span class="value" data-bind="text: po.type"></span></div>
+					</section>
+					<section>
+						<div class="servicetype"><span class="name">Contract Type:</span> <span class="value" data-bind="text: type"></span></div>
+					</section>
+					<section>
+						<div class="section notes"><span class="name">Notes:</span> <div class="value" data-bind="text: notes"></span></div>
+					</section>
 				</div>
 				<div class="actions">
-					<div data-bind="ifnot: po.status">
-						<button class="bigbtn checkin" id="checkin" data-bind="click: function() { po.checkin(); }">CHECK IN</button>
+					<div data-bind="ifnot: status">
+						<button class="bigbtn green checkin" id="checkin" data-bind="click: $root.checkin">CHECK IN</button>
 					</div>
 				</div>
         	</div>
     	</script>
     	
+    	<script id="screen_checkedin" type="text/x-page">
+	    	<div class="ibar">
+	    		<div class="left"><button class="ibtn left" id="detail_cancel" data-bind="click: $root.cancel">Cancel</button></div>
+	    		<div class="title">Check Out</div>
+	    	</div>
+    		<div id="details" data-bind="with: $root.currentPo">
+				<div class="podata">
+					<section>
+						<div class="ponum"><span class="name">PO:</span><span class="value" data-bind="text: number"></span></div>
+						<div class="location" data-bind="with: $root.currentLocation">
+							<span class="name">Location:</span>
+							<div class="value">
+								<div class="locname" data-bind="text: name"></div>
+								<div class="locaddr" data-bind="text: address"></div>
+							</div>
+						</div>
+					</section>
+				</div>
+				<div class="actions">
+					<button class="bigbtn green jobcomplete" id="checkin" data-bind="click: $root.completeJob">CHECK OUT<br/>(job complete)</button>
+					<button class="bigbtn amber requireauth" id="checkin" data-bind="click: $root.requireAuth">CHECK OUT<br/>(requires authentication)</button>
+					<button class="bigbtn red contact" id="checkin" data-bind="click: $root.contactCustomerService">CUSTOMER SERVICE</button>
+				</div>
+        	</div>
+    	</script>
+    	
     	<script id="screen_polist" type="text/x-handlebars-template">
-    		<div id="polist" class="list">
-    		</div>
-    		<div id="heading">
-	    		<div class="ibar">
-    				<div class="left"><button class="ibtn left" id="polist_cancel">Cancel</button></div>
-    				<div class="title">Select PO</div>
+			<div data-bind="with: currentLocation">
+    			<div id="polist" class="list" data-bind="foreach: pos">
+					<div class="record porecord" data-bind="css: { closed : status() == 'closed', checkin : status() == 'checkin' }, click: $root.selectPo">
+						<div class="po"><span class="poprefix">PO:</span> <span class="number" data-bind="text: number"></span></div>
+    					<div class="type" data-bind="text: type"></div>
+    					<div class="due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(due)).format('MM/DD')"></span></div>
+					</div>
     			</div>
-    		</div>
+    			<div id="heading">
+		    		<div class="ibar">
+    					<div class="left"><button class="ibtn left" id="polist_cancel" data-bind="click: $root.cancel">Cancel</button></div>
+    					<div class="title">Select PO</div>
+    				</div>
+    			</div>
+			</div>
     	</script>
     	
     	<script id="po_record" type="text/x-handlebars-template">
-			<div class="po"><span class="poprefix">PO:</span> <span class="number">{{number}}</span></div>
-    		<div class="type">{{type}}</div>
-    		<div class="due"><span class="name">due:</span> <span class="value">{{dateFormat due format="MM/DD"}}</span></div>
     	</script>
     	
         <script type="text/javascript" src="cordova-2.6.0.js"></script>
