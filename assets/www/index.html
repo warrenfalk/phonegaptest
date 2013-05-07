@@ -76,7 +76,7 @@
 					</section>
 				</div>
 				<div class="actions">
-					<div data-bind="ifnot: status">
+					<div data-bind="ifnot: status() == 'closed'">
 						<button class="bigbtn green checkin" id="checkin" data-bind="click: $root.checkin">CHECK IN</button>
 					</div>
 				</div>
