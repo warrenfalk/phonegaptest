@@ -309,6 +309,11 @@ body {
 	background-position: 7px 50%;
 	background-repeat: no-repeat
 }
+.closed .indicators, .indicators.closed {
+	background-image: url(../img/checkgray.svg);
+	background-position: 7px 50%;
+	background-repeat: no-repeat
+}
 .incomplete .indicators {
 	background-image: url(../img/circempty.svg);
 	background-position: 7px 50%;
@@ -451,30 +456,61 @@ body {
 .actions .bigbtn {
 	height: 89px;
 	width: 274px;
-	background: url(../img/greenbtn.svg);
+	background: url(../img/whitebtn.svg);
 	background-repeat: no-repeat;
 	background-position: 0 0;
 	border: none;
-	color: white;
+	color: black;
 	font-size: 15px;
-	padding: 0;
-	text-shadow: 0px -1px #4f6c8b;
+	text-shadow: 0px 1px white;
 	font-weight: bold;
 	margin: 3px;
 }
 .actions .bigbtn.green {
 	background: url(../img/greenbtn.svg);
+	color: white;
+	text-shadow: 0px -1px #4f6c8b;
+}
+.actions .bigbtn.contact {
+	background: url(../img/btn-contact.svg);
+	color: white;
+	text-shadow: 0px -1px #4f6c8b;
+	padding-left: 40px;
+}
+.actions .bigbtn.gray {
+	background: url(../img/graybtn.svg);
+	color: white;
+	text-shadow: 0px -1px #4f6c8b;
+}
+.actions .bigbtn.jobcomplete {
+	background: url(../img/btn-jobcomplete.svg);
+	color: white;
+	text-shadow: 0px -1px #4f6c8b;
+	padding-left: 36px;
+}
+.actions .bigbtn.white{
+	background: url(../img/whitebtn.svg);
+}
+.actions .bigbtn.incomplete {
+	background: url(../img/btn-incomplete.svg);
+	padding-left: 36px;
+}
+.actions .bigbtn.checkin {
+	background: url(../img/btn-checkin.svg);
+	padding-left: 36px;
 }
 .actions .bigbtn.red {
 	background: url(../img/redbtn.svg);
+	color: white;
+	text-shadow: 0px -1px #4f6c8b;
 }
 .actions .bigbtn.amber {
 	background: url(../img/amberbtn.svg);
+	color: white;
 }
 .actions .bigbtn:active {
 	background-repeat: no-repeat, no-repeat;
 	background-position: 0 100%;
-	padding: 2px 0;
 }
 
 #error {

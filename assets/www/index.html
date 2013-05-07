@@ -81,7 +81,7 @@
 				</div>
 				<div class="actions">
 					<div data-bind="ifnot: status() == 'closed'">
-						<button class="bigbtn green checkin" id="checkin" data-bind="click: $root.checkin">CHECK IN</button>
+						<button class="bigbtn white checkin" id="checkin" data-bind="click: $root.checkin">CHECK IN</button>
 					</div>
 				</div>
         	</div>
@@ -106,10 +106,10 @@
 					</section>
 				</div>
 				<div class="actions">
-					<button class="bigbtn green jobcomplete" id="checkin" data-bind="click: $root.completeJob">CHECK OUT<br/>(job complete)</button>
-					<button class="bigbtn amber incomplete" id="checkin" data-bind="click: $root.incompleteJob">CHECK OUT<br/>(requires authentication)</button>
-					<button class="bigbtn amber incomplete" id="checkin" data-bind="click: $root.incompleteJob">CHECK OUT<br/>(follow up required)</button>
-					<button class="bigbtn red contact" id="checkin" data-bind="click: $root.contactCustomerService">CUSTOMER SERVICE</button>
+					<button class="bigbtn jobcomplete" data-bind="click: $root.completeJob">CHECK OUT<br/>(job complete)</button>
+					<button class="bigbtn incomplete" data-bind="click: $root.incompleteJob">CHECK OUT<br/>(requires authentication)</button>
+					<button class="bigbtn incomplete" data-bind="click: $root.incompleteJob">CHECK OUT<br/>(follow up required)</button>
+					<button class="bigbtn contact" data-bind="click: $root.contactCustomerService">CALL<br/>CUSTOMER SERVICE</button>
 				</div>
         	</div>
     	</script>
