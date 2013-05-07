@@ -379,8 +379,11 @@ body {
 .record .rtarrow {
 	position: absolute;
 	right: 8px;
-	top: 19px;
+	top: 0;
+	height: 100%;
 	background: url(../img/rtarrow.svg);
+	background-position: 0 50%;
+	background-repeat: no-repeat;
 }
 .rtarrow {
 	width: 12px;
