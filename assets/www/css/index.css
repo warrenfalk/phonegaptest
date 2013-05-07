@@ -73,7 +73,13 @@ body {
 	transition-duration: .20s;
 }
 #search {
+	position: relative;
 	text-align: left;
+}
+#search .indicators {
+	position: absolute;
+	left: 0;
+	top: 0;
 }
 .ibar {
 	position: relative;
@@ -163,6 +169,9 @@ body {
 	padding: 2px 2px 2px 30px;
 	font-size: 20px;
 	width: 220px;
+	position: absolute;
+	left: 30px;
+	top: 4px;
 }
 #searchbox.prompt {
 	color: #888888;
@@ -295,7 +304,7 @@ body {
 	height: 100%;
 	text-align: center;
 }
-.checkin .indicators {
+.checkin .indicators, .indicators.checkin {
 	background-image: url(../img/circred.svg);
 	background-position: 7px 50%;
 	background-repeat: no-repeat

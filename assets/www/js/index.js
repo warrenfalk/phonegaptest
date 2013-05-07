@@ -4,6 +4,17 @@ function ViewModel() {
 	this.selectionStack = [];
 	this.currentLocation = ko.observable();
 	this.currentPo = ko.observable();
+	this.overallStatus = ko.computed(function() {
+		var locs = this.location();
+		if (!locs || locs.length == 0)
+			return '';
+		for (var i = 0; i < locs.length; i++) {
+			var loc = locs[i];
+			if (loc.status() == 'checkin')
+				return 'checkin';
+		}
+		return '';
+	}, model);
 
 	this.receiveLocations = function(locations) {
 		this.map.locations(locations, this.location);
