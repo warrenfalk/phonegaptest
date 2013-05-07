@@ -366,11 +366,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.7172633"
+     inkscape:zoom="4.7552108"
      inkscape:cx="61.22944"
      inkscape:cy="82.262117"
      inkscape:document-units="px"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="g3820"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -411,6 +411,14 @@
          width="272.00772"
          id="rect3027"
          style="color:#000000;fill:url(#linearGradient3826);fill-opacity:1;stroke:#dedede;stroke-width:1.99226474999999990;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <rect
+         style="color:#000000;fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:1.87831342;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect3962"
+         width="264.98401"
+         height="79.389214"
+         x="-3.4920082"
+         y="976.1676"
+         ry="16.377684" />
       <rect
          ry="15"
          y="979.36218"

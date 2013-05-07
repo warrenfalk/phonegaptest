@@ -16,7 +16,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="graybtn.svg">
+   sodipodi:docname="btn-jobcomplete.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -341,11 +341,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.7172633"
+     inkscape:zoom="4.7552108"
      inkscape:cx="55.370717"
      inkscape:cy="103.15763"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="g3820"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -366,7 +366,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -387,6 +387,14 @@
          width="272.00772"
          id="rect3027"
          style="color:#000000;fill:url(#linearGradient3826);fill-opacity:1;stroke:#dedede;stroke-width:1.99226475;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <rect
+         style="color:#000000;fill:#d8d8d8;fill-opacity:1;stroke:none;stroke-width:1.87831342;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="rect3962"
+         width="264.98401"
+         height="79.389214"
+         x="-3.4920082"
+         y="976.1676"
+         ry="16.377684" />
       <rect
          ry="15"
          y="979.36218"
