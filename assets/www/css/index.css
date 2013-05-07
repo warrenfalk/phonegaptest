@@ -215,8 +215,27 @@ body {
 	padding-top: 132px;
 	padding-bottom: 30px;
 }
+#polist {
+	padding-top: 75px;
+}
+#heading .location {
+	background: #e0e0e0;
+	position: relative;
+	height: 30px;
+	border-bottom: solid 1px #b0b0b0;
+}
+#heading .location .locname {
+	position: absolute;
+	top: 7px;
+	left: 10px;
+}
+#heading .location .locaddr {
+	position: absolute;
+	top: 7px;
+	right: 10px;
+}
+
 .list {
-	padding-top: 44px;
 	padding-bottom: 30px;
 }
 .porecord {
@@ -294,6 +313,7 @@ body {
 	right: 150px;
 	overflow: hidden;
 	white-space: nowrap;
+	font-weight: bold;
 }
 .locrecord .locaddr {
 	position: absolute;
@@ -304,7 +324,6 @@ body {
 	right: 100px;
 	overflow: hidden;
 	white-space: nowrap;
-	font-weight: bolder;
 }
 .locrecord .dist {
 	position: absolute;

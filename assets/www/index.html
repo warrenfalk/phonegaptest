@@ -128,6 +128,12 @@
     					<div class="left"><button class="ibtn left" id="polist_cancel" data-bind="click: $root.cancel">Cancel</button></div>
     					<div class="title">Select PO</div>
     				</div>
+					<div class="location" data-bind="with: $root.currentLocation">
+						<div class="value">
+							<div class="locname" data-bind="text: name"></div>
+							<div class="locaddr" data-bind="text: address"></div>
+						</div>
+					</div>
     			</div>
 			</div>
     	</script>
