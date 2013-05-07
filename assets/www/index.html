@@ -21,7 +21,7 @@
     		<div id="locations">
 				<div id="recordsarea">
 			    	<div id="records" data-bind="foreach: location">
-		        		<div class="locrecord record data" data-bind="css: { closed : status() == 'closed', checkin : status() == 'checkin', reqauth : status() == 'reqauth' }, click: $root.selectLocation">
+		        		<div class="locrecord record data" data-bind="css: status(), click: $root.selectLocation">
 							<div class="indicators"></div>
         					<div class="locname" data-bind="text: name"></div>
 		        			<div class="locaddr" data-bind="text: address"></div>
@@ -29,6 +29,9 @@
         					<div class="ponum" data-bind="if: pos().length == 1">
 								<span class="poprefix">PO:</span><span class="number" data-bind="text: pos()[0].number"></span>
         					</div>
+							<div class="ponum mult" data-bind="if: pos().length > 1">
+								(<span class="count" data-bind="text: pos().length"></span> POs)
+							</div>
       						<div class="rtarrow"></div>
         				</div>
 				    </div>
@@ -103,8 +106,8 @@
 				</div>
 				<div class="actions">
 					<button class="bigbtn green jobcomplete" id="checkin" data-bind="click: $root.completeJob">CHECK OUT<br/>(job complete)</button>
-					<button class="bigbtn amber requireauth" id="checkin" data-bind="click: $root.requireAuth">CHECK OUT<br/>(requires authentication)</button>
-					<button class="bigbtn amber requireauth" id="checkin" data-bind="click: $root.requireAuth">CHECK OUT<br/>(follow up required)</button>
+					<button class="bigbtn amber incomplete" id="checkin" data-bind="click: $root.incompleteJob">CHECK OUT<br/>(requires authentication)</button>
+					<button class="bigbtn amber incomplete" id="checkin" data-bind="click: $root.incompleteJob">CHECK OUT<br/>(follow up required)</button>
 					<button class="bigbtn red contact" id="checkin" data-bind="click: $root.contactCustomerService">CUSTOMER SERVICE</button>
 				</div>
         	</div>
@@ -113,7 +116,8 @@
     	<script id="screen_polist" type="text/x-handlebars-template">
 			<div data-bind="with: currentLocation">
     			<div id="polist" class="list" data-bind="foreach: pos">
-					<div class="record porecord" data-bind="css: { closed : status() == 'closed', checkin : status() == 'checkin' }, click: $root.selectPo">
+					<div class="record porecord" data-bind="css: status(), click: $root.selectPo">
+						<div class="indicators"></div>
 						<div class="po"><span class="poprefix">PO:</span> <span class="number" data-bind="text: number"></span></div>
     					<div class="type" data-bind="text: type"></div>
     					<div class="due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(due)).format('MM/DD')"></span></div>

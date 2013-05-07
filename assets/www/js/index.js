@@ -36,8 +36,8 @@ function ViewModel() {
 		var screen = Screens.pop();
 	}
 	
-	this.requireAuth = function() {
-		model.currentPo().status('reqauth');
+	this.incompleteJob = function() {
+		model.currentPo().status('incomplete');
 		model.currentPo(null);
 		var screen = Screens.pop();
 	}
@@ -81,7 +81,26 @@ function ViewModel() {
 						return pos[0].status();
 					else if (pos.length == 0)
 						return 'closed';
-					return 'unknown'; // TODO: calculate correctly
+					// if any PO is checked in, then the status is checked in
+					// if all are closed, then status is closed
+					var closed = true;
+					for (var i = 0; i < pos.length; i++) {
+						var po = pos[i];
+						if (po.status() == 'checkin')
+							return 'checkin';
+					}
+					for (var i = 0; i < pos.length; i++) {
+						var po = pos[i];
+						if (po.status() == 'incomplete')
+							return 'incomplete';
+					}
+					for (var i = 0; i < pos.length; i++) {
+						var po = pos[i];
+						if (po.status() != 'closed')
+							closed = false;
+					}
+					if (closed)
+						return 'closed';
 				}, objout);
 
 			}

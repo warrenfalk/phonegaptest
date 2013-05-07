@@ -225,7 +225,7 @@ body {
 }
 .porecord .po {
 	position: absolute;
-	left: 7px;
+	left: 28px;
 	top: 14px;
 	font-size: 18px;
 }
@@ -271,21 +271,19 @@ body {
 	background-color: #8cc0f5;
 	border-left: solid 5px #4096ee;
 }
-
-
-.locrecord .indicators {
+.indicators {
 	width: 28px;
-	height: 59px;
+	height: 100%;
 	text-align: center;
 }
 .checkin .indicators {
 	background-image: url(../img/circred.svg);
-	background-position: 7px 23px;
+	background-position: 7px 50%;
 	background-repeat: no-repeat
 }
-.reqauth .indicators {
+.incomplete .indicators {
 	background-image: url(../img/circempty.svg);
-	background-position: 7px 23px;
+	background-position: 7px 50%;
 	background-repeat: no-repeat
 }
 .locrecord .locname {
@@ -323,6 +321,14 @@ body {
 	top: 2px;
 	font-size: 22px;
 	margin: 3px;
+}
+.locrecord .ponum.mult {
+	font-size: 18px;
+	color: #606060;
+}
+.locrecord .ponum.mult .count {
+	font-weight: bolder;
+	color: black;
 }
 .locrecord {
 	height: 59px;
