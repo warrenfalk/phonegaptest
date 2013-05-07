@@ -261,9 +261,6 @@ body {
 	background-color: white;
 	opacity: 2;
 }
-.locrecord {
-	height: 60px;
-}
 .record {
 	position: relative;
 	border-bottom: solid 1px #c0c0c0;
@@ -274,28 +271,49 @@ body {
 	background-color: #8cc0f5;
 	border-left: solid 5px #4096ee;
 }
-.locrecord {
+
+
+.locrecord .indicators {
+	width: 28px;
 	height: 59px;
+	text-align: center;
+}
+.checkin .indicators {
+	background-image: url(../img/circred.svg);
+	background-position: 7px 23px;
+	background-repeat: no-repeat
+}
+.reqauth .indicators {
+	background-image: url(../img/circempty.svg);
+	background-position: 7px 23px;
+	background-repeat: no-repeat
 }
 .locrecord .locname {
 	position: absolute;
-	left: 8px;
+	left: 28px;
 	top: 9px;
 	font-size: 18px;
+	right: 150px;
+	overflow: hidden;
+	white-space: nowrap;
 }
 .locrecord .locaddr {
 	position: absolute;
 	font-size: 13px;
-	left: 8px;
+	left: 28px;
 	top: 34px;
 	color: #134a82;
+	right: 100px;
+	overflow: hidden;
+	white-space: nowrap;
+	font-weight: bolder;
 }
 .locrecord .dist {
 	position: absolute;
 	right: 30px;
 	top: 34px;
 	font-size: 13px;
-	color: #134a82;
+	color: #2470d8;
 	font-weight: bold;
 	padding-right: 1.5em;
 }
@@ -306,11 +324,21 @@ body {
 	font-size: 22px;
 	margin: 3px;
 }
+.locrecord {
+	height: 59px;
+}
+@media screen and (min-width:330px) {
+}
+
+@media screen and (max-width:330px) {
+	.locrecord .ponum {
+		top: 6px;
+		font-size: 18px;
+	}
+}
+
 .closed {
 	background-color: #c0c0c0;
-}
-.checkin {
-	background-color: #c0ffc0;
 }
 .poprefix {
 	color: #808080;
@@ -321,11 +349,6 @@ body {
 .record .data .multiple {
 	font-size: 80%;
 	color: #505050;
-}
-@media screen and (max-width:330px) {
-	.locrecord .poprefix {
-		display: none;
-	}
 }
 .record .rtarrow {
 	position: absolute;
@@ -399,7 +422,7 @@ body {
 	padding: 0;
 	text-shadow: 0px -1px #4f6c8b;
 	font-weight: bold;
-	margin: 8px;
+	margin: 3px;
 }
 .actions .bigbtn.green {
 	background: url(../img/greenbtn.svg);
