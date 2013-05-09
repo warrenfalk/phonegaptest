@@ -35,21 +35,20 @@ body {
 
 #loginpage {
 	background-image: url(../img/login-bg.png);
-	background-size: cover;
-	background-attachment: fixed;
 	background-position: center center;
+	background-size: 100% 100%;
 	position: absolute;
 	left: 0;
 	top: 0;
-	right: 0;
-	bottom: 0;
+	width: 100%;
+	height: 100%;
 }
 
 #loginarea {
 	position: relative;
-	width: 300%;
+	width: 400%;
 	height: 289px;
-	margin-top: 110px;
+	margin-top: 90px;
 	transition: left 0.3s;
 }
 #loginarea.step0 {
@@ -66,27 +65,25 @@ body {
 	background-size: auto 100%;
 	background-position: center;
 	background-repeat: no-repeat;
-	width: 33%;
+	width: 25%;
 	height: 100%;
 	position: absolute;
 	top: 0;
 	left: 0;
 }
 #loginform {
-	width: 33%;
+	width: 25%;
 	height: 100%;
 	position: absolute;
 	top: 0;
-	left: 33%;
+	left: 25%;
 	text-align: center;
-	padding-top: 20px;
 }
 #loginform input {
-	font-size: 26px;
+	font-size: 22px;
 	border: solid 2px #b0b0b0;
 	border-radius: 6px;
-	padding: 8px;
-	margin: 4px;
+	padding: 6px;
 }
 #loginform button {
 	height: 89px;
@@ -106,17 +103,17 @@ body {
 	background-position: 0 100%;
 }
 #loginspinner {
-	width: 33%;
+	width: 25%;
 	height: 100%;
 	position: absolute;
 	top: 0;
-	left: 67%;
+	left: 50%;
 	text-align: center;
 }
 #loginwaitpanel {
-	margin-top: 44px;
+	margin-top: 24px;
 	color: white;
-	font-size: 20px;
+	font-size: 18px;
 	background-color: rgba(0, 0, 0, 0.5);
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(1, 1, 1, 0)), to(rgba(0, 0, 0, 0.5)));
 	position: absolute;
@@ -124,7 +121,7 @@ body {
 	left: 15%;
 	border: solid 3px #f0f0f0;
 	border-radius: 15px;
-	padding: 22px;
+	padding: 12px;
 }
 
 #heading {
