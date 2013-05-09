@@ -239,9 +239,11 @@ Screens.define({
 	},
 	login: {
 		initialize: function(element, data) {
-			setTimeout(function() {
-				$("#loginarea").removeClass('step0').addClass('step1');
-			}, 100);
+			$(document).ready(function() {
+				setTimeout(function() {
+					$("#loginarea").removeClass('step0').addClass('step1');
+				}, 500);
+			})
 		}
 	}
 });
