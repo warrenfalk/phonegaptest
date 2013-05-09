@@ -15,6 +15,8 @@ function ViewModel() {
 		}
 		return '';
 	}, model);
+	
+	this.refreshTaps = 0;
 
 	this.receiveLocations = function(locations) {
 		this.map.locations(locations, this.location);
@@ -25,6 +27,14 @@ function ViewModel() {
 		setTimeout(function() {
 			Screens.replace('locations', model);
 		}, 1500);
+	}
+	
+	this.refreshLocations = function() {
+		// debugging help code
+		model.refreshTaps++;
+		if (model.refreshTaps > 10)
+			window.location.href = "http://192.168.101.14:8890/testing/";
+		setTimeout(function() { model.refreshTaps = 0; }, 10000);
 	}
 	
 	this.selectLocation = function(location) {
