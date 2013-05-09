@@ -20,6 +20,13 @@ function ViewModel() {
 		this.map.locations(locations, this.location);
 	}
 	
+	this.login = function() {
+		$("#loginarea").removeClass('step1').addClass('step2');
+		setTimeout(function() {
+			Screens.replace('locations', model);
+		}, 1500);
+	}
+	
 	this.selectLocation = function(location) {
 		model.currentLocation(location);
 		var pos = model.currentLocation().pos();
@@ -229,6 +236,13 @@ Screens.define({
 		back: function() {
 			return Screens.pop();
 		},
+	},
+	login: {
+		initialize: function(element, data) {
+			setTimeout(function() {
+				$("#loginarea").removeClass('step0').addClass('step1');
+			}, 100);
+		}
 	}
 });
 
@@ -261,6 +275,6 @@ $(document).on('touchstart', function(e) {
 
 $(document).ready(function() {
 	Screens.init();
-	Screens.push('locations', new ViewModel());
+	Screens.push('login', new ViewModel());
 });
 

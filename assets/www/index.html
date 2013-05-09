@@ -17,6 +17,25 @@
     	<div id="page">
     	</div>
     	
+    	<script id="screen_login" type="text/x-page">
+			<div id="loginpage">
+				<div id="loginarea" class="step0">
+					<div id="loginlogo"></div>
+					<div id="loginform">
+						<p><input type="text" id="loginbox" placeholder="user name"/></p>
+						<p><input type="password" id="passwordbox" placeholder="password"/></p>
+						<p><button id="loginbutton" data-bind="click: login">Login</button></p>
+					</div>
+					<div id="loginspinner">
+						<div id="loginwaitpanel">
+							<img src="img/spinner.gif" width="75" height="75"/>
+							<p>Logging in; please wait...</p>
+						</div>
+					</div>
+				</div>
+			</div>
+    	</script>
+    	
     	<script id="screen_locations" type="text/x-page">
     		<div id="locations">
 				<div id="recordsarea">

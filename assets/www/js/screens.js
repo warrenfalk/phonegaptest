@@ -5,13 +5,36 @@ this.Screens = {
 	
 	push: function(screen, model) {
 		model = model || (this._top ? this._top.model : null) || [];
+		var name;
 		if (typeof screen === 'string')
-			screen = this._screens[screen];
+			screen = this._screens[name = screen];
 		if (this._top)
 			this._top.$element.hide();
+		if (!screen)
+			throw "Screen '" + name + "' is not defined";
 		screen.$element = $("<div/>");
 		screen.model = model;
 		this._stack.push(this._top = screen);
+		screen.$element.append($('#' + screen.template).html());
+		$("#page").append(screen.$element);
+		if (screen.initialize)
+			screen.initialize(screen.$element, model);
+		ko.applyBindings(model, screen.$element.get(0));
+		return screen;
+	},
+	
+	replace: function(screen, model) {
+		model = model || (this._top ? this._top.model : null) || [];
+		var name;
+		if (typeof screen === 'string')
+			screen = this._screens[name = screen];
+		if (this._top)
+			this._top.$element.hide();
+		if (!screen)
+			throw "Screen '" + name + "' is not defined";
+		screen.$element = $("<div/>");
+		screen.model = model;
+		this._stack = [this._top = screen];
 		screen.$element.append($('#' + screen.template).html());
 		$("#page").append(screen.$element);
 		if (screen.initialize)
