@@ -1,5 +1,5 @@
 this.Fixtures = {};
-this.Fixtures.getLocationData = function() { 
+this.Fixtures.getPOs = function() {
 	return [
 	 {
 	   'name':'Walmart #925',

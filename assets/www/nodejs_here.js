@@ -67,6 +67,6 @@ http.createServer(function (req, res) {
 			});
 		}
 	}
-}).listen(8890, '0.0.0.0');
+}).listen(8890);
 
-console.log('Server running http://0.0.0.0:8890/');
+console.log('Server running...');

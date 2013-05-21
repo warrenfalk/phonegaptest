@@ -19,18 +19,29 @@
     	
     	<script id="screen_login" type="text/x-page">
 			<div id="loginpage">
-				<div id="loginarea" class="step0">
-					<div id="loginlogo"></div>
-					<div id="loginform">
-						<p><input type="text" id="loginbox" placeholder="user name"/></p>
-						<p><input type="password" id="passwordbox" placeholder="password"/></p>
-						<p><button id="loginbutton" data-bind="click: login">Login</button></p>
-					</div>
-					<div id="loginspinner">
-						<div id="loginwaitpanel">
-							<img src="img/spinner.gif" width="75" height="75"/>
-							<p>Please wait...</p>
-						</div>
+				<div id="loginarea">
+				</div>
+			</div>
+    	</script>
+    	
+    	<script id="html_login_logo" type="text/html">
+			<div id="loginlogo"></div>
+		</script>
+
+		<script id="html_loginform" type="text/html">
+			<p><input type="text" id="loginbox" placeholder="user name"/></p>
+			<p><input type="password" id="passwordbox" placeholder="password"/></p>
+			<p><button id="loginbutton" data-bind="click: login">Login</button></p>
+		</script>
+		
+    	
+    	<script id="hold" type="text/x-page">
+			<div id="loginarea" class="step0">
+				<div id="loginlogo"></div>
+				<div id="loginspinner">
+					<div id="loginwaitpanel">
+						<img src="img/spinner.gif" width="75" height="75"/>
+						<p>Please wait...</p>
 					</div>
 				</div>
 			</div>
@@ -57,9 +68,9 @@
 				</div>
 				<div id="heading">
 			    	<div class="ibar large">
-						<div class="title">What's your position?</div>
+						<div class="title" id="maintitle">What's your position?</div>
 						<div class="right">
-							<button class="ibtnsq" data-bind="click: refreshLocations"><img src="img/refresh.svg"/></button>
+							<button class="ibtnsq" data-bind="click: $root.refreshLocations"><img src="img/refresh.svg"/></button>
 						</div>
 					</div>
 			    	<div id="search" class="silverbar">

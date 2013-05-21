@@ -1,11 +1,14 @@
 function ViewModel() {
 	var model = this; 
-	this.location = ko.observableArray();
+	this.locations = ko.observableArray();
+	
 	this.selectionStack = [];
 	this.currentLocation = ko.observable();
 	this.currentPo = ko.observable();
 	this.overallStatus = ko.computed(function() {
-		var locs = this.location();
+		var locs = this.locations();
+		console.log(locs.length);
+		console.log(locs);
 		if (!locs || locs.length == 0)
 			return '';
 		for (var i = 0; i < locs.length; i++) {
@@ -16,25 +19,24 @@ function ViewModel() {
 		return '';
 	}, model);
 	
-	this.refreshTaps = 0;
-
-	this.receiveLocations = function(locations) {
-		this.map.locations(locations, this.location);
-	}
-	
-	this.login = function() {
-		$("#loginarea").removeClass('step1').addClass('step2');
-		setTimeout(function() {
-			Screens.replace('locations', model);
-		}, 1500);
+	this.receiveSync = function(syncData) {
+		
 	}
 	
 	this.refreshLocations = function() {
 		// debugging help code
-		model.refreshTaps++;
-		if (model.refreshTaps > 10)
-			window.location.href = "http://192.168.101.14:8890/testing/";
-		setTimeout(function() { model.refreshTaps = 0; }, 10000);
+		alert('refresh');
+		if (!model.refreshTaps)
+			model.refreshTaps = 1;
+		else
+			model.refreshTaps++;
+		if (model.refreshTaps > 10) {
+			alert('debug');
+			$.ajax({url: 'http://192.168.101.14:8890/test/index.html', dataType: 'html'}).done(function (data) {
+				document.html(data);
+			});
+		}
+		//setTimeout(function() { model.refreshTaps = 0; }, 10000);
 	}
 	
 	this.selectLocation = function(location) {
@@ -86,7 +88,7 @@ function ViewModel() {
 	this.map = {
 		locations: function(objin, objout) {
 			for (var i = 0; i < objin.length; i++) {
-				var location = this.location(objin[i]);
+				var location = this.locations(objin[i]);
 				objout.push(location);
 			}
 			return objout;
@@ -248,11 +250,37 @@ Screens.define({
 		},
 	},
 	login: {
-		initialize: function(element, data) {
+		initialize: function(element, model) {
 			$(document).ready(function() {
-				setTimeout(function() {
-					$("#loginarea").removeClass('step0').addClass('step1');
-				}, 500);
+				var $page = $('#loginpage');
+				var $area = $('#loginarea');
+				$area.css({ 'top': ($page.width() * 0.3) + 'px' });
+
+				// preload image
+				var $logo = $('<div id="loginlogo"/>'); 
+				$img = $('<img/>');
+				$img[0].src = 'img/login-logo.png';
+				$logo.append($img);
+				$logo.css('visibility', 'hidden');
+				$logo.hide();
+				$area.append($logo);
+				
+				// add the login form
+				var $form = $('<div id="loginform"/>');
+				$form.append($('#html_loginform').html());
+				$area.append($form);
+
+				// register the click to login
+				$('#loginbutton').click(function() {
+					$form.fadeOut("fast", function() {
+					});
+					$logo.css('visibility', 'visible');
+					$logo.fadeIn();
+					
+					setTimeout(function() {
+						Screens.replace('locations', model);
+					}, 1500);
+				});
 			})
 		}
 	}
