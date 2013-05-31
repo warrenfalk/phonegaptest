@@ -164,7 +164,7 @@ body {
 .ibar {
 	position: relative;
 	height: 44px;
-	padding: 3px 10px;
+	padding: 5px 10px;
 	background-color: #4096ee;
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#4f6c8b), to(#bbc9db));
 	background: -webkit-linear-gradient(top, #bbc9db, #4f6c8b);
@@ -582,9 +582,9 @@ body {
 	right: 68px;
 }
 .slider > .optionlist > .option {
-	font-size: 17px;
+	font-size: 14px;
 	color: black;
-	padding: 10px;
+	padding: 10px 5px;
 	border-radius: 9px;
 }
 .slider > .optionlist > .option.current {

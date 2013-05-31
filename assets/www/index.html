@@ -32,7 +32,7 @@
 		<script id="html_loginform" type="text/html">
 			<p><input type="text" id="loginbox" placeholder="user name"/></p>
 			<p><input type="password" id="passwordbox" placeholder="password"/></p>
-			<p><button id="loginbutton" data-bind="click: login">Login</button></p>
+			<p><button id="loginbutton" data-bind="click: $root.login">Login</button></p>
 		</script>
 		
     	
@@ -69,7 +69,10 @@
 				</div>
 				<div id="heading">
 			    	<div class="ibar large">
-						<div class="title" id="maintitle">What's your position?</div>
+						<div class="left">
+							<button class="ibtn left" id="logout" data-bind="click: $root.logout">Logout</button>
+						</div>
+						<div class="title" id="maintitle">InPOsition</div>
 						<div class="right">
 							<button class="ibtnsq" data-bind="click: $root.refreshLocations"><img src="img/refresh.svg"/></button>
 						</div>

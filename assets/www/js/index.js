@@ -1,3 +1,5 @@
+var ON_DEVICE = document.URL.indexOf('http://') === -1;
+
 function ViewModel() {
 	var model = this; 
 	this.locations = ko.observableArray();
@@ -17,12 +19,160 @@ function ViewModel() {
 		return '';
 	}, model);
 	
-	this.ondevice = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
-	if (this.ondevice) {
+	if (ON_DEVICE) {
 		this.webserviceRoot = 'http://192.168.101.14:82/ServiceVerificationApp.svc';
 	}
 	else {
 		this.webserviceRoot = '/test/webservice/ServiceVerificationApp.svc';
+	}
+	
+	this.logout = function() {
+		var db = model.db();
+		db.transaction(
+			function(tx) {
+				tx.executeSql('DELETE FROM TOKEN', [],
+					function(tx, results) {
+					},
+					function(err) {
+						console.log("db store auth data failed: " + err);
+					}
+				)
+			},
+			function(err) {
+				console.log("db store auth data failed: " + JSON.stringify(err));
+			},
+			function() {
+			}
+		);
+		model.doLoginScreen();
+	}
+	
+	this.onAuthenticate = function(token, expires) {
+		model.token = token;
+		var db = model.db();
+		db.transaction(
+			function(tx) {
+				tx.executeSql('INSERT INTO TOKEN (token, expires) VALUES (?, ?)', [token, expires],
+					function(tx, results) {
+					},
+					function(err) {
+						console.log("db store auth data failed: " + err);
+					}
+				)
+			},
+			function(err) {
+				console.log("db store auth data failed: " + JSON.stringify(err));
+			},
+			function() {
+			}
+		);
+	}
+
+	
+	this.login = function() {
+		var $form = $('#loginform');
+		var $logo = $('#loginlogo');
+		
+		var login = $('#loginbox').val();
+		var password = $('#passwordbox').val();
+		
+		if (login == "") {
+			alert("Please enter a login");
+			return;
+		}
+		
+		if (password == "") {
+			alert("Please enter a password");
+			return;
+		}
+
+		$form.fadeOut("fast", function() {
+			var success = function(token, expires) {
+				model.onAuthenticate(token, expires)
+				model.doMainActivity();
+			}
+			var fail = function(message) {
+				alert(message);
+				$logo.fadeOut("fast", function() {
+				});
+				$form.css('visibility', 'visible');
+				$form.fadeIn();
+			}
+			try {
+				$req = $.ajax({
+					type: 'POST',
+					url: model.webserviceRoot + '/auth/' + login,
+					contentType: 'application/json; charset=UTF-8',
+					timeout: 5000,
+					dataType: 'json',
+					data: JSON.stringify({ Password: password }),
+					success: function(data) {
+						if (data.status == "Authorized") {
+							success(data.token, data.expires);
+						}
+						else {
+							if (data.status == "Authorization failed")
+								fail("Authorization failed, please try again");
+							else
+								fail(data.status);
+						}
+					},
+					error: function(jqXHR, textStatus) {
+						if (textStatus == "error")
+							fail("There was an unexpected problem processing this login request.  Please try again");
+						else if (textStatus == "timeout")
+							fail("Unable to reach the server, do you have signal and a data connection?");
+						else
+							fail("There was an unexpected problem processing this login request.  Please try again.  (Status = '" + textStatus + "')");
+						},
+					});
+			}
+			catch (e) {
+				fail("There was an unexpected problem processing this login request.  Please try again.  (Problem = '" + e.message + "')");
+			}
+		});
+		$logo.css('visibility', 'visible');
+		$logo.fadeIn();
+	}
+	
+	this.doMainActivity = function() {
+		Screens.replace('locations', model);
+	}
+	
+	this.doAppAuth = function() {
+		var db = model.db();
+		var expiry = (new Date().getTime() / 1000) + 60;
+		db.transaction(
+			function(tx) {
+				tx.executeSql('SELECT token FROM TOKEN WHERE expires > ? ORDER BY expires DESC', [expiry],
+					function(tx, results) {
+						if (results.rows.length > 0)
+							model.token = results.rows.item(0).token;
+						if (model.token)
+							model.doMainActivity();
+						else
+							model.doLoginScreen();
+						return false;
+					},
+					function(err) {
+						console.log("db get auth data failed: " + err);
+						model.doLoginScreen();
+					}
+				)
+			},
+			function(err) {
+				console.log("db get auth data failed: " + JSON.stringify(err));
+				model.doLoginScreen();
+			},
+			function() {
+				
+			}
+		);
+	}
+	
+	this.doLoginScreen = function() {
+		console.log('doLoginScreen');
+		Screens.replace('login', model);
 	}
 	
 	this.lastPosition = false;
@@ -128,7 +278,7 @@ function ViewModel() {
 			
 			$req = $.ajax({
 				type: 'POST',
-				url: model.webserviceRoot + '/sync/' + "00000000-3C25-DE11-839F-0019B9EF37AC",
+				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/sync',
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
 				data: JSON.stringify({ Hashes: hashes }),
@@ -136,7 +286,7 @@ function ViewModel() {
 						// TODO: hide wait indicator
 						model.receiveSync(data);
 					},
-				fail: function(jqXHR, textStatus) {
+				error: function(jqXHR, textStatus) {
 						// TODO: hide wait indicator
 						// TODO: do something about the problem here
 					},
@@ -150,7 +300,7 @@ function ViewModel() {
 		}
 
 		this.requestDbLoad = function(oncomplete) {
-			var db = this.db();
+			var db = model.db();
 			db.transaction(
 				function(tx) {
 					tx.executeSql('SELECT data FROM PURCHORD', [],
@@ -256,7 +406,7 @@ function ViewModel() {
 		}
 		
 		this.updateDb = function(operations) {
-			var db = this.db();
+			var db = model.db();
 			for (var i = 0; i < operations.ins.length; i++) {
 				var po = operations.ins[i];
 				db.transaction(function(tx) {
@@ -291,22 +441,23 @@ function ViewModel() {
 				})
 			}
 		}
-		
-		this.db = function() {
-			if (!('dbhandle' in this)) {
-				var db = this.dbhandle = window.openDatabase("localstore", "1.0", "Local Store", 1048576);
-				db.transaction(function(tx) {
-					tx.executeSql('CREATE TABLE IF NOT EXISTS PURCHORD (id unique, data)');
-				},
-				function(err) {
-					console.log("db open failed: " + err);
-				},
-				function() {
-					console.log("db opened");
-				})
-			}
-			return this.dbhandle;
+	}
+	
+	this.db = function() {
+		if (!('dbhandle' in model)) {
+			var db = model.dbhandle = window.openDatabase("localstore", "1.0", "Local Store", 1048576);
+			db.transaction(function(tx) {
+				tx.executeSql('CREATE TABLE IF NOT EXISTS PURCHORD (id unique, data)');
+				tx.executeSql('CREATE TABLE IF NOT EXISTS TOKEN (token unique, expires)');
+			},
+			function(err) {
+				console.log("db open failed: " + err);
+			},
+			function() {
+				console.log("db opened");
+			})
 		}
+		return model.dbhandle;
 	}
 	
 	this.receiveSync = function(syncData) {
@@ -509,37 +660,23 @@ Screens.define({
 	},
 	login: {
 		initialize: function(element, model) {
-			$(document).ready(function() {
-				var $page = $('#loginpage');
-				var $area = $('#loginarea');
-				$area.css({ 'top': ($page.width() * 0.3) + 'px' });
+			var $page = $('#loginpage');
+			var $area = $('#loginarea');
+			$area.css({ 'top': ($page.width() * 0.3) + 'px' });
 
-				// preload image
-				var $logo = $('<div id="loginlogo"/>'); 
-				$img = $('<img/>');
-				$img[0].src = 'img/login-logo.png';
-				$logo.append($img);
-				$logo.css('visibility', 'hidden');
-				$logo.hide();
-				$area.append($logo);
-				
-				// add the login form
-				var $form = $('<div id="loginform"/>');
-				$form.append($('#html_loginform').html());
-				$area.append($form);
-
-				// register the click to login
-				$('#loginbutton').click(function() {
-					$form.fadeOut("fast", function() {
-					});
-					$logo.css('visibility', 'visible');
-					$logo.fadeIn();
-					
-					setTimeout(function() {
-						Screens.replace('locations', model);
-					}, 1500);
-				});
-			})
+			// preload image
+			var $logo = $('<div id="loginlogo"/>'); 
+			$img = $('<img/>');
+			$img[0].src = 'img/login-logo.png';
+			$logo.append($img);
+			$logo.css('visibility', 'hidden');
+			$logo.hide();
+			$area.append($logo);
+			
+			// add the login form
+			var $form = $('<div id="loginform"/>');
+			$form.append($('#html_loginform').html());
+			$area.append($form);
 		}
 	}
 });
@@ -570,9 +707,15 @@ Handlebars.registerHelper('dateFormat', function(context, block) {
 $(document).on('touchstart', function(e) {
 });
 
-
-$(document).ready(function() {
+var init = function() {
+	console.log("ready");
 	Screens.init();
-	Screens.push('login', new ViewModel());
-});
+	var model = new ViewModel();
+	model.doAppAuth();
+}
+
+if (ON_DEVICE)
+	document.addEventListener('deviceready', init, false);
+else
+	$(document).ready(init);
 
