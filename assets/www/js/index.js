@@ -7,36 +7,360 @@ function ViewModel() {
 	this.currentPo = ko.observable();
 	this.overallStatus = ko.computed(function() {
 		var locs = this.locations();
-		console.log(locs.length);
-		console.log(locs);
 		if (!locs || locs.length == 0)
 			return '';
 		for (var i = 0; i < locs.length; i++) {
 			var loc = locs[i];
-			if (loc.status() == 'checkin')
-				return 'checkin';
+			if (loc.status() == 'checkedin')
+				return 'checkedin';
 		}
 		return '';
 	}, model);
 	
-	this.receiveSync = function(syncData) {
+	this.ondevice = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
+	if (this.ondevice) {
+		this.webserviceRoot = 'http://192.168.101.14:82/ServiceVerificationApp.svc';
+	}
+	else {
+		this.webserviceRoot = '/test/webservice/ServiceVerificationApp.svc';
+	}
+	
+	this.lastPosition = false;
+	this.onPositionUpdate = function(position) {
+		var c = position.coords;
+		if (!model.lastPosition)
+			model.lastPosition = {};
+		var p = model.lastPosition;
+		if (!model.ondevice) {
+			c = { latitude: 39.97231, longitude: -104.83427, accuracy: 40.1 };
+		}
+		p.latitude = c.latitude;
+		p.longitude = c.longitude;
+		p.accuracy = c.accuracy;
+		console.log(c);
 		
+		for (var i = model.locations().length - 1; i >= 0; i--) {
+			var loc = model.locations()[i];
+			loc.dist = model.myDistanceTo(loc.latitude, loc.longitude);
+			loc.distance(model.formatDistance(loc.dist));
+		}
+		
+		model.sortLocations();
+	}
+	
+	this.locationSorters = {
+		'sort_by_cust': function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); },
+		'sort_by_dist': function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); },
+	}
+	
+	this.selectSort = function(sorter) {
+		$sortbox = $("#" + sorter);
+		$sortbox.addClass("sortbox_current");
+		if ('previousSort' in model && model.previousSort != sorter)
+			$("#" + model.previousSort).removeClass("sortbox_current");
+		model.previousSort = sorter;
+		model.currentSorter = model.locationSorters[sorter];
+		model.sortLocations();
+	}
+	
+	this.sortLocations = function() {
+		model.locations.sort(model.currentSorter);
+	}
+	
+	function numberWithCommas(x) {
+	    var parts = x.toString().split(".");
+	    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	    return parts.join(".");
+	}
+	
+	this.myDistanceTo = function(lat, long) {
+		var p = model.lastPosition;
+		if (!p)
+			return -1;
+		var x1 = long * Math.PI / 180;
+		var y1 = lat * Math.PI / 180;
+		var x2 = p.longitude * Math.PI / 180;
+		var y2 = p.latitude * Math.PI / 180;
+		var dx = x2 - x1;
+		var dy = y2 - y1;
+		var shdy = Math.sin(dy/2);
+		var shdx = Math.sin(dx/2);
+		var a = shdy * shdy + shdx * shdx * Math.cos(y1) * Math.cos(y2);
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return 6371000 * c;
+	}
+	
+	this.formatDistance = function(meters) {
+		if (meters == -1)
+			return '?';
+		var mi = meters * 0.000621504;
+		var m = mi;
+		var tenths = Math.floor((mi % 1) * 10);
+		mi = "" + Math.floor(mi);
+		if (mi.length > 2)
+			return numberWithCommas(mi) + ' mi';
+		else
+			return mi + '.' + tenths + ' mi';
+	}
+	
+	this.poManager = new function() {
+		var mgr = this;
+		
+		this.poByHash = {};
+		this.poById = {};
+		
+		this.sendSyncRequest = function() {
+			// Request PO data
+			// TODO: show wait indicator
+			
+			// Do Sync
+			// get hashes for current POs
+			var hashes = [];
+			var locs = model.locations();
+			for (var i = 0; i < locs.length; i++) {
+				var loc = locs[i];
+				var pos = loc.pos();
+				for (var j = 0; j < pos.length; j++) {
+					var po = pos[j];
+					hashes.push(po.hash);
+				}
+			}
+			
+			$req = $.ajax({
+				type: 'POST',
+				url: model.webserviceRoot + '/sync/' + "00000000-3C25-DE11-839F-0019B9EF37AC",
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+				data: JSON.stringify({ Hashes: hashes }),
+				success: function(data) {
+						// TODO: hide wait indicator
+						model.receiveSync(data);
+					},
+				fail: function(jqXHR, textStatus) {
+						// TODO: hide wait indicator
+						// TODO: do something about the problem here
+					},
+				});
+		}
+		
+		this.refresh = function() {
+			// Load data from database
+			model.poManager.requestDbLoad(mgr.sendSyncRequest);
+			mgr.refresh = mgr.sendSyncRequest; // only load from db the first time
+		}
+
+		this.requestDbLoad = function(oncomplete) {
+			var db = this.db();
+			db.transaction(
+				function(tx) {
+					tx.executeSql('SELECT data FROM PURCHORD', [],
+						function(tx, results) {
+							var syncData = { minus: [], plus: [] };
+							for (var i = 0; i < results.rows.length; i++) {
+								var po = JSON.parse(results.rows.item(i).data);
+								syncData.plus.push(po);
+							}
+							mgr.sync(syncData);
+							if (oncomplete)
+								oncomplete();
+						},
+						function(err) {
+							console.log("db get data failed: " + err);
+						}
+					)
+				},
+				function(err) {
+					
+				},
+				function() {
+					
+				}
+			);
+		}
+		
+		this.sync = function (syncData) {
+			// sync data is in two parts, "minus" and "plus".
+			results = { del: [], upd: [], ins: [] };
+			
+			// map location hashes to locations
+			var locsByLocHash = {};
+			for (var i = model.locations().length - 1; i >= 0; i--) {
+				var loc = model.locations()[i];
+				locsByLocHash[loc.lochash] = loc;
+			}
+			
+			// process new+modified POs from sync data
+			var plus = syncData.plus;
+			for (var i = 0; i < plus.length; i++) {
+				var syncPo = plus[i];
+				if (syncPo.id in this.poById) {
+					// update existing PO
+					var po = this.poById[syncPo.id];
+					model.map(model.maps.po, syncPo, po);
+					this.poByHash[po.hash] = po;
+					results.upd.push(syncPo);
+					console.log('updated po ' + po.number);
+				}
+				else {
+					// insert new PO
+					var po = {};
+					model.map(model.maps.po, syncPo, po);
+					this.poById[syncPo.id] = po;
+					this.poByHash[syncPo.hash] = po;
+					results.ins.push(syncPo);
+					if (!(po.lochash in locsByLocHash)) {
+						model.locations.push(locsByLocHash[po.lochash] = model.createLocation(po));
+						console.log('added location ' + locsByLocHash[po.lochash].name);
+					}
+					var loc = locsByLocHash[po.lochash];
+					// add PO to its location
+					loc.pos.push(po);
+					console.log('added po ' + po.number);
+				}
+			}
+
+			// remove old hashes
+			for (var i = 0; i < syncData.minus.length; i++) {
+				var hash = syncData.minus[i];
+				delete this.poByHash[hash];
+			}
+			
+			// remove any POs whose hash no longer exists
+			for (var poId in this.poById) {
+				var po = this.poById[poId];
+				if (!(po.hash in this.poByHash)) {
+					delete this.poById[poId];
+					results.del.push(poId);
+					console.log('removed po ' + po.number);
+				}
+			}
+			// also remove them from their locations, and remove empty locations
+			for (var i = model.locations().length - 1; i >= 0; i--) {
+				var loc = model.locations()[i];
+				for (var j = loc.pos().length - 1; j >= 0; j--) {
+					var po = loc.pos()[j];
+					if (!(po.hash in this.poByHash)) {
+						loc.pos.splice(j, 1);
+						console.log('removed po ' + po.number + ' from loc');
+						if (loc.pos().length == 0) {
+							model.locations.splice(i, 1);
+							console.log('removed loc ' + loc.name);
+						}
+					}
+				}
+			}
+			
+			model.sortLocations();
+			
+			return results;
+		}
+		
+		this.updateDb = function(operations) {
+			var db = this.db();
+			for (var i = 0; i < operations.ins.length; i++) {
+				var po = operations.ins[i];
+				db.transaction(function(tx) {
+					tx.executeSql('INSERT OR REPLACE INTO PURCHORD (id, data) VALUES (?, ?)', [po.id, JSON.stringify(po)]);
+				},
+				function(err) {
+					console.log("db insert failed: " + err);
+				},
+				function() {
+				})
+			}
+			for (var i = 0; i < operations.upd.length; i++) {
+				var po = operations.upd[i];
+				db.transaction(function(tx) {
+					tx.executeSql('INSERT OR REPLACE INTO PURCHORD (id, data) VALUES (?, ?)', [po.id, JSON.stringify(po)]);
+				},
+				function(err) {
+					console.log("db update failed: " + err);
+				},
+				function() {
+				})
+			}
+			for (var i = 0; i < operations.del.length; i++) {
+				var id = operations.del[i];
+				db.transaction(function(tx) {
+					tx.executeSql('DELETE FROM PURCHORD WHERE id = ?', [id]);
+				},
+				function(err) {
+					console.log("db delete failed: " + err);
+				},
+				function() {
+				})
+			}
+		}
+		
+		this.db = function() {
+			if (!('dbhandle' in this)) {
+				var db = this.dbhandle = window.openDatabase("localstore", "1.0", "Local Store", 1048576);
+				db.transaction(function(tx) {
+					tx.executeSql('CREATE TABLE IF NOT EXISTS PURCHORD (id unique, data)');
+				},
+				function(err) {
+					console.log("db open failed: " + err);
+				},
+				function() {
+					console.log("db opened");
+				})
+			}
+			return this.dbhandle;
+		}
+	}
+	
+	this.receiveSync = function(syncData) {
+		var results = model.poManager.sync(syncData);
+		model.poManager.updateDb(results);
+	}
+	
+	this.createLocation = function(po) {
+		var dist = model.myDistanceTo(po.latitude, po.longitude);
+		var location = {
+			hash: po.lochash,
+			name: po.locName,
+			address: po.locAddress,
+			latitude: po.latitude,
+			longitude: po.longitude,
+			radius: po.radius,
+			pos: ko.observableArray(),
+			dist: dist,
+			distance: ko.observable(model.formatDistance(dist)),
+		};
+		location.status = ko.computed(function() {
+			if (!this.pos)
+				return 'undefined';
+			var pos = this.pos();
+			if (pos.length == 1)
+				return pos[0].status();
+			else if (pos.length == 0)
+				return 'closed';
+			// if any PO is checked in, then the status is checked in
+			// if all are closed, then status is closed
+			var closed = true;
+			for (var i = 0; i < pos.length; i++) {
+				var po = pos[i];
+				if (po.status() == 'checkin')
+					return 'checkin';
+			}
+			for (var i = 0; i < pos.length; i++) {
+				var po = pos[i];
+				if (po.status() == 'incomplete')
+					return 'incomplete';
+			}
+			for (var i = 0; i < pos.length; i++) {
+				var po = pos[i];
+				if (po.status() != 'closed')
+					closed = false;
+			}
+			if (closed)
+				return 'closed';
+		}, location);
+		return location;
 	}
 	
 	this.refreshLocations = function() {
-		// debugging help code
-		alert('refresh');
-		if (!model.refreshTaps)
-			model.refreshTaps = 1;
-		else
-			model.refreshTaps++;
-		if (model.refreshTaps > 10) {
-			alert('debug');
-			$.ajax({url: 'http://192.168.101.14:8890/test/index.html', dataType: 'html'}).done(function (data) {
-				document.html(data);
-			});
-		}
-		//setTimeout(function() { model.refreshTaps = 0; }, 10000);
+		model.poManager.refresh();
 	}
 	
 	this.selectLocation = function(location) {
@@ -55,7 +379,7 @@ function ViewModel() {
 	}
 	
 	this.checkin = function() {
-		model.currentPo().status('checkin');
+		model.currentPo().status('checkedin');
 		model.currentPo(null);
 		var screen = Screens.pop();
 	}
@@ -79,93 +403,41 @@ function ViewModel() {
 	
 	this.selectPo = function(po) {
 		model.currentPo(po);
-		var screen = Screens.push((po.status() == 'checkin') ? 'checkedin' : 'details');
+		var screen = Screens.push('details');
 		screen.cancel = function() {
 			model.currentPo(null);
 		}
 	}
 	
-	this.map = {
-		locations: function(objin, objout) {
-			for (var i = 0; i < objin.length; i++) {
-				var location = this.locations(objin[i]);
-				objout.push(location);
-			}
-			return objout;
-		},
-		location: function(objin, objout) {
-			if (!objout) {
-				objout = {
-					name: objin.name,
-					address: objin.address,
-					distance: objin.distance,
-					selectedPo: ko.observable(),
-					pos: this.purchaseorders(objin.pos)
-				}
-				// computed observables
-				objout.status = ko.computed(function() {
-					if (!this.pos)
-						return 'undefined';
-					var pos = this.pos();
-					if (pos.length == 1)
-						return pos[0].status();
-					else if (pos.length == 0)
-						return 'closed';
-					// if any PO is checked in, then the status is checked in
-					// if all are closed, then status is closed
-					var closed = true;
-					for (var i = 0; i < pos.length; i++) {
-						var po = pos[i];
-						if (po.status() == 'checkin')
-							return 'checkin';
-					}
-					for (var i = 0; i < pos.length; i++) {
-						var po = pos[i];
-						if (po.status() == 'incomplete')
-							return 'incomplete';
-					}
-					for (var i = 0; i < pos.length; i++) {
-						var po = pos[i];
-						if (po.status() != 'closed')
-							closed = false;
-					}
-					if (closed)
-						return 'closed';
-				}, objout);
-
+	this.map = function(map, jso, modelo) {
+		var rules = map['rules'];
+		var stat = map['static'];
+		for (prop in jso) {
+			if (prop in rules) {
+				var rule = rules[prop];
+				if (typeof(rule) == "function")
+					rule.call(modelo, jso[prop]);
+				else if (typeof(rule) == "string")
+					modelo[rule] = jso[prop];
 			}
 			else {
-				this.purchaseorders(objin.pos, objout.pos);
+				modelo[prop] = jso[prop];
 			}
-			return objout;
-		},
-		purchaseorders: function(objin, objout) {
-			objout = objout || ko.observableArray();
-			for (var i = 0; i < objin.length; i++) {
-				var po = this.purchaseorder(objin[i]);
-				objout.push(po);
-			}
-			return objout;
-		},
-		purchaseorder: function(objin, objout) {
-			if (!objout) {
-				objout = {
-					number: objin.number,
-					type: objin.type,
-					due: objin.due,
-					notes: objin.notes,
-					status: ko.observable(objin.status),
-					select: function() {
-						// TODO: using Screens, below, violates separation between viewmodel and view
-						Screens.push('details', this);
-					},
-				}
-			}
-			else {
-				objout.status(objin.status);
-			}
-			return objout;
 		}
+		for (s in stat) {
+			if (!(s in modelo))
+				modelo[s] = stat[s];
+		}
+	}
+
+	this.maps = {
+		po: {
+			'static': {
+			},
+			'rules': {
+				'status': function (val) { if (!this.status) { this.status = ko.observable(val); } else { this.status(val); }},
+			},
+		},
 	};
 };
 
@@ -191,44 +463,20 @@ Screens.define({
 			
 			
 			// Setup sorters
-			var $currentSort = null;
-			function selectSort(sorter) {
-				if ($currentSort != null)
-					$currentSort.removeClass("sortbox_current");
-				$currentSort = $("#" + sorter);
-				$currentSort.addClass("sortbox_current");
-			}
 			// Select sort-by-distance as default
-			selectSort("sort_by_dist");
+			model.selectSort("sort_by_dist");
 			// Setup event handler for changing sort
 			$(".sortbox").touchstart(function() {
-				selectSort(this.id);
+				model.selectSort(this.id);
 			});
 			
+			model.poManager.refresh();
 			
-			// Receive location data
-			var receiveLocations = function(locations) {
-			    $('#recordsarea .loading').fadeOut();
-		    	model.receiveLocations(locations);
-			};
-			
-			// Request location data
-			// show loading indicator
-			$div = $('#recordsarea');
-			$div.append('<div class="loading" id="loadwait">retrieving locations...</div>');
-			$('#loadwait').hide();
-			$('#loadwait').fadeIn();
-			// mocked data
-			setTimeout(function() {
-				//try {
-					var data = Fixtures.getLocationData();
-					receiveLocations(data);
-				//}
-				//catch (e) {
-					//Screens.showError(e);
-					//$("#loadwait").remove();
-				//}
-			}, 400);
+			navigator.geolocation.watchPosition(function(position) {
+				model.onPositionUpdate(position);
+			}, function() {
+				// TODO: add indicator for bad GPS
+			}, { frequency: 3000, maximumAge: 60000, timeout: 60000, enableHighAccuracy: true });
 		}
 	},
 	checkedin : {
@@ -237,6 +485,16 @@ Screens.define({
 	},
 	details: {
 		initialize: function() {
+			var slider = new Slider($('#checkinout'));
+			slider.setEndOptions(1, ['Job Complete', 'Requires Authorization', 'Follow-up Required']);
+			slider.onSlid = function() {
+				if (slider.direction() == -1) {
+					slider.direction(1);
+				}
+				else {
+					return false;
+				}
+			}
 		},
 		back: function() {
 			return Screens.pop();

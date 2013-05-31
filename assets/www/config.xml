@@ -21,4 +21,9 @@
         <preference name="orientation" value="portrait"/>
         
         <gap:splash src="img/launch.png" gap:platform="ios" width="640" height="920"/>
+        
+        <access origin="http://192.168.101.14:82" subdomains="true"/>
+        <access origin="http://192.168.101.14:81" subdomains="true"/>
+        <access origin="http://192.168.101.14" subdomains="true"/>
+        <access origin="http://localhost:81" subdomains="true"/>
 </widget>

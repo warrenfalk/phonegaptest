@@ -11,6 +11,7 @@
         <script type="text/javascript" src="js/fixture.js"></script>
         <script type="text/javascript" src="js/screens.js"></script>
         <script type="text/javascript" src="js/moment.js"></script>
+        <script type="text/javascript" src="js/slider.js"></script>
         <title>Check In</title>
     </head>
     <body>
@@ -50,14 +51,14 @@
     	<script id="screen_locations" type="text/x-page">
     		<div id="locations">
 				<div id="recordsarea">
-			    	<div id="records" data-bind="foreach: location">
+			    	<div id="records" data-bind="foreach: locations">
 		        		<div class="locrecord record data" data-bind="css: status(), click: $root.selectLocation">
 							<div class="indicators"></div>
         					<div class="locname" data-bind="text: name"></div>
 		        			<div class="locaddr" data-bind="text: address"></div>
         					<div class="dist">(<span class="disttext" data-bind="text: distance"></span>)</div>
         					<div class="ponum" data-bind="if: pos().length == 1">
-								<span class="poprefix">PO:</span><span class="number" data-bind="text: pos()[0].number"></span>
+								<span class="number" data-bind="text: pos()[0].number"></span>
         					</div>
 							<div class="ponum mult" data-bind="if: pos().length > 1">
 								(<span class="count" data-bind="text: pos().length"></span> POs)
@@ -93,7 +94,7 @@
     		<div id="details" data-bind="with: $root.currentPo">
 				<div class="podata">
 					<section>
-						<div class="ponum"><span class="name">PO:</span><span class="value" data-bind="text: number"></span></div>
+						<div class="ponum"><span class="value" data-bind="text: number"></span></div>
 						<div class="location" data-bind="with: $root.currentLocation">
 							<span class="name">Location:</span>
 							<div class="value">
@@ -103,16 +104,18 @@
 						</div>
 					</section>
 					<section>
-						<div class="servicetype"><span class="name">Contract Type:</span> <span class="value" data-bind="text: type"></span></div>
+						<div class="servicetype"><span class="name">Contract Type:</span> <span class="value" data-bind="text: serviceType"></span></div>
 					</section>
 					<section>
-						<div class="section notes"><span class="name">Notes:</span> <div class="value" data-bind="text: notes"></span></div>
+						<div class="section notes"><span class="name">Scope:</span> <div class="value" data-bind="text: scope"></span></div>
 					</section>
 				</div>
 				<div class="actions">
 					<div data-bind="ifnot: status() == 'closed'">
-						<button class="bigbtn white checkin" id="checkin" data-bind="click: $root.checkin">CHECK IN</button>
+						<div class="slider" id="checkinout" data-left="slide to check out" data-right="slide to check in" data-direction="reverse"></div>
 					</div>
+					<button id="takepictures">Take Pictures</button>
+					<button id="addnote">Add Note</button>
 				</div>
         	</div>
     	</script>
@@ -149,9 +152,9 @@
     			<div id="polist" class="list" data-bind="foreach: pos">
 					<div class="record porecord" data-bind="css: status(), click: $root.selectPo">
 						<div class="indicators"></div>
-						<div class="po"><span class="poprefix">PO:</span> <span class="number" data-bind="text: number"></span></div>
-    					<div class="type" data-bind="text: type"></div>
-    					<div class="due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(due)).format('MM/DD')"></span></div>
+						<div class="po"><span class="number" data-bind="text: number"></span></div>
+    					<div class="type" data-bind="text: serviceType"></div>
+    					<div class="due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(followUpBy)).format('MM/DD')"></span></div>
 						<div class="rtarrow"></div>
 					</div>
     			</div>

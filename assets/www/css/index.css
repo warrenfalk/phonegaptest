@@ -342,14 +342,14 @@ body {
 	right: 20px;
 	top: 4px;
 	font-size: 15px;
-	min-width: 33%;
+	min-width: 43%;
 }
 .porecord .due {
 	position: absolute;
 	right: 20px;
 	top: 25px;
 	font-size: 15px;
-	min-width: 33%;
+	min-width: 43%;
 }
 #records.isloading {
 }
@@ -384,7 +384,7 @@ body {
 	height: 100%;
 	text-align: center;
 }
-.checkin .indicators, .indicators.checkin {
+.checkedin .indicators, .indicators.checkedin {
 	background-image: url(../img/circred.svg);
 	background-position: 7px 50%;
 	background-repeat: no-repeat
@@ -407,7 +407,6 @@ body {
 	right: 150px;
 	overflow: hidden;
 	white-space: nowrap;
-	font-weight: bold;
 }
 .locrecord .locaddr {
 	position: absolute;
@@ -519,6 +518,79 @@ body {
 	padding: 10px;
 	border-top: solid 1px #e0e0e0;
 }
+#takepictures, #addnote {
+	width: 108px;
+	height: 95px;
+	margin: 18px;
+	border: 0;
+	border-radius: 10px;
+	padding: 50px 0 0 0;
+	color: white;
+	text-shadow: 0px 1px black;
+	background-color: #808080;
+}
+#takepictures:active, #addnote:active {
+	background-position: 0 100%;
+}
+#takepictures {
+	background-color: transparent;
+	background-image: url(../img/btn-camera.svg);
+	background-repeat: no-repeat;
+}
+#addnote {
+	background-color: transparent;
+	background-image: url(../img/btn-note.svg);
+	background-repeat: no-repeat;
+}
+.slider {
+	position: relative;
+	border: solid 1px black;
+	border-radius: 12px;
+	height: 50px;
+	padding: 2px;
+	margin: 18px 37px 18px 37px;
+	background-color: #627292;
+}
+.slider.optionsmode {
+	background-color: white;
+}
+.slider > .handle {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	margin: 2px;
+	height: 44px;
+	width: 68px;
+	border: solid 1px black;
+	border-radius: 11px;
+	background-color: #e0e0e0;
+}
+.slider > .caption {
+	color: white;
+	font-size: 18px;
+}
+.slider > .optionlist {
+	position: absolute;
+	padding: 0 10px;
+}
+.slider > .optionlist.left {
+	text-align: left;
+	left: 68px;
+}
+.slider > .optionlist.right {
+	text-align: right;
+	right: 68px;
+}
+.slider > .optionlist > .option {
+	font-size: 17px;
+	color: black;
+	padding: 10px;
+	border-radius: 9px;
+}
+.slider > .optionlist > .option.current {
+	background-color: #8cc0f5
+}
+
 .name {
 	color: #134a82;
 	font-weight: normal;

@@ -9,9 +9,10 @@ if(x.isFunction(n))while(r=o[i++])"+"===r[0]?(r=r.slice(1)||"*",(e[r]=e[r]||[]).
 if (!('ontouchstart' in document.createElement('div'))) {
 	jQuery.fn.touchstart = jQuery.fn.mousedown;
 	jQuery.fn.touchend = jQuery.fn.mouseup;
+	jQuery.fn.touchmove = jQuery.fn.mousemove;
 }
 if (!jQuery.fn.touchstart) {
-	$.each("touchstart touchend".split(" "), function(i, name) {
+	$.each("touchstart touchend touchmove".split(" "), function(i, name) {
 		jQuery.fn[name] = function(data, fn) { return arguments.length > 0 ? this.on(name, null, data, fn) : this.trigger(name); }
 	});
 }
