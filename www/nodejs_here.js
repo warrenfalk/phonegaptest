@@ -1,6 +1,7 @@
 if (typeof WScript !== "undefined") {
+	var pathToMe = WScript.ScriptFullName;
 	var WshShell = new ActiveXObject("WScript.Shell");
-	var rval = WshShell.Run('cmd /k "C:\\Program Files\\nodejs\\node.exe" nodejs_here.js');
+	var rval = WshShell.Run('cmd /k "C:\\Program Files\\nodejs\\node.exe" ' + pathToMe);
 	WScript.quit();
 }
 
@@ -33,9 +34,9 @@ http.createServer(function (req, res) {
 				seg = seg.slice(1);
 				reqpath = seg.join('/');
 				var headers = req.headers;
-				headers['host'] = 'localhost:81';
+				headers['host'] = '10.10.11.6:81';
 				var proxy_options = {
-					hostname: 'localhost',
+					hostname: '10.10.11.6',
 					port: 82,
 					path: '/' + reqpath,
 					method: req.method,
