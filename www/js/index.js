@@ -175,6 +175,15 @@ function ViewModel() {
 		Screens.replace('login', model);
 	}
 	
+	this.takePic = function() {
+		navigator.camera.getPicture(function(filename) {
+			alert(data);
+		},
+		function(data) {
+		},
+		{quality: 40, destinationType: Camera.DestinationType.FILE_URI, correctOrientation: false});
+	}
+	
 	this.lastPosition = false;
 	this.onPositionUpdate = function(position) {
 		var c = position.coords;

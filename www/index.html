@@ -117,8 +117,8 @@
 					<div data-bind="ifnot: status() == 'closed'">
 						<div class="slider" id="checkinout" data-left="slide to check out" data-right="slide to check in" data-direction="reverse"></div>
 					</div>
-					<button id="takepictures">Take Pictures</button>
 					<button id="addnote">Add Note</button>
+					<button id="takepictures" data-bind="click: $root.takePic">Take Pictures</button>
 				</div>
         	</div>
     	</script>
