@@ -184,6 +184,32 @@ function ViewModel() {
 		{quality: 40, destinationType: Camera.DestinationType.FILE_URI, correctOrientation: false});
 	}
 	
+	this.addNote = function() {
+		$noteform = $('#noteform');
+		$noteform.fadeIn(function() {
+			$('#notebox').focus();
+		});
+	}
+	
+	this.sendNote = function() {
+		$noteform = $('#noteform');
+		$noteform.fadeOut(function() {
+			$notebox = $('#notebox');
+			var note = $notebox.val();
+			if (note != '') {
+				$notebox.val('');
+				// TODO: send the note
+			}
+		});
+	}
+	
+	this.cancelNote = function() {
+		$noteform = $('#noteform');
+		$noteform.fadeOut(function() {
+			$('#notebox').val('');	
+		});
+	}
+	
 	this.lastPosition = false;
 	this.onPositionUpdate = function(position) {
 		var c = position.coords;

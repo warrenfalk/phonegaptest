@@ -117,8 +117,18 @@
 					<div data-bind="ifnot: status() == 'closed'">
 						<div class="slider" id="checkinout" data-left="slide to check out" data-right="slide to check in" data-direction="reverse"></div>
 					</div>
-					<button id="addnote">Add Note</button>
 					<button id="takepictures" data-bind="click: $root.takePic">Take Pictures</button>
+					<button id="addnote" data-bind="click: $root.addNote">Add Note</button>
+				</div>
+				<div id="noteform">
+					<div class="note">
+						<label for="notebox" class="caption">Note for <span data-bind="text: number">this PO</span></p>
+						<textarea id="notebox"></textarea>
+					</div>
+					<div class="actions">
+						<button id="cancelnote" data-bind="click: $root.cancelNote">Cancel</button>
+						<button id="sendnote" data-bind="click: $root.sendNote">Send</button>
+					</div>
 				</div>
         	</div>
     	</script>
