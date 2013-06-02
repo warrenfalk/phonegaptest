@@ -181,7 +181,7 @@ function ViewModel() {
 		if (!model.lastPosition)
 			model.lastPosition = {};
 		var p = model.lastPosition;
-		if (!model.ondevice) {
+		if (!ON_DEVICE) {
 			c = { latitude: 39.97231, longitude: -104.83427, accuracy: 40.1 };
 		}
 		p.latitude = c.latitude;
