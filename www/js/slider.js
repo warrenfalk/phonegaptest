@@ -12,6 +12,7 @@ function Slider($div) {
 	this.grabbed = false;
 	this.endOptions = {};
 	this.optionsMode = false; // true when dragging vertically for options
+	this.currentOption = null;
 
 	this.grabHandle = function(e) {
 		console.log('slider grabbed');
@@ -23,11 +24,23 @@ function Slider($div) {
 	
 	this.calcDragWidth = function() { return control.$div.width() - control.$handle.outerWidth(); };
 	
+	this.handleComplete = function(d, option) {
+		control.direction(-d);
+		control.onSlid(d, option);
+	}
+	
 	this.ungrabHandle = function() {
 		console.log('slider ungrabbed');
 		control.grabbed = false;
-		if (control.optionsMode)
+		if (control.optionsMode) {
+			var d = control.direction();
+			var option = control.currentOption;
 			control.exitOptionsMode();
+			if (option) {
+				control.direction(-d);
+				control.handleComplete(d, option)
+			}
+		}
 		delete control.grab;
 		control.moveHandle(0);
 	}
@@ -51,13 +64,14 @@ function Slider($div) {
 			dx = control.clampHandle(dx);
 			control.moveHandle(dx);
 			if (dx == control.dragWidth && control.onSlid) {
-				eo = control.endOptions[control.dir];
+				var d = control.direction();
+				eo = control.endOptions[d];
 				if (eo && eo.length) {
 					control.showOptions(eo);
 				}
 				else {
-					control.onSlid();
-					control.ungrabHandle();
+					control.direction(-d);
+					control.handleComplete(d, null);
 				}
 			}
 		}
@@ -78,11 +92,14 @@ function Slider($div) {
 		for (var i = 0; i < o.length; i++) {
 			var otext = o[i];
 			var opt = {};
+			opt.text = otext;
 			opt.$div = $('<div class="option"/>');
 			opt.$div.text(otext);
 			$list.append(opt.$div);
 			activeOptions.push(opt);
 		}
+		for (var i = 0; i < activeOptions.length; i++)
+			activeOptions[i].index = i;
 		control.$div.append($list);
 		$list.css('bottom', control.normalHeight + 'px');
 		control.$div.height(control.normalHeight + $list.height());
@@ -97,6 +114,7 @@ function Slider($div) {
 		control.$div.height(control.normalHeight);
 		control.$optionsList.remove();
 		control.$div.removeClass('optionsmode');
+		control.currentOption = null;
 		delete control.activeOptions;
 	}
 	
@@ -114,15 +132,17 @@ function Slider($div) {
 		control.$handle.css('-webkit-transform', 'translate3d(' + dx + 'px, ' + dy + 'px,0)');
 		// try to see which option is current
 		var y = dy + control.$div.height() - (control.$handle.outerHeight() / 2);
+		var currentOption = null;
 		for (var i = 0; i < control.activeOptions.length; i++) {
 			var o = control.activeOptions[i];
 			var top = control.activeOptions[i].$div.position().top;
 			var bottom = top + control.activeOptions[i].$div.outerHeight();
 			if (y >= top && y < bottom)
-				control.activeOptions[i].$div.addClass('current');
+				(currentOption = control.activeOptions[i]).$div.addClass('current');
 			else
 				control.activeOptions[i].$div.removeClass('current');
 		}
+		control.currentOption = currentOption;
 	}
 	
 	this.clampHandle = function(dx) {
