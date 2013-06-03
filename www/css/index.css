@@ -600,6 +600,9 @@ body {
 	border-radius: 11px;
 	background-color: #e0e0e0;
 }
+.slider.grabbed > .handle {
+	background-color: #808080;
+}
 .slider > .caption {
 	color: white;
 	font-size: 18px;
