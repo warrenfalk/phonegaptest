@@ -211,21 +211,37 @@ function ViewModel() {
 	
 	this.addNote = function() {
 		$noteform = $('#noteform');
+		$notebox = $('#notebox');
+		$notebox.prop('disabled', false);
 		$noteform.fadeIn(function() {
-			$('#notebox').focus();
+			$notebox.focus();
 		});
 	}
 	
 	this.sendNote = function() {
 		$noteform = $('#noteform');
-		$noteform.fadeOut(function() {
-			$notebox = $('#notebox');
-			var note = $notebox.val();
-			if (note != '') {
-				$notebox.val('');
-				// TODO: send the note
-			}
-		});
+		$notebox = $('#notebox');
+		var note = $notebox.val();
+		if (note != '') {
+			$notebox.prop('disabled', true);
+			$req = $.ajax({
+				type: 'POST',
+				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo().id.replace('.', '+') + '/notes',
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+				data: JSON.stringify({ Note: note }),
+				success: function(data) {
+					$noteform.fadeOut();
+					$notebox.val('');
+					},
+				error: function(jqXHR, textStatus) {
+					// TODO: probably the wrong status here... don't know if we even get here on connection failure
+					alert('There was a problem encountered while sending your note.  Check that you have a signal and a data connection');
+					$notebox.prop('disabled', false);
+					$notebox.focus();
+					},
+				});
+		}
 	}
 	
 	this.cancelNote = function() {
