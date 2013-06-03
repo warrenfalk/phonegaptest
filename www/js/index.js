@@ -108,7 +108,9 @@ function ViewModel() {
 					data: JSON.stringify({ Password: password }),
 					success: function(data) {
 						if (data.status == "Authorized") {
-							success(data.token, data.expires);
+							var expiry = Math.round(parseFloat(data.expires)) + Math.round((new Date().getTime() / 1000));
+							console.log("Received token: " + data.token + " expires in: " + data.expires + ": absolute: " + expiry);
+							success(data.token, expiry);
 						}
 						else {
 							if (data.status == "Authorization failed")
@@ -144,6 +146,7 @@ function ViewModel() {
 		var expiry = (new Date().getTime() / 1000) + 60;
 		db.transaction(
 			function(tx) {
+				tx.executeSql('DELETE FROM TOKEN WHERE expires <= ?', [expiry]);
 				tx.executeSql('SELECT token FROM TOKEN WHERE expires > ? ORDER BY expires DESC', [expiry],
 					function(tx, results) {
 						if (results.rows.length > 0)
