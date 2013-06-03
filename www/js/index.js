@@ -567,13 +567,18 @@ function ViewModel() {
 			var closed = true;
 			for (var i = 0; i < pos.length; i++) {
 				var po = pos[i];
-				if (po.status() == 'checkin')
-					return 'checkin';
+				if (po.status() == 'checkedin')
+					return 'checkedin';
 			}
 			for (var i = 0; i < pos.length; i++) {
 				var po = pos[i];
-				if (po.status() == 'incomplete')
-					return 'incomplete';
+				if (po.status() == 'reqauth')
+					return 'reqauth';
+			}
+			for (var i = 0; i < pos.length; i++) {
+				var po = pos[i];
+				if (po.status() == 'reqfollowup')
+					return 'reqfollowup';
 			}
 			for (var i = 0; i < pos.length; i++) {
 				var po = pos[i];
