@@ -17,6 +17,7 @@ function Slider($div) {
 	this.grabHandle = function(e) {
 		console.log('slider grabbed');
 		control.grabbed = true;
+		control.$div.addClass('grabbed');
 		var c = touchCoords(e); 
 		control.grab = { originX: c.pageX, originY: c.pageY };
 		control.dragWidth = control.calcDragWidth();
@@ -31,6 +32,7 @@ function Slider($div) {
 	
 	this.ungrabHandle = function() {
 		console.log('slider ungrabbed');
+		control.$div.removeClass('grabbed');
 		control.grabbed = false;
 		if (control.optionsMode) {
 			var d = control.direction();
@@ -65,7 +67,7 @@ function Slider($div) {
 			control.moveHandle(dx);
 			if (dx == control.dragWidth && control.onSlid) {
 				var d = control.direction();
-				eo = control.endOptions[d];
+				var eo = control.endOptions[d];
 				if (eo && eo.length) {
 					control.showOptions(eo);
 				}
@@ -169,6 +171,12 @@ function Slider($div) {
 			control.$caption.text($div.data(b == 1 ? 'left' : 'right'));
 			control.dragWidth = control.calcDragWidth();
 			control.moveHandle(0);
+			var eo = control.endOptions[b];
+			var hasOptions = eo && eo.length;
+			if (hasOptions)
+				control.$div.addClass('hasoptions');
+			else
+				control.$div.removeClass('hasoptions');
 		}
 		return control.dir;
 	}
