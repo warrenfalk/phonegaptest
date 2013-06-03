@@ -177,7 +177,7 @@ function ViewModel() {
 	
 	this.takePic = function() {
 		navigator.camera.getPicture(function(filename) {
-			var url = '/' + model.token + '/purchaseorders/' + model.currentPo().id.replace(':', '-') + '/pic';
+			var url = '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/pic';
 			alert(filename);
 			alert(url);
 			var options = new FileUploadOptions();
@@ -336,6 +336,8 @@ function ViewModel() {
 				}
 			}
 			
+			console.log("Sending sync request");
+			
 			$req = $.ajax({
 				type: 'POST',
 				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/sync',
@@ -370,7 +372,9 @@ function ViewModel() {
 								var po = JSON.parse(results.rows.item(i).data);
 								syncData.plus.push(po);
 							}
+							console.log("database read complete, applying...");
 							mgr.sync(syncData);
+							console.log("database read application complete");
 							if (oncomplete)
 								oncomplete();
 						},
@@ -390,13 +394,19 @@ function ViewModel() {
 		
 		this.sync = function (syncData) {
 			// sync data is in two parts, "minus" and "plus".
-			results = { del: [], upd: [], ins: [] };
+			var results = { del: [], upd: [], ins: [] };
 			
 			// map location hashes to locations
 			var locsByLocHash = {};
 			for (var i = model.locations().length - 1; i >= 0; i--) {
 				var loc = model.locations()[i];
 				locsByLocHash[loc.lochash] = loc;
+			}
+			
+			// remove old hashes
+			for (var i = 0; i < syncData.minus.length; i++) {
+				var hash = syncData.minus[i];
+				delete this.poByHash[hash];
 			}
 			
 			// process new+modified POs from sync data
@@ -425,25 +435,20 @@ function ViewModel() {
 					var loc = locsByLocHash[po.lochash];
 					// add PO to its location
 					loc.pos.push(po);
-					console.log('added po ' + po.number);
+					console.log('added po ' + po.number + ' with hash ' + syncPo.hash);
 				}
 			}
 
-			// remove old hashes
-			for (var i = 0; i < syncData.minus.length; i++) {
-				var hash = syncData.minus[i];
-				delete this.poByHash[hash];
-			}
-			
 			// remove any POs whose hash no longer exists
 			for (var poId in this.poById) {
 				var po = this.poById[poId];
 				if (!(po.hash in this.poByHash)) {
 					delete this.poById[poId];
 					results.del.push(poId);
-					console.log('removed po ' + po.number);
+					console.log('removed po ' + po.number + ', ' + po.hash + ' no longer exists');
 				}
 			}
+			
 			// also remove them from their locations, and remove empty locations
 			for (var i = model.locations().length - 1; i >= 0; i--) {
 				var loc = model.locations()[i];
@@ -467,39 +472,27 @@ function ViewModel() {
 		
 		this.updateDb = function(operations) {
 			var db = model.db();
-			for (var i = 0; i < operations.ins.length; i++) {
-				var po = operations.ins[i];
-				db.transaction(function(tx) {
-					tx.executeSql('INSERT OR REPLACE INTO PURCHORD (id, data) VALUES (?, ?)', [po.id, JSON.stringify(po)]);
+			db.transaction(
+				function(tx) {
+					for (var i = 0; i < operations.ins.length; i++) {
+						var po = operations.ins[i];
+						tx.executeSql('INSERT OR REPLACE INTO PURCHORD (id, data) VALUES (?, ?)', [po.id, JSON.stringify(po)]);
+					}
+					for (var i = 0; i < operations.upd.length; i++) {
+						var po = operations.upd[i];
+						tx.executeSql('INSERT OR REPLACE INTO PURCHORD (id, data) VALUES (?, ?)', [po.id, JSON.stringify(po)]);
+					}
+					for (var i = 0; i < operations.del.length; i++) {
+						var id = operations.del[i];
+						tx.executeSql('DELETE FROM PURCHORD WHERE id = ?', [id]);
+					}
 				},
 				function(err) {
-					console.log("db insert failed: " + err);
+					console.log("db transaction failed: " + err);
 				},
 				function() {
-				})
-			}
-			for (var i = 0; i < operations.upd.length; i++) {
-				var po = operations.upd[i];
-				db.transaction(function(tx) {
-					tx.executeSql('INSERT OR REPLACE INTO PURCHORD (id, data) VALUES (?, ?)', [po.id, JSON.stringify(po)]);
-				},
-				function(err) {
-					console.log("db update failed: " + err);
-				},
-				function() {
-				})
-			}
-			for (var i = 0; i < operations.del.length; i++) {
-				var id = operations.del[i];
-				db.transaction(function(tx) {
-					tx.executeSql('DELETE FROM PURCHORD WHERE id = ?', [id]);
-				},
-				function(err) {
-					console.log("db delete failed: " + err);
-				},
-				function() {
-				})
-			}
+				}
+			);
 		}
 	}
 	
@@ -521,6 +514,7 @@ function ViewModel() {
 	}
 	
 	this.receiveSync = function(syncData) {
+		console.log("Sync data received");
 		var results = model.poManager.sync(syncData);
 		model.poManager.updateDb(results);
 	}
