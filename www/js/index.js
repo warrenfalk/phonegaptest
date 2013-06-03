@@ -177,11 +177,36 @@ function ViewModel() {
 	
 	this.takePic = function() {
 		navigator.camera.getPicture(function(filename) {
-			alert(data);
+			var url = '/' + model.token + '/purchaseorders/' + model.currentPo().id.replace(':', '-') + '/pic';
+			alert(filename);
+			alert(url);
+			var options = new FileUploadOptions();
+			options.fileKey = "image";
+			options.fileName = filename.substr(filename.lastIndexOf('/') + 1);
+			options.mimeType = "image/jpeg";
+			options.params = {};
+			var success = function(r) {
+				console.log("Code = " + r.responseCode);
+	            console.log("Response = " + r.response);
+	            console.log("Sent = " + r.bytesSent);
+			}
+			var fail = function(error) {
+				alert("An error has occurred: Code = " + error.code);
+	            console.log("upload error source " + error.source);
+	            console.log("upload error target " + error.target);
+			}
+			var ft = new FileTransfer();
+			ft.upload(filename, model.webserviceRoot + url, success, fail, options);
 		},
 		function(data) {
 		},
-		{quality: 40, destinationType: Camera.DestinationType.FILE_URI, correctOrientation: false});
+		{
+			quality: 40, 
+			destinationType: Camera.DestinationType.FILE_URI, 
+			correctOrientation: true,
+			targetWidth: 1080,
+			targetHeight: 1080,
+		});
 	}
 	
 	this.addNote = function() {
