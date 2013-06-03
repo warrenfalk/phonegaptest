@@ -226,7 +226,7 @@ function ViewModel() {
 			$notebox.prop('disabled', true);
 			$req = $.ajax({
 				type: 'POST',
-				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo().id.replace('.', '+') + '/notes',
+				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo() + '/notes',
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
 				data: JSON.stringify({ Note: note }),
