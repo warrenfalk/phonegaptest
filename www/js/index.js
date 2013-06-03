@@ -705,15 +705,55 @@ Screens.define({
 		},
 	},
 	details: {
-		initialize: function() {
-			var slider = new Slider($('#checkinout'));
-			slider.setEndOptions(1, ['Job Complete', 'Requires Authorization', 'Follow-up Required']);
-			slider.onSlid = function() {
-				if (slider.direction() == -1) {
-					slider.direction(1);
-				}
-				else {
-					return false;
+		initialize: function(e, model) {
+			$sliderdiv = $('#checkinout');
+			if (model.currentPo().status() == 'closed') {
+				$sliderdiv.hide();
+			}
+			else {
+				var slider = new Slider($sliderdiv);
+				slider.direction(model.currentPo().status() == 'checkedin' ? 1 : -1);
+				var statuses = ['closed', 'reqauth', 'reqfollowup'];
+				slider.setEndOptions(1, ['Job Complete', 'Requires Authorization', 'Follow-up Required']);
+				slider.onSlid = function(direction, option) {
+					var isCheckin = direction == -1;
+					if (isCheckin) {
+						$req = $.ajax({
+							type: 'POST',
+							url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/status',
+							contentType: 'application/json; charset=UTF-8',
+							dataType: 'json',
+							data: JSON.stringify({ NewStatus: 'checkedin', latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy }),
+							success: function(syncData) {
+								model.receiveSync(syncData);
+								},
+							error: function(jqXHR, textStatus) {
+								// TODO: probably the wrong status here... don't know if we even get here on connection failure
+								alert('There was a problem encountered while trying to checkin.  Check that you have a signal and a data connection');
+								slider.direction(direction);
+								},
+							});
+					}
+					else {
+						var status = statuses[option.index];
+						$req = $.ajax({
+							type: 'POST',
+							url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/status',
+							contentType: 'application/json; charset=UTF-8',
+							dataType: 'json',
+							data: JSON.stringify({ NewStatus: status, latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy }),
+							success: function(syncData) {
+								model.receiveSync(syncData);
+								if (model.currentPo().status == 'closed')
+									$sliderdiv.hide();
+								},
+							error: function(jqXHR, textStatus) {
+								// TODO: probably the wrong status here... don't know if we even get here on connection failure
+								alert('There was a problem encountered while trying to checkout.  Check that you have a signal and a data connection');
+								slider.direction(direction);
+								},
+							});
+					}
 				}
 			}
 		},
