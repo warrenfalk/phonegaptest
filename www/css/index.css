@@ -394,7 +394,7 @@ body {
 	background-position: 7px 50%;
 	background-repeat: no-repeat
 }
-.incomplete .indicators {
+.reqauth .indicators, .reqfollowup .indicators {
 	background-image: url(../img/circempty.svg);
 	background-position: 7px 50%;
 	background-repeat: no-repeat
