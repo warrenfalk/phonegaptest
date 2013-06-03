@@ -26,6 +26,15 @@ function ViewModel() {
 		this.webserviceRoot = '/test/webservice/ServiceVerificationApp.svc';
 	}
 	
+	this.doSync = function() {
+		if (model.locations().length == 0)
+			model.poManager.requestDbLoad(model.poManager.sendSyncRequest);
+		else
+			model.poManager.sendSyncRequest();
+	}
+	
+	setInterval(function() { model.doSync(); }, 120000);
+	
 	this.logout = function() {
 		var db = model.db();
 		db.transaction(
@@ -374,12 +383,6 @@ function ViewModel() {
 				});
 		}
 		
-		this.refresh = function() {
-			// Load data from database
-			model.poManager.requestDbLoad(mgr.sendSyncRequest);
-			mgr.refresh = mgr.sendSyncRequest; // only load from db the first time
-		}
-
 		this.requestDbLoad = function(oncomplete) {
 			var db = model.db();
 			db.transaction(
@@ -584,7 +587,7 @@ function ViewModel() {
 	}
 	
 	this.refreshLocations = function() {
-		model.poManager.refresh();
+		model.doSync();
 	}
 	
 	this.selectLocation = function(location) {
@@ -667,6 +670,9 @@ function ViewModel() {
 
 Screens.define({
 	locations: {
+		activate: function(model) {
+			model.doSync();
+		},
 		initialize: function(e, model) {
 			// Setup Search Box
 			$searchbox = $("#searchbox");
@@ -693,8 +699,6 @@ Screens.define({
 			$(".sortbox").touchstart(function() {
 				model.selectSort(this.id);
 			});
-			
-			model.poManager.refresh();
 			
 			navigator.geolocation.watchPosition(function(position) {
 				model.onPositionUpdate(position);

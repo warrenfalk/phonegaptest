@@ -19,6 +19,8 @@ this.Screens = {
 		$("#page").append(screen.$element);
 		if (screen.initialize)
 			screen.initialize(screen.$element, model);
+		if (screen.activate)
+			screen.activate(model);
 		ko.applyBindings(model, screen.$element.get(0));
 		return screen;
 	},
@@ -39,6 +41,8 @@ this.Screens = {
 		$("#page").append(screen.$element);
 		if (screen.initialize)
 			screen.initialize(screen.$element, model);
+		if (screen.activate)
+			screen.activate(screen.model);
 		ko.applyBindings(model, screen.$element.get(0));
 		return screen;
 	},
@@ -50,6 +54,8 @@ this.Screens = {
 		this._top.$element.remove();
 		this._top = this._stack[this._stack.length - 1];
 		this._top.$element.show();
+		if (this._top.activate)
+			this._top.activate(this._top.model);
 		return old;
 	},
 	
