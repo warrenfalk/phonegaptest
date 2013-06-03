@@ -20,7 +20,7 @@ function ViewModel() {
 	}, model);
 	
 	if (ON_DEVICE) {
-		this.webserviceRoot = 'http://10.10.11.6:82/ServiceVerificationApp.svc';
+		this.webserviceRoot = 'http://192.168.101.14:82/ServiceVerificationApp.svc';
 	}
 	else {
 		this.webserviceRoot = '/test/webservice/ServiceVerificationApp.svc';
