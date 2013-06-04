@@ -610,6 +610,10 @@ body {
 	color: white;
 	font-size: 18px;
 }
+.slider.grabbed > .caption {
+	-webkit-transition: opacity 0.3s ease-out;
+	opacity: 0;
+}
 .slider.disabled > .caption {
 	-webkit-transition: opacity 0.6s ease-in-out;
     -webkit-animation-direction: normal;
@@ -634,10 +638,10 @@ body {
 	border-radius: 9px;
 }
 .slider > .optionlist.left > .option {
-	padding-left: 68px;
+	padding-left: 72px;
 }
 .slider > .optionlist.right > .option {
-	padding-right: 68px;
+	padding-right: 72px;
 }
 .slider > .optionlist > .option.current {
 	background-color: #8cc0f5

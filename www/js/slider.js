@@ -159,15 +159,11 @@ function Slider($div) {
 	this.moveHandle = function(dx) {
 		var tx = (control.dir == 1) ? dx : control.dragWidth - dx;
 		control.$handle.css('-webkit-transform', 'translate3d(' + tx + 'px,0,0)');
-		var opacity = 45 - Math.abs(dx);
-		if (opacity < 0)
-			opacity = 0;
 		var d = control.dir;
 		if (Math.abs(dx) > Math.abs(control.dragWidth / 2))
 			d = -d;
 		control.$caption.css('marginLeft', d == 1 ? control.$handle.width() : 0);
 		control.$caption.css('marginRight', d == -1 ? control.$handle.width() : 0);
-		control.$caption.css('opacity', opacity / 45); 
 	}
 	
 	this.moveHandleY = function(dy) {
