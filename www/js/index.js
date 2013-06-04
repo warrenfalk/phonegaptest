@@ -20,7 +20,7 @@ function ViewModel() {
 	}, model);
 	
 	if (ON_DEVICE) {
-		this.webserviceRoot = 'http://192.168.101.14:82/ServiceVerificationApp.svc';
+		this.webserviceRoot = 'http://{host}/ServiceVerificationApp.svc';
 	}
 	else {
 		this.webserviceRoot = '/test/webservice/ServiceVerificationApp.svc';
@@ -107,40 +107,56 @@ function ViewModel() {
 				$form.css('visibility', 'visible');
 				$form.fadeIn();
 			}
-			try {
-				$req = $.ajax({
-					type: 'POST',
-					url: model.webserviceRoot + '/auth/' + login,
-					contentType: 'application/json; charset=UTF-8',
-					timeout: 5000,
-					dataType: 'json',
-					data: JSON.stringify({ Password: password }),
-					success: function(data) {
-						if (data.status == "Authorized") {
-							var expiry = Math.round(parseFloat(data.expires)) + Math.round((new Date().getTime() / 1000));
-							console.log("Received token: " + data.token + " expires in: " + data.expires + ": absolute: " + expiry);
-							success(data.token, expiry);
-						}
-						else {
-							if (data.status == "Authorization failed")
-								fail("Authorization failed, please try again");
-							else
-								fail(data.status);
-						}
-					},
-					error: function(jqXHR, textStatus) {
-						if (textStatus == "error")
-							fail("There was an unexpected problem processing this login request.  Please try again");
-						else if (textStatus == "timeout")
-							fail("Unable to reach the server, do you have signal and a data connection?");
-						else
-							fail("There was an unexpected problem processing this login request.  Please try again.  (Status = '" + textStatus + "')");
+			var servers = [{host: 'divisionssvr:82', timeout: 1000}, {host: '10.10.11.6:82', timeout: 1000}, {host: '192.168.101.14:82', timeout: 1000}];
+			var doAuth = function(list) {
+				var server = list[0];
+				console.log(server);
+				var url = model.webserviceRoot.replace('{host}', server.host) + '/auth/' + login;
+				console.log(url);
+				var err = function(list, message) {
+					if (list.length > 1)
+						doAuth(list.splice(1));
+					else
+						fail(message);
+				}
+				try {
+					$req = $.ajax({
+						type: 'POST',
+						url: url,
+						contentType: 'application/json; charset=UTF-8',
+						timeout: 5000,
+						dataType: 'json',
+						data: JSON.stringify({ Password: password }),
+						success: function(data) {
+							if (data.status == "Authorized") {
+								var expiry = Math.round(parseFloat(data.expires)) + Math.round((new Date().getTime() / 1000));
+								console.log("Received token: " + data.token + " expires in: " + data.expires + ": absolute: " + expiry);
+								model.webserviceRoot = model.webserviceRoot.replace('{host}', server.host);
+								success(data.token, expiry);
+							}
+							else {
+								if (data.status == "Authorization failed")
+									fail("Authorization failed, please try again");
+								else
+									fail(data.status);
+							}
 						},
-					});
+						error: function(jqXHR, textStatus) {
+							console.log("error: " + textStatus);
+							if (textStatus == "error")
+								err(list, "There was an unexpected problem processing this login request.  Please try again");
+							else if (textStatus == "timeout")
+								err(list, "Unable to reach the server, do you have signal and a data connection?");
+							else
+								err(list, "There was an unexpected problem processing this login request.  Please try again.  (Status = '" + textStatus + "')");
+							},
+						});
+				}
+				catch (e) {
+					err(list, "There was an unexpected problem processing this login request.  Please try again.  (Problem = '" + e.message + "')");
+				}
 			}
-			catch (e) {
-				fail("There was an unexpected problem processing this login request.  Please try again.  (Problem = '" + e.message + "')");
-			}
+			doAuth(servers);
 		});
 		$logo.css('visibility', 'visible');
 		$logo.fadeIn();
