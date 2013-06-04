@@ -89,6 +89,18 @@ function ViewModel() {
 		});
 	}
 	
+	this.checkoutCurrentPo = function(onsuccess, onfail) {
+		model.post({
+			path: '/purchaseorders/' + model.currentPo().id + '/status',
+			payload: { newStatus: status, latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy },
+			success: function(syncData) {
+				model.receiveSync(syncData);
+				onsuccess(syncData);
+			},
+			error: onfail,
+		})
+	}
+	
 	this.onAuthenticate = function(token, expires) {
 		model.token = token;
 		var db = model.db();
@@ -784,7 +796,8 @@ Screens.define({
 							slider.enable();
 						}
 						var fail = function() {
-							alert('There was a problem encountered while trying to checkout.  Please check your signal and data connection and try again');
+							slider.disableWith("Checkin failed");
+							alert('There was a problem encountered while trying to checkin.  Please check your signal and data connection and try again');
 							slider.direction(direction);
 							slider.enable();
 						}
@@ -792,23 +805,19 @@ Screens.define({
 					}
 					else {
 						var status = statuses[option.index];
-						$req = $.ajax({
-							type: 'POST',
-							url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/status',
-							contentType: 'application/json; charset=UTF-8',
-							dataType: 'json',
-							data: JSON.stringify({ NewStatus: status, latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy }),
-							success: function(syncData) {
-								model.receiveSync(syncData);
-								if (model.currentPo().status == 'closed')
-									$sliderdiv.hide();
-								},
-							error: function(jqXHR, textStatus) {
-								// TODO: probably the wrong status here... don't know if we even get here on connection failure
-								alert('There was a problem encountered while trying to checkout.  Check that you have a signal and a data connection');
-								slider.direction(direction);
-								},
-							});
+						slider.disableWith("Checking out...");
+						var success = function(syncData) {
+							slider.enable();
+							if (model.currentPo().status == 'closed')
+								$sliderdiv.hide();
+						}
+						var fail = function(jqXHR, textStatus, e) {
+							slider.disableWith("Checkout failed");
+							alert('There was a problem encountered while trying to checkout.  Please check your signal and data connection and try again');
+							slider.enable();
+							slider.direction(direction);
+						}
+						model.checkoutCurrentPo(success, fail);
 					}
 				}
 			}

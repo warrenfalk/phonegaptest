@@ -28,7 +28,6 @@ function Slider($div) {
 	this.calcDragWidth = function() { return control.$div.width() - control.$handle.outerWidth(); };
 	
 	this.handleComplete = function(d, option) {
-		control.direction(-d);
 		control.onSlid(d, option);
 	}
 	
@@ -36,17 +35,22 @@ function Slider($div) {
 		console.log('slider ungrabbed');
 		control.$div.removeClass('grabbed');
 		control.grabbed = false;
-		if (control.optionsMode) {
+		if (control.atMax) {
 			var d = control.direction();
-			var option = control.currentOption;
-			control.exitOptionsMode();
-			if (option) {
-				control.direction(-d);
-				control.handleComplete(d, option)
+			if (control.optionsMode) {
+				var option = control.currentOption;
+				control.exitOptionsMode();
+				if (option) {
+					control.handleComplete(d, option)
+				}
+			}
+			else {
+				control.handleComplete(d, option);
 			}
 		}
 		delete control.grab;
-		control.moveHandle(0);
+		if (!control.disabled)
+			control.moveHandle(0);
 	}
 	
 	this.dragHandle = function(e) {
@@ -67,15 +71,12 @@ function Slider($div) {
 			}
 			dx = control.clampHandle(dx);
 			control.moveHandle(dx);
-			if (dx == control.dragWidth && control.onSlid) {
+			control.atMax = dx == control.dragWidth;
+			if (control.atMax) {
 				var d = control.direction();
 				var eo = control.endOptions[d];
 				if (eo && eo.length) {
 					control.showOptions(eo);
-				}
-				else {
-					control.direction(-d);
-					control.handleComplete(d, null);
 				}
 			}
 		}
@@ -87,8 +88,11 @@ function Slider($div) {
 	}
 	
 	this.disableWith = function(message) {
-		control.disabled = true;
-		control.$div.addClass('disabled');
+		if (!control.disabled) {
+			control.disabled = true;
+			control.$div.addClass('disabled');
+			control.$caption.css('opacity', 1);
+		}
 		control.disableMessage = message;
 		control.updateCaption();
 		if (control.grabbed)
@@ -100,6 +104,8 @@ function Slider($div) {
 		control.$div.removeClass('disabled');
 		control.disableMessage = null;
 		control.updateCaption();
+		if (!control.grabbed)
+			control.moveHandle(0);
 	}
 	
 	this.enterOptionsMode = function(o) {
@@ -124,16 +130,24 @@ function Slider($div) {
 		$list.css('bottom', control.normalHeight + 'px');
 		var newHeight = control.normalHeight + $list.height();
 		control.$div.addClass('optionsmode');
-		control.$div.animate({height: newHeight + 'px'}, 300, 'swing', function() { 
-			control.$div.height(newHeight);
-			control.$optionsList = $list;
-			control.dragHeight = control.$div.height() - control.$handle.outerHeight();
-			control.activeOptions = activeOptions;
+		control.$optionsList = $list;
+		control.activeOptions = activeOptions;
+		control.animating = true;
+		control.$div.animate({height: newHeight + 'px'}, 200, 'swing', function() {
+			control.animating = false;
+			if (control.optionsMode) {
+				control.$div.height(newHeight);
+				control.dragHeight = control.$div.height() - control.$handle.outerHeight();
+			}
+			else {
+				control.$div.height(control.normalHeight);
+			}
 		});
 		//control.$div.height();
 	}
 	
 	this.exitOptionsMode = function() {
+		control.moveHandleY(0);
 		control.optionsMode = false;
 		control.$div.height(control.normalHeight);
 		control.$optionsList.remove();
@@ -148,6 +162,11 @@ function Slider($div) {
 		var opacity = 45 - Math.abs(dx);
 		if (opacity < 0)
 			opacity = 0;
+		var d = control.dir;
+		if (Math.abs(dx) > Math.abs(control.dragWidth / 2))
+			d = -d;
+		control.$caption.css('marginLeft', d == 1 ? control.$handle.width() : 0);
+		control.$caption.css('marginRight', d == -1 ? control.$handle.width() : 0);
 		control.$caption.css('opacity', opacity / 45); 
 	}
 	
@@ -157,14 +176,16 @@ function Slider($div) {
 		// try to see which option is current
 		var y = dy + control.$div.height() - (control.$handle.outerHeight() / 2);
 		var currentOption = null;
-		for (var i = 0; i < control.activeOptions.length; i++) {
-			var o = control.activeOptions[i];
-			var top = control.activeOptions[i].$div.position().top;
-			var bottom = top + control.activeOptions[i].$div.outerHeight();
-			if (y >= top && y < bottom)
-				(currentOption = control.activeOptions[i]).$div.addClass('current');
-			else
-				control.activeOptions[i].$div.removeClass('current');
+		if (!control.animating) {
+			for (var i = 0; i < control.activeOptions.length; i++) {
+				var o = control.activeOptions[i];
+				var top = control.activeOptions[i].$div.position().top;
+				var bottom = top + control.activeOptions[i].$div.outerHeight();
+				if (y >= top && y < bottom)
+					(currentOption = control.activeOptions[i]).$div.addClass('current');
+				else
+					control.activeOptions[i].$div.removeClass('current');
+			}
 		}
 		control.currentOption = currentOption;
 	}
@@ -188,8 +209,6 @@ function Slider($div) {
 	this.direction = function(b) {
 		if (b && control.dir != b) {
 			control.dir = b;
-			control.$caption.css('marginLeft', b == 1 ? control.$handle.width() : 0);
-			control.$caption.css('marginRight', b == -1 ? control.$handle.width() : 0);
 			control.updateCaption();
 			control.dragWidth = control.calcDragWidth();
 			control.moveHandle(0);
