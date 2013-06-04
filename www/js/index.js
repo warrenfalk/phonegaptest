@@ -56,6 +56,38 @@ function ViewModel() {
 		model.doLoginScreen();
 	}
 	
+	this.post = function(options) {
+		try {
+			$req = $.ajax({
+				type: 'POST',
+				url: model.webserviceRoot + '/' + model.token + options.path,
+				contentType: 'application/json; charset=UTF-8',
+				dataType: 'json',
+				data: JSON.stringify(options.payload),
+				success: options.success,
+				error: options.error
+			});
+		}
+		catch (e) {
+			options.error(null, null, e);
+		}
+		
+	}
+	
+	this.checkinCurrentPo = function(onsuccess, onfail) {
+		model.post({
+			path: '/purchaseorders/' + model.currentPo().id + '/status',
+			payload: { NewStatus: 'checkedin', latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy },
+			success: function(syncData) {
+				model.receiveSync(syncData);
+				onsuccess(syncData);
+			},
+			error: function(jqXHR, textStatus, e) {
+				onfail(jqXHR, textStatus, e);
+			},
+		});
+	}
+	
 	this.onAuthenticate = function(token, expires) {
 		model.token = token;
 		var db = model.db();
@@ -746,21 +778,15 @@ Screens.define({
 				slider.onSlid = function(direction, option) {
 					var isCheckin = direction == -1;
 					if (isCheckin) {
-						$req = $.ajax({
-							type: 'POST',
-							url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/status',
-							contentType: 'application/json; charset=UTF-8',
-							dataType: 'json',
-							data: JSON.stringify({ NewStatus: 'checkedin', latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy }),
-							success: function(syncData) {
-								model.receiveSync(syncData);
-								},
-							error: function(jqXHR, textStatus) {
-								// TODO: probably the wrong status here... don't know if we even get here on connection failure
-								alert('There was a problem encountered while trying to checkin.  Check that you have a signal and a data connection');
-								slider.direction(direction);
-								},
-							});
+						slider.disableWith("Checking in...");
+						var success = function() {
+							slider.enable();
+						}
+						var fail = function() {
+							slider.direction(direction);
+							slider.enable();
+						}
+						model.checkinCurrentPo(success, fail)
 					}
 					else {
 						var status = statuses[option.index];
