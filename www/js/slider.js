@@ -84,6 +84,14 @@ function Slider($div) {
 			control.enterOptionsMode(o);
 	}
 	
+	this.disableWith = function(message) {
+		console.log("TODO: implement Slider.disableWith()");
+	}
+	
+	this.enable = function() {
+		console.log("TODO: implement Slider.enable()");
+	}
+	
 	this.enterOptionsMode = function(o) {
 		control.optionsMode = true;
 		control.normalHeight = control.$div.height();
