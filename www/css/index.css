@@ -586,6 +586,9 @@ body {
 	margin: 18px 37px 18px 37px;
 	background-color: #627292;
 }
+.slider.disabled {
+	background-color: #808080;
+}
 .slider.optionsmode {
 	background-color: white;
 }

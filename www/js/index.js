@@ -65,7 +65,8 @@ function ViewModel() {
 				dataType: 'json',
 				data: JSON.stringify(options.payload),
 				success: options.success,
-				error: options.error
+				error: options.error,
+				timeout: options.timeout || 8000,
 			});
 		}
 		catch (e) {
@@ -783,6 +784,7 @@ Screens.define({
 							slider.enable();
 						}
 						var fail = function() {
+							alert('There was a problem encountered while trying to checkout.  Please check your signal and data connection and try again');
 							slider.direction(direction);
 							slider.enable();
 						}

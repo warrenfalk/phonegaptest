@@ -15,6 +15,8 @@ function Slider($div) {
 	this.currentOption = null;
 
 	this.grabHandle = function(e) {
+		if (control.disabled)
+			return;
 		console.log('slider grabbed');
 		control.grabbed = true;
 		control.$div.addClass('grabbed');
@@ -85,11 +87,19 @@ function Slider($div) {
 	}
 	
 	this.disableWith = function(message) {
-		console.log("TODO: implement Slider.disableWith()");
+		control.disabled = true;
+		control.$div.addClass('disabled');
+		control.disableMessage = message;
+		control.updateCaption();
+		if (control.grabbed)
+			control.ungrabHandle();
 	}
 	
 	this.enable = function() {
-		console.log("TODO: implement Slider.enable()");
+		control.disabled = false;
+		control.$div.removeClass('disabled');
+		control.disableMessage = null;
+		control.updateCaption();
 	}
 	
 	this.enterOptionsMode = function(o) {
@@ -112,11 +122,15 @@ function Slider($div) {
 			activeOptions[i].index = i;
 		control.$div.append($list);
 		$list.css('bottom', control.normalHeight + 'px');
-		control.$div.height(control.normalHeight + $list.height());
+		var newHeight = control.normalHeight + $list.height();
 		control.$div.addClass('optionsmode');
-		control.$optionsList = $list;
-		control.dragHeight = control.$div.height() - control.$handle.outerHeight();
-		control.activeOptions = activeOptions;
+		control.$div.animate({height: newHeight + 'px'}, 300, 'swing', function() { 
+			control.$div.height(newHeight);
+			control.$optionsList = $list;
+			control.dragHeight = control.$div.height() - control.$handle.outerHeight();
+			control.activeOptions = activeOptions;
+		});
+		//control.$div.height();
 	}
 	
 	this.exitOptionsMode = function() {
@@ -176,7 +190,7 @@ function Slider($div) {
 			control.dir = b;
 			control.$caption.css('marginLeft', b == 1 ? control.$handle.width() : 0);
 			control.$caption.css('marginRight', b == -1 ? control.$handle.width() : 0);
-			control.$caption.text($div.data(b == 1 ? 'left' : 'right'));
+			control.updateCaption();
 			control.dragWidth = control.calcDragWidth();
 			control.moveHandle(0);
 			var eo = control.endOptions[b];
@@ -187,6 +201,13 @@ function Slider($div) {
 				control.$div.removeClass('hasoptions');
 		}
 		return control.dir;
+	}
+	
+	this.updateCaption = function() {
+		if (control.disabled)
+			control.$caption.text(control.disableMessage);
+		else
+			control.$caption.text(control.$div.data(control.dir == 1 ? 'left' : 'right'))
 	}
 	
 	this.setEndOptions = function(forDirection, options) {
