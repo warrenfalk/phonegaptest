@@ -126,8 +126,8 @@ function Slider($div) {
 		}
 		for (var i = 0; i < activeOptions.length; i++)
 			activeOptions[i].index = i;
-		control.$div.append($list);
-		$list.css('bottom', control.normalHeight + 'px');
+		control.$div.prepend($list);
+		//$list.css('bottom', control.normalHeight + 'px');
 		var newHeight = control.normalHeight + $list.height();
 		control.$div.addClass('optionsmode');
 		control.$optionsList = $list;

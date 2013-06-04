@@ -583,7 +583,7 @@ body {
 	border-radius: 12px;
 	height: 50px;
 	padding: 2px;
-	margin: 18px 37px 18px 37px;
+	margin: 18px 37px 10px 37px;
 	background-color: #627292;
 }
 .slider.disabled {
@@ -611,35 +611,33 @@ body {
 	font-size: 18px;
 }
 .slider.disabled > .caption {
-	-webkit-transition: all 1s ease-in-out;
-    -moz-transition: all 1s ease-in-out;
-    -o-transition: all 1s ease-in-out;
-    -ms-transition: all 1s ease-in-out;
-    transition: all 1s ease-in-out;
-    
+	-webkit-transition: opacity 0.6s ease-in-out;
     -webkit-animation-direction: normal;
-    -webkit-animation-duration: 2s;
+    -webkit-animation-duration: 1.2s;
     -webkit-animation-iteration-count: infinite;
     -webkit-animation-name: blink;
     -webkit-animation-timing-function: ease-in-out;   
 }
 .slider > .optionlist {
-	position: absolute;
-	padding: 0 10px;
+	position: relative;
 }
 .slider > .optionlist.left {
 	text-align: left;
-	left: 68px;
 }
 .slider > .optionlist.right {
 	text-align: right;
-	right: 68px;
 }
 .slider > .optionlist > .option {
 	font-size: 14px;
 	color: black;
 	padding: 10px 5px;
 	border-radius: 9px;
+}
+.slider > .optionlist.left > .option {
+	padding-left: 68px;
+}
+.slider > .optionlist.right > .option {
+	padding-right: 68px;
 }
 .slider > .optionlist > .option.current {
 	background-color: #8cc0f5
@@ -741,7 +739,7 @@ body {
         opacity:1;
     }
     50% {
-        opacity:0;
+        opacity:0.2;
     }
     100% {
         opacity:1;

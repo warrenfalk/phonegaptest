@@ -90,7 +90,7 @@ function ViewModel() {
 		});
 	}
 	
-	this.checkoutCurrentPo = function(onsuccess, onfail) {
+	this.checkoutCurrentPo = function(status, onsuccess, onfail) {
 		model.post({
 			path: '/purchaseorders/' + model.currentPo().id + '/status',
 			payload: { newStatus: status, latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy },
@@ -252,22 +252,29 @@ function ViewModel() {
 	this.takePic = function() {
 		navigator.camera.getPicture(function(filename) {
 			var url = '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/pic';
-			alert(filename);
-			alert(url);
+			//alert(filename);
+			//alert(url);
 			var options = new FileUploadOptions();
 			options.fileKey = "image";
 			options.fileName = filename.substr(filename.lastIndexOf('/') + 1);
 			options.mimeType = "image/jpeg";
 			options.params = {};
+			var deleteFile = function(filename) {
+				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs) {
+					fs.root.remove(filename, function() { console.log("local pic deleted"); }, function(err) { console.log("local pic delete failed: " + err); });
+				}, null);
+			}
 			var success = function(r) {
 				console.log("Code = " + r.responseCode);
 	            console.log("Response = " + r.response);
 	            console.log("Sent = " + r.bytesSent);
+	            deleteFile(filename);
 			}
 			var fail = function(error) {
-				alert("An error has occurred: Code = " + error.code);
+				alert("Uploading the image has failed: Code = " + error.code);
 	            console.log("upload error source " + error.source);
 	            console.log("upload error target " + error.target);
+	            deleteFile(filename);
 			}
 			var ft = new FileTransfer();
 			ft.upload(filename, model.webserviceRoot + url, success, fail, options);
@@ -795,6 +802,7 @@ Screens.define({
 						slider.disableWith("Checking in...");
 						var success = function() {
 							slider.enable();
+							slider.direction(-direction);
 						}
 						var fail = function() {
 							slider.disableWith("Checkin failed");
@@ -811,6 +819,7 @@ Screens.define({
 							slider.enable();
 							if (model.currentPo().status == 'closed')
 								$sliderdiv.hide();
+							slider.direction(-direction);
 						}
 						var fail = function(jqXHR, textStatus, e) {
 							slider.disableWith("Checkout failed");
@@ -818,7 +827,7 @@ Screens.define({
 							slider.enable();
 							slider.direction(direction);
 						}
-						model.checkoutCurrentPo(success, fail);
+						model.checkoutCurrentPo(status, success, fail);
 					}
 				}
 			}
