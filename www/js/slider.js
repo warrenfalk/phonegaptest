@@ -127,23 +127,13 @@ function Slider($div) {
 		for (var i = 0; i < activeOptions.length; i++)
 			activeOptions[i].index = i;
 		control.$div.prepend($list);
-		//$list.css('bottom', control.normalHeight + 'px');
 		var newHeight = control.normalHeight + $list.height();
 		control.$div.addClass('optionsmode');
 		control.$optionsList = $list;
 		control.activeOptions = activeOptions;
 		control.animating = true;
-		control.$div.animate({height: newHeight + 'px'}, 200, 'swing', function() {
-			control.animating = false;
-			if (control.optionsMode) {
-				control.$div.height(newHeight);
-				control.dragHeight = control.$div.height() - control.$handle.outerHeight();
-			}
-			else {
-				control.$div.height(control.normalHeight);
-			}
-		});
-		//control.$div.height();
+		control.$div.css({overflow: 'hidden', height: newHeight + 'px', '-webkit-transition': 'height 0.2s'});
+		control.dragHeight = newHeight - control.$handle.outerHeight();
 	}
 	
 	this.exitOptionsMode = function() {
@@ -170,9 +160,9 @@ function Slider($div) {
 		var dx = control.direction() == 1 ? control.dragWidth : 0;
 		control.$handle.css('-webkit-transform', 'translate3d(' + dx + 'px, ' + dy + 'px,0)');
 		// try to see which option is current
-		var y = dy + control.$div.height() - (control.$handle.outerHeight() / 2);
 		var currentOption = null;
 		if (!control.animating) {
+			var y = dy + control.$div.height() - (control.$handle.outerHeight() / 2);
 			for (var i = 0; i < control.activeOptions.length; i++) {
 				var o = control.activeOptions[i];
 				var top = control.activeOptions[i].$div.position().top;
@@ -243,6 +233,14 @@ function Slider($div) {
 	$(document).touchend(function() { if (control.grabbed) { control.ungrabHandle(); } });
 	
 	$div.append($handle);
+	
+	$div.on('webkitTransitionEnd', function(event) {
+		var e = event.originalEvent;
+		if (e.propertyName == 'height' && e.target == $div.get(0)) {
+			console.log('test');
+			control.animating = false;
+		}
+	});
 	
 	this.$div = $div;
 	this.$handle = $handle;
