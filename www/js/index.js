@@ -124,7 +124,7 @@ function ViewModel() {
 						type: 'POST',
 						url: url,
 						contentType: 'application/json; charset=UTF-8',
-						timeout: 5000,
+						timeout: server.timeout,
 						dataType: 'json',
 						data: JSON.stringify({ Password: password }),
 						success: function(data) {
@@ -254,7 +254,7 @@ function ViewModel() {
 			$notebox.prop('disabled', true);
 			$req = $.ajax({
 				type: 'POST',
-				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo() + '/notes',
+				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/notes',
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
 				data: JSON.stringify({ Note: note }),
