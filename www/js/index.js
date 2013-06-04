@@ -78,7 +78,7 @@ function ViewModel() {
 	this.checkinCurrentPo = function(onsuccess, onfail) {
 		model.post({
 			path: '/purchaseorders/' + model.currentPo().id + '/status',
-			payload: { NewStatus: 'checkedin', latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy },
+			payload: { newStatus: 'checkedin', latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy },
 			success: function(syncData) {
 				model.receiveSync(syncData);
 				onsuccess(syncData);
@@ -171,7 +171,7 @@ function ViewModel() {
 						contentType: 'application/json; charset=UTF-8',
 						timeout: server.timeout,
 						dataType: 'json',
-						data: JSON.stringify({ Password: password }),
+						data: JSON.stringify({ password: password, data: "" }),
 						success: function(data) {
 							if (data.status == "Authorized") {
 								var expiry = Math.round(parseFloat(data.expires)) + Math.round((new Date().getTime() / 1000));
@@ -302,7 +302,7 @@ function ViewModel() {
 				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/notes',
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
-				data: JSON.stringify({ Note: note }),
+				data: JSON.stringify({ note: note }),
 				success: function(data) {
 					$noteform.fadeOut();
 					$notebox.val('');
@@ -432,7 +432,7 @@ function ViewModel() {
 				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/sync',
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
-				data: JSON.stringify({ Hashes: hashes }),
+				data: JSON.stringify({ hashes: hashes }),
 				success: function(data) {
 						// TODO: hide wait indicator
 						model.receiveSync(data);
