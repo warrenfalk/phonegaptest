@@ -57,6 +57,8 @@ function ViewModel() {
 	}
 	
 	this.post = function(options) {
+		var event = "POST[" + options.path + "]"; 
+		console.log(event);
 		try {
 			$req = $.ajax({
 				type: 'POST',
@@ -64,12 +66,13 @@ function ViewModel() {
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
 				data: JSON.stringify(options.payload),
-				success: options.success,
-				error: options.error,
+				success: function(a,b) { console.log(event + " success"); options.success(a,b); },
+				error: function(a,b) { console.log(event + " error " + b); options.error(a,b); },
 				timeout: options.timeout || 8000,
 			});
 		}
 		catch (e) {
+			console.log(event + " exception " + e);
 			options.error(null, null, e);
 		}
 		
@@ -83,9 +86,7 @@ function ViewModel() {
 				model.receiveSync(syncData);
 				onsuccess(syncData);
 			},
-			error: function(jqXHR, textStatus, e) {
-				onfail(jqXHR, textStatus, e);
-			},
+			error: onfail,
 		});
 	}
 	
