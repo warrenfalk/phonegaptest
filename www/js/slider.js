@@ -33,8 +33,8 @@ function Slider($div) {
 	
 	this.ungrabHandle = function() {
 		console.log('slider ungrabbed');
-		control.$div.removeClass('grabbed');
 		control.grabbed = false;
+		control.$div.removeClass('grabbed');
 		if (control.atMax) {
 			var d = control.direction();
 			if (control.optionsMode) {
@@ -148,7 +148,9 @@ function Slider($div) {
 	
 	this.moveHandle = function(dx) {
 		var tx = (control.dir == 1) ? dx : control.dragWidth - dx;
-		control.$handle.css('-webkit-transform', 'translate3d(' + tx + 'px,0,0)');
+		var css = {'left': tx + 'px', '-webkit-transform': 'translate3d(0,0,0)'};
+		css['-webkit-transition'] = control.grabbed ? '' : 'left 0.1s ease-out';
+		control.$handle.css(css);
 		var d = control.dir;
 		if (Math.abs(dx) > Math.abs(control.dragWidth / 2))
 			d = -d;
@@ -158,7 +160,7 @@ function Slider($div) {
 	
 	this.moveHandleY = function(dy) {
 		var dx = control.direction() == 1 ? control.dragWidth : 0;
-		control.$handle.css('-webkit-transform', 'translate3d(' + dx + 'px, ' + dy + 'px,0)');
+		control.$handle.css({'left': dx + 'px', 'bottom': -dy + 'px', '-webkit-transform': 'translate3d(0,0,0)'});
 		// try to see which option is current
 		var currentOption = null;
 		if (!control.animating) {
@@ -239,6 +241,13 @@ function Slider($div) {
 		if (e.propertyName == 'height' && e.target == $div.get(0)) {
 			console.log('test');
 			control.animating = false;
+			control.dragHeight = control.$div.height() - control.$handle.outerHeight();
+		}
+		else if (e.propertyName == 'left' && e.target == $handle.get(0)) {
+			// the following works around an apparent bug in webkit whereby visual updates of a class
+			// removal may not have been applied if the element was being animated
+			if (!control.grabbed)
+				control.$div.removeClass('grabbed');
 		}
 	});
 	
