@@ -30,8 +30,11 @@ this.Screens = {
 		var name;
 		if (typeof screen === 'string')
 			screen = this._screens[name = screen];
-		if (this._top)
-			this._top.$element.hide();
+		while (this._stack.length) {
+			this._top = this._stack.pop();
+			this._top.$element.remove();
+		}
+		this._top = null;
 		if (!screen)
 			throw "Screen '" + name + "' is not defined";
 		screen.$element = $("<div/>");

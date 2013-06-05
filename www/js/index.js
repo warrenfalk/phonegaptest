@@ -58,7 +58,7 @@ function ViewModel() {
 	}
 
 	this.locationSearchChange = function() {
-		$search = $('#searchbox');
+		var $search = $('#searchbox');
 		var searchText = $search.val();
 		$search.toggleClass('filtering', searchText != '');
 		model.filter(searchText.toLowerCase());
@@ -369,7 +369,7 @@ function ViewModel() {
 	}
 	
 	this.selectSort = function(sorter) {
-		$sortbox = $("#" + sorter);
+		var $sortbox = $("#" + sorter);
 		$sortbox.addClass("sortbox_current");
 		if ('previousSort' in model && model.previousSort != sorter)
 			$("#" + model.previousSort).removeClass("sortbox_current");
@@ -771,6 +771,7 @@ Screens.define({
 			model.doSync();
 		},
 		initialize: function(e, model) {
+			console.log('initialize');
 			// Setup sorters
 			// Select sort-by-distance as default
 			model.selectSort("sort_by_dist");
