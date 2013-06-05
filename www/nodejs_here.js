@@ -1,3 +1,5 @@
+#!/usr/bin/nodejs
+
 if (typeof WScript !== "undefined") {
 	var pathToMe = WScript.ScriptFullName;
 	var WshShell = new ActiveXObject("WScript.Shell");
