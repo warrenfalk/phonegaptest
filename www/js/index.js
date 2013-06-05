@@ -852,25 +852,6 @@ Screens.define({
 		activate: function(model) {
 		},
 		initialize: function(element, model) {
-			/*
-			var $page = $('#loginpage');
-			var $area = $('#loginarea');
-			$area.css({ 'top': ($page.width() * 0.3) + 'px' });
-
-			// preload image
-			var $logo = $('<div id="loginlogo"/>'); 
-			$img = $('<img/>');
-			$img[0].src = 'img/gen/login-logo.png';
-			$logo.append($img);
-			$logo.css('visibility', 'hidden');
-			$logo.hide();
-			$area.append($logo);
-			
-			// add the login form
-			var $form = $('<div id="loginform"/>');
-			$form.append($('#html_loginform').html());
-			$area.append($form);
-			*/
 		}
 	}
 });
@@ -923,7 +904,7 @@ var init = function() {
 	// detect and handle android 2 (lack of svg)
 	console.log("ready");
 	var model = new ViewModel();
-	model.needPng = true; //'device' in window && device.platform.toLowerCase() == 'android' && device.version.substring(0, 1) == '2';
+	model.needPng = 'device' in window && device.platform.toLowerCase() == 'android' && device.version.substring(0, 1) == '2';
 	if (model.needPng)
 		switchToPng();
 	Screens.init();
