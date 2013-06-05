@@ -849,7 +849,10 @@ Screens.define({
 		},
 	},
 	login: {
+		activate: function(model) {
+		},
 		initialize: function(element, model) {
+			/*
 			var $page = $('#loginpage');
 			var $area = $('#loginarea');
 			$area.css({ 'top': ($page.width() * 0.3) + 'px' });
@@ -867,6 +870,7 @@ Screens.define({
 			var $form = $('<div id="loginform"/>');
 			$form.append($('#html_loginform').html());
 			$area.append($form);
+			*/
 		}
 	}
 });

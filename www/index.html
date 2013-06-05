@@ -22,20 +22,18 @@
     	<script id="screen_login" type="text/x-page">
 			<div id="loginpage">
 				<div id="loginarea">
+					<div id="loginform">
+						<p><input type="text" id="loginbox" placeholder="user name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/></p>
+						<p><input type="password" id="passwordbox" placeholder="password"/></p>
+						<p><button id="loginbutton" data-bind="click: $root.login">Login</button></p>
+					</div>
+					<div id="loginlogo">
+						<img src="img/gen/login-logo.png"/>
+					</div>
 				</div>
 			</div>
     	</script>
     	
-    	<script id="html_login_logo" type="text/html">
-			<div id="loginlogo"></div>
-		</script>
-
-		<script id="html_loginform" type="text/html">
-			<p><input type="text" id="loginbox" placeholder="user name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/></p>
-			<p><input type="password" id="passwordbox" placeholder="password"/></p>
-			<p><button id="loginbutton" data-bind="click: $root.login">Login</button></p>
-		</script>
-		
     	
     	<script id="hold" type="text/x-page">
 			<div id="loginarea" class="step0">
