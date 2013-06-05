@@ -897,7 +897,6 @@ function switchToPng() {
 	style = document.createElement('style');
 	$style = $(style);
 	$style.attr('type', 'text/css');
-	console.log(style);
 	var sss = document.styleSheets;
 	expr = /\/img\/svg\/(.*?)\.svg/g;
 	var overrides = '';
