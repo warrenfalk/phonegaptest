@@ -857,7 +857,7 @@ Screens.define({
 			// preload image
 			var $logo = $('<div id="loginlogo"/>'); 
 			$img = $('<img/>');
-			$img[0].src = 'img/login-logo.png';
+			$img[0].src = 'img/gen/login-logo.png';
 			$logo.append($img);
 			$logo.css('visibility', 'hidden');
 			$logo.hide();
@@ -893,14 +893,37 @@ Handlebars.registerHelper('dateFormat', function(context, block) {
   };
 });
 
-// For some reason, this is needed to make buttons appear "activated" when tapped
-$(document).on('touchstart', function(e) {
-});
+function switchToPng() {
+	style = document.createElement('style');
+	$style = $(style);
+	$style.attr('type', 'text/css');
+	console.log(style);
+	var sss = document.styleSheets;
+	expr = /\/img\/svg\/(.*?)\.svg/g;
+	var overrides = '';
+	for (var i = 0; i < sss.length; i++) {
+		var ss = sss[i];
+		for (var j = 0; j < ss.cssRules.length; j++) {
+			var rule = ss.cssRules[j];
+			var text = rule.cssText;
+			if (expr.test(text)) {
+				text = text.replace(expr, "/img/gen/$1.png");
+				overrides += text + '\n';
+			}
+		}
+	}
+	$style.html(overrides);
+	$('head').append($style);
+}
 
 var init = function() {
+	// detect and handle android 2 (lack of svg)
 	console.log("ready");
-	Screens.init();
 	var model = new ViewModel();
+	model.needPng = true; //'device' in window && device.platform.toLowerCase() == 'android' && device.version.substring(0, 1) == '2';
+	if (model.needPng)
+		switchToPng();
+	Screens.init();
 	model.doAppAuth();
 }
 

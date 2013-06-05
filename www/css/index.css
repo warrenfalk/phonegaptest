@@ -34,7 +34,7 @@ body {
 }
 
 #loginpage {
-	background-image: url(../img/login-bg.png);
+	background-image: url(../img/gen/login-bg.png);
 	background-position: fixed;
 	background-repeat: no-repeat;
 	background-size: 100% auto;
@@ -77,7 +77,7 @@ body {
 #loginform button {
 	height: 89px;
 	width: 274px;
-	background: url(../img/btn-login.svg);
+	background: url(../img/svg/btn-login.svg);
 	background-repeat: no-repeat;
 	background-position: 0 0;
 	border: none;
@@ -120,7 +120,7 @@ body {
 	width:100%;        
 }
 .silverbar {
-	background: #e9e7ea url(../img/graybar.svg);
+	background: #e9e7ea url(../img/svg/graybar.svg);
 	border-bottom: solid 1px #b9b9b9;
 	text-align: center;
 	height: 44px;
@@ -190,7 +190,7 @@ body {
 }
 .ibtnsq {
 	background-color: transparent;
-	background-image: url(../img/ibtnsq.svg);
+	background-image: url(../img/svg/ibtnsq.svg);
 	background-repeat: no-repeat;
 	background-position: 0 0;
 	height: 30px;
@@ -217,7 +217,7 @@ body {
 	font-weight: bold;
 	color: white;
 	background-color: transparent;
-	background-image: url(../img/ibtnleft.svg), url(../img/ibtnmid.svg), url(../img/ibtnright.svg);
+	background-image: url(../img/svg/ibtnleft.svg), url(../img/svg/ibtnmid.svg), url(../img/svg/ibtnright.svg);
 	background-clip: padding-box, content-box, padding-box;
 	background-position: left top, left top, right top;
 	background-repeat: no-repeat, repeat-x, no-repeat;
@@ -228,7 +228,7 @@ body {
 }
 .ibtn.left {
 	padding: 0 15px 0 20px;
-	background-image: url(../img/ibtnleftarr.svg), url(../img/ibtnmid.svg), url(../img/ibtnright.svg);
+	background-image: url(../img/svg/ibtnleftarr.svg), url(../img/svg/ibtnmid.svg), url(../img/svg/ibtnright.svg);
 }
 #sorters {
 	position: relative;
@@ -241,7 +241,7 @@ body {
 	width: 220px;
 }
 #searchbox {
-	background: white url(../img/mag.svg) no-repeat scroll 100% 50%;
+	background: white url(../img/svg/mag.svg) no-repeat scroll 100% 50%;
 	border-top: solid 1px #4a4a4a;
 	border-left: solid 1px #4a4a4a;
 	border-right: solid 1px #c1c1c1;
@@ -274,7 +274,7 @@ body {
 	height: 6px;
 	width: 100%;
 	top: 44px;
-	background-image: url(../img/dnarrow.svg);
+	background-image: url(../img/svg/dnarrow.svg);
 	background-repeat: no-repeat;
 	background-position: 50%;
 	z-index: 100;
@@ -388,17 +388,17 @@ body {
 	display: none;
 }
 .checkedin .indicators, .indicators.checkedin {
-	background-image: url(../img/circred.svg);
+	background-image: url(../img/svg/circred.svg);
 	background-position: 7px 50%;
 	background-repeat: no-repeat
 }
 .closed .indicators, .indicators.closed {
-	background-image: url(../img/checkgray.svg);
+	background-image: url(../img/svg/checkgray.svg);
 	background-position: 7px 50%;
 	background-repeat: no-repeat
 }
 .reqauth .indicators, .reqfollowup .indicators {
-	background-image: url(../img/circempty.svg);
+	background-image: url(../img/svg/circempty.svg);
 	background-position: 7px 50%;
 	background-repeat: no-repeat
 }
@@ -477,7 +477,7 @@ body {
 	right: 8px;
 	top: 0;
 	height: 100%;
-	background: url(../img/rtarrow.svg);
+	background: url(../img/svg/rtarrow.svg);
 	background-position: 0 50%;
 	background-repeat: no-repeat;
 }
@@ -506,7 +506,7 @@ body {
 	padding-left: 35px;
 	font-weight: bold;
 	min-height: 34px;
-	background: url('../img/pin.svg') no-repeat;
+	background: url('../img/svg/pin.svg') no-repeat;
 }
 #details .podata .servicetype {
 }
@@ -572,12 +572,12 @@ body {
 }
 #takepictures {
 	background-color: transparent;
-	background-image: url(../img/btn-camera.svg);
+	background-image: url(../img/svg/btn-camera.svg);
 	background-repeat: no-repeat;
 }
 #addnote {
 	background-color: transparent;
-	background-image: url(../img/btn-note.svg);
+	background-image: url(../img/svg/btn-note.svg);
 	background-repeat: no-repeat;
 }
 .slider {
@@ -667,7 +667,7 @@ body {
 .actions .bigbtn {
 	height: 89px;
 	width: 274px;
-	background: url(../img/whitebtn.svg);
+	background: url(../img/svg/whitebtn.svg);
 	background-repeat: no-repeat;
 	background-position: 0 0;
 	border: none;
@@ -678,45 +678,45 @@ body {
 	margin: 3px;
 }
 .actions .bigbtn.green {
-	background: url(../img/greenbtn.svg);
+	background: url(../img/svg/greenbtn.svg);
 	color: white;
 	text-shadow: 0px -1px #4f6c8b;
 }
 .actions .bigbtn.contact {
-	background: url(../img/btn-contact.svg);
+	background: url(../img/svg/btn-contact.svg);
 	color: white;
 	text-shadow: 0px -1px #4f6c8b;
 	padding-left: 40px;
 }
 .actions .bigbtn.gray {
-	background: url(../img/graybtn.svg);
+	background: url(../img/svg/graybtn.svg);
 	color: white;
 	text-shadow: 0px -1px #4f6c8b;
 }
 .actions .bigbtn.jobcomplete {
-	background: url(../img/btn-jobcomplete.svg);
+	background: url(../img/svg/btn-jobcomplete.svg);
 	color: white;
 	text-shadow: 0px -1px #4f6c8b;
 	padding-left: 36px;
 }
 .actions .bigbtn.white{
-	background: url(../img/whitebtn.svg);
+	background: url(../img/svg/whitebtn.svg);
 }
 .actions .bigbtn.incomplete {
-	background: url(../img/btn-incomplete.svg);
+	background: url(../img/svg/btn-incomplete.svg);
 	padding-left: 36px;
 }
 .actions .bigbtn.checkin {
-	background: url(../img/btn-checkin.svg);
+	background: url(../img/svg/btn-checkin.svg);
 	padding-left: 36px;
 }
 .actions .bigbtn.red {
-	background: url(../img/redbtn.svg);
+	background: url(../img/svg/redbtn.svg);
 	color: white;
 	text-shadow: 0px -1px #4f6c8b;
 }
 .actions .bigbtn.amber {
-	background: url(../img/amberbtn.svg);
+	background: url(../img/svg/amberbtn.svg);
 	color: white;
 }
 .actions .bigbtn:active {
@@ -728,7 +728,7 @@ body {
 	position: fixed;
 	bottom: 0;
 	width: 100%;
-	background: #ecf0a4 url('../img/error.svg') no-repeat 4px 4px;
+	background: #ecf0a4 url('../img/svg/error.svg') no-repeat 4px 4px;
 	color: black;
 	padding: 8px 5px 5px 62px;
 	border-top: solid 1px #959c1a;
