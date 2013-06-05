@@ -3,6 +3,7 @@ var ON_DEVICE = document.URL.indexOf('http://') === -1;
 function ViewModel() {
 	var model = this; 
 	this.locations = ko.observableArray();
+	this.filter = ko.observable('');
 	
 	this.selectionStack = [];
 	this.currentLocation = ko.observable();
@@ -54,6 +55,13 @@ function ViewModel() {
 			}
 		);
 		model.doLoginScreen();
+	}
+
+	this.locationSearchChange = function() {
+		$search = $('#searchbox');
+		var searchText = $search.val();
+		$search.toggleClass('filtering', searchText != '');
+		model.filter(searchText.toLowerCase());
 	}
 	
 	this.post = function(options) {
@@ -657,6 +665,21 @@ function ViewModel() {
 			if (closed)
 				return 'closed';
 		}, location);
+		location.filterStatus = ko.computed(function() {
+			var f = model.filter();
+			if (f == '')
+				return this.status();
+			for (var i = 0; i < this.pos().length; i++) {
+				var po = this.pos()[i];
+				if (po.number.toLowerCase().indexOf(f) != -1)
+					return this.status();
+			}
+			if (-1 != this.name.toLowerCase().indexOf(f))
+				return this.status();
+			if (-1 != this.address.toLowerCase().indexOf(f))
+				return this.status();
+			return 'filtered';
+		}, location);
 		return location;
 	}
 	
@@ -748,24 +771,6 @@ Screens.define({
 			model.doSync();
 		},
 		initialize: function(e, model) {
-			// Setup Search Box
-			$searchbox = $("#searchbox");
-			$searchbox.focus(function() {
-				if (!this.unempty)
-					this.value = "";
-				$searchbox.removeClass("prompt");
-			});
-			$searchbox.change(function() {
-				this.unempty = this.value != "";
-			});
-			$searchbox.blur(function() {
-				if (!this.unempty) {
-					this.value = "enter PO number";
-					$searchbox.addClass("prompt");
-				}
-			});
-			
-			
 			// Setup sorters
 			// Select sort-by-distance as default
 			model.selectSort("sort_by_dist");

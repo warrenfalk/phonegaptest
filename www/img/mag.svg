@@ -9,7 +9,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="22"
+   width="26"
    height="22"
    id="svg2"
    version="1.1"
@@ -24,16 +24,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.9195959"
-     inkscape:cx="-7.5232861"
-     inkscape:cy="6.8398204"
+     inkscape:zoom="16.798205"
+     inkscape:cx="7.8226704"
+     inkscape:cy="13.181073"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="842"
-     inkscape:window-height="648"
-     inkscape:window-x="404"
-     inkscape:window-y="220"
+     inkscape:window-width="1079"
+     inkscape:window-height="710"
+     inkscape:window-x="346"
+     inkscape:window-y="127"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
@@ -43,7 +43,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -54,7 +54,7 @@
      transform="translate(0,-1030.3622)">
     <path
        style="fill:#134a82;fill-opacity:1"
-       d="m 14.636422,1031.731 c -3.589851,0 -6.5000004,2.9102 -6.5000004,6.5 0,3.5899 2.9101494,6.5 6.5000004,6.5 3.589851,0 6.5,-2.9101 6.5,-6.5 0,-3.5898 -2.910149,-6.5 -6.5,-6.5 z m 0,2 c 2.485281,0 4.5,2.0148 4.5,4.5 0,2.4853 -2.014719,4.5 -4.5,4.5 -2.485281,0 -4.5,-2.0147 -4.5,-4.5 0,-2.4852 2.014719,-4.5 4.5,-4.5 z"
+       d="m 13.112662,1031.731 c -3.5898494,0 -6.4999984,2.9102 -6.4999984,6.5 0,3.5899 2.910149,6.5 6.4999984,6.5 3.589851,0 6.5,-2.9101 6.5,-6.5 0,-3.5898 -2.910149,-6.5 -6.5,-6.5 z m 0,2 c 2.485281,0 4.5,2.0148 4.5,4.5 0,2.4853 -2.014719,4.5 -4.5,4.5 -2.485281,0 -4.4999984,-2.0147 -4.4999984,-4.5 0,-2.4852 2.0147174,-4.5 4.4999984,-4.5 z"
        id="path2985"
        inkscape:connector-curvature="0" />
     <rect
@@ -62,8 +62,8 @@
        id="rect2992"
        width="3.2308416"
        height="9.9011011"
-       x="742.69568"
-       y="730.69971"
+       x="741.61871"
+       y="731.77667"
        transform="matrix(0.70710678,0.70710678,-0.70710678,0.70710678,0,0)"
        ry="1.25" />
   </g>

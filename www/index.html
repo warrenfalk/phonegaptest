@@ -53,7 +53,7 @@
     		<div id="locations">
 				<div id="recordsarea">
 			    	<div id="records" data-bind="foreach: locations">
-		        		<div class="locrecord record data" data-bind="css: status(), click: $root.selectLocation">
+		        		<div class="locrecord record data" data-bind="css: filterStatus(), click: $root.selectLocation">
 							<div class="indicators"></div>
         					<div class="locname" data-bind="text: name"></div>
 		        			<div class="locaddr" data-bind="text: address"></div>
@@ -78,9 +78,11 @@
 							<button class="ibtnsq" data-bind="click: $root.refreshLocations"><img src="img/refresh.svg"/></button>
 						</div>
 					</div>
-			    	<div id="search" class="silverbar">
+			    	<div class="silverbar">
 						<div class="indicators" data-bind="css: $root.overallStatus()"></div>
-			    		<input id="searchbox" class="prompt" value="enter PO number"/>
+						<div id="search">
+			    			<input id="searchbox" placeholder="search" data-bind="event: {input: $root.locationSearchChange}"/>
+			    		</div>
 			    	</div>
 			    	<div id="sorters">
 				    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
