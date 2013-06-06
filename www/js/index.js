@@ -4,7 +4,13 @@ function ViewModel() {
 	var model = this; 
 	this.locations = ko.observableArray();
 	this.filter = ko.observable('');
-	
+	this.authRequest = {
+		login: ko.observable(),
+		password: ko.observable(),
+		status: ko.observable('ready'),
+	}
+	this.authToken = ko.observable();
+	this.authStatus = ko.observable();
 	this.selectionStack = [];
 	this.currentLocation = ko.observable();
 	this.currentPo = ko.observable();
@@ -21,10 +27,12 @@ function ViewModel() {
 	}, model);
 	this.syncStatus = ko.observable('ok');
 	this.webserviceRoot = (ON_DEVICE ? 'http://wfalk-desktop:82' : '/test/webservice') + '/ServiceVerificationApp.svc';
-	
+
 	this.doSync = function() {
-		if (model.locations().length == 0)
+		if (model.locations().length == 0) {
 			model.poManager.requestDbLoad(model.poManager.sendSyncRequest);
+			model.poManager.sendSyncRequest();
+		}
 		else
 			model.poManager.sendSyncRequest();
 	}
@@ -32,6 +40,7 @@ function ViewModel() {
 	setInterval(function() { model.doSync(); }, 120000);
 	
 	this.logout = function() {
+		model.authToken(false);
 		var db = model.db();
 		db.transaction(
 			function(tx) {
@@ -49,7 +58,6 @@ function ViewModel() {
 			function() {
 			}
 		);
-		model.doLoginScreen();
 	}
 
 	this.locationSearchChange = function() {
@@ -65,7 +73,7 @@ function ViewModel() {
 		try {
 			$req = $.ajax({
 				type: 'POST',
-				url: model.webserviceRoot + (options.noToken ? '' : '/' + model.token) + options.path,
+				url: model.webserviceRoot + ((!model.authToken() || options.noToken) ? '' : '/' + model.authToken().token) + options.path,
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
 				data: JSON.stringify(options.payload),
@@ -133,15 +141,20 @@ function ViewModel() {
 		})
 	}
 
-	this.postLogin = function(login, password, data, onsuccess, onfail) {
+	this.postLogin = function(auth, data, onsuccess, onfail) {
+		var login = auth.login();
+		var password = auth.password();
+		auth.status('requested');
 		model.post({
 			noToken: true,
 			path: '/auth/' + login,
 			payload: {password: password, data: data},
 			success: function(response) {
+				auth.status('ready');
 				if (response.status == "Authorized") {
 					var expiry = Math.round(parseFloat(response.expires)) + Math.round((new Date().getTime() / 1000));
 					console.log("Received token: " + response.token + " expires in: " + response.expires + ": absolute: " + expiry);
+					model.onAuthenticated(response.token, expiry)
 					onsuccess(response.token, expiry);
 				}
 				else {
@@ -152,6 +165,7 @@ function ViewModel() {
 				}
 			},
 			error: function(jqXHR, textStatus, e) {
+				auth.status('ready');
 				if (textStatus == "error")
 					onfail("There was an unexpected problem processing this login request.  Please try again");
 				else if (textStatus == "timeout")
@@ -172,8 +186,9 @@ function ViewModel() {
 		model.postStatus(model.currentPo(), status, onsuccess, onfail);
 	}
 	
-	this.onAuthenticate = function(token, expires) {
-		model.token = token;
+	this.onAuthenticated = function(token, expires) {
+		model.authToken({token: token, expires: expires});
+		model.doSync();
 		var db = model.db();
 		db.transaction(
 			function(tx) {
@@ -194,49 +209,55 @@ function ViewModel() {
 	}
 
 	this.prompt = function(message, title, button, callback) {
+		button = button || "OK";
+		title = title || "In Position";
+		// uses phonegap's alert if we are actually on-device,
+		// otherwise simulate with a fallback message
 		if (ON_DEVICE)
-			navigator.notification.alert(message, title, button || "OK", callback);
-		else
-			setTimeout(function() { alert(message); if (callback) { callback(); } })
+			navigator.notification.alert(message, callback, title, button);
+		else {
+			$div = $('<div class="alert"/>');
+			$title = $('<div class="title"/>')
+			$title.text(title);
+			$text = $('<div class="text"/>')
+			$text.text(message);
+			$button = $('<button/>');
+			$button.text(button);
+			$div.append($title).append($text).append($button);
+			$(document.body).append($div);
+			var y = -($div.height() / 2) + 'px';
+			$div.css('margin-top', y);
+			$button.on('click', function(e) {
+				if (callback)
+					callback();
+				$div.fadeOut(function() {
+					$div.remove();
+				})
+			});
+			$div.fadeIn();
+		}
 	}
 	
-	this.login = function() {
-		var $form = $('#loginform');
-		var $logo = $('#loginlogo');
+	this.loginClick = function() {
+		var auth = model.authRequest;
 		
-		var login = $('#loginbox').val();
-		var password = $('#passwordbox').val();
-		
-		if (login == "") {
+		if (auth.login() == null) {
 			model.prompt("Please enter a login", "Login", "OK");
 			return;
 		}
 		
-		if (password == "") {
+		if (auth.password() == null) {
 			model.prompt("Please enter a password", "Login", "OK");
 			return;
 		}
 
-		$form.fadeOut("fast", function() {
-			var success = function(token, expires) {
-				model.onAuthenticate(token, expires)
-				model.doMainActivity();
-			}
-			var fail = function(message) {
-				model.prompt(message, 'Login');
-				$logo.fadeOut("fast", function() {
-				});
-				$form.css('visibility', 'visible');
-				$form.fadeIn();
-			}
-			model.postLogin(login, password, "", success, fail);
-		});
-		$logo.css('visibility', 'visible');
-		$logo.fadeIn();
-	}
-	
-	this.doMainActivity = function() {
-		Screens.replace('locations', model);
+		var success = function(token, expires) {
+		}
+		var fail = function(message) {
+			model.prompt(message, 'Login');
+		}
+		// TODO: add relevant device data below to 'data' param
+		model.postLogin(auth, "", success, fail);
 	}
 	
 	this.doAppAuth = function() {
@@ -247,26 +268,30 @@ function ViewModel() {
 				tx.executeSql('DELETE FROM TOKEN WHERE expires <= ?', [expiry]);
 				tx.executeSql('SELECT token FROM TOKEN WHERE expires > ? ORDER BY expires DESC', [expiry],
 					function(tx, results) {
-						if (results.rows.length > 0)
-							model.token = results.rows.item(0).token;
-						if (model.token)
-							model.doMainActivity();
-						else
-							model.doLoginScreen();
-						return false;
+						if (results.rows.length > 0) {
+							var r = results.rows.item(0);
+							model.authToken({token: r.token, expires: r.expires});
+							var now = new Date().getTime();
+							var recheck = (r.expires * 1000) - now;
+							if (recheck <= 0)
+								recheck = 1;
+							setTimeout(function() {
+								model.doAppAuth();
+							}, recheck);
+						}
+						else {
+							model.authToken(false);
+						}
 					},
 					function(err) {
 						console.log("db get auth data failed: " + err);
-						model.doLoginScreen();
 					}
 				)
 			},
 			function(err) {
 				console.log("db get auth data failed: " + JSON.stringify(err));
-				model.doLoginScreen();
 			},
 			function() {
-				
 			}
 		);
 	}
@@ -688,16 +713,8 @@ function ViewModel() {
 	this.selectLocation = function(location) {
 		model.currentLocation(location);
 		var pos = model.currentLocation().pos();
-		var poCount = pos.length; 
-		if (poCount == 1) {
-			model.selectPo(pos[0]);
-		}
-		else {
-			var screen = Screens.push('polist');
-			screen.cancel = function() {
-				model.currentLocation(null);
-			}
-		}
+		if (pos.length == 1)
+			model.currentPo(pos[0]);
 	}
 	
 	this.checkin = function() {
@@ -763,6 +780,7 @@ function ViewModel() {
 	};
 };
 
+/*
 Screens.define({
 	locations: {
 		activate: function(model) {
@@ -854,6 +872,7 @@ Screens.define({
 		}
 	}
 });
+*/
 
 Handlebars.registerHelper('hasMultiple', function(item, options) {
 	return (item.length && item.length > 1) ? options.fn(this) : options.inverse(this);
@@ -900,13 +919,14 @@ function switchToPng() {
 }
 
 var init = function() {
-	// detect and handle android 2 (lack of svg)
-	console.log("ready");
+	console.log("device ready");
 	var model = new ViewModel();
+	// detect and handle android 2 (lack of svg)
 	model.needPng = 'device' in window && device.platform.toLowerCase() == 'android' && device.version.substring(0, 1) == '2';
 	if (model.needPng)
 		switchToPng();
-	Screens.init();
+	model.logout();
+	ko.applyBindings(model, document.getElementById('application'));
 	model.doAppAuth();
 }
 
@@ -915,3 +935,14 @@ if (ON_DEVICE)
 else
 	$(document).ready(init);
 
+
+ko.bindingHandlers.fade = {
+	init: function(element, valueAccessor) {
+		var visible = ko.utils.unwrapObservable(valueAccessor());
+		$(element).css('display', visible ? 'auto' : 'none');
+	},
+	update: function(element, valueAccessor) {
+		var visible = ko.utils.unwrapObservable(valueAccessor());
+		visible ? $(element).fadeIn() : $(element).fadeOut();
+	},
+};

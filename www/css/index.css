@@ -21,6 +21,47 @@
     -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
 }
 
+.alert {
+	z-index: 100;
+	width: 75%;
+	position: absolute;
+	top: 50%;
+	left: 12%;
+	color: white;
+	background-color: #555555;
+	font-size: 17px;
+	text-align: center;
+	border: solid 2px black;
+}
+.alert .title {
+	background-color: #333333;
+	border-bottom: solid 1px black;
+	font-weight: bold;
+	text-align: left;
+	padding: 5px 10px;
+}
+.alert .text {
+	padding: 5px 10px;
+}
+.alert button {
+	font-size: 17px;
+	padding: 8px 20px;
+	margin: 5px;
+}
+
+.container {
+	width: 100%;
+	height: 100%;
+}
+
+.container .page {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
 body {
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
@@ -38,11 +79,6 @@ body {
 	background-position: fixed;
 	background-repeat: no-repeat;
 	background-size: 100% auto;
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
 }
 #loginarea {
 	position: absolute;
@@ -114,7 +150,7 @@ body {
 	padding: 12px;
 }
 
-#heading {
+.heading {
 	position: fixed;
 	top: 0;
 	left: 0;

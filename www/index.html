@@ -9,29 +9,77 @@
         <script type="text/javascript" src="js/knockout.js"></script>
         <script type="text/javascript" src="js/handlebars.js"></script>
         <script type="text/javascript" src="js/fixture.js"></script>
-        <script type="text/javascript" src="js/screens.js"></script>
         <script type="text/javascript" src="js/moment.js"></script>
         <script type="text/javascript" src="js/slider.js"></script>
         <title>Check In</title>
     </head>
     <body ontouchstart="">
 	
-    	<div id="page">
-    	</div>
-    	
-    	<script id="screen_login" type="text/x-page">
-			<div id="loginpage">
-				<div id="loginarea">
-					<div id="loginform">
-						<p><input type="text" id="loginbox" placeholder="user name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/></p>
-						<p><input type="password" id="passwordbox" placeholder="password"/></p>
-						<p><button id="loginbutton" data-bind="click: $root.login">Login</button></p>
-					</div>
-					<div id="loginlogo">
-						<img src="img/login-logo.png"/>
+    	<div id="application">
+			<div class="container">
+				<div class="page" id="waitpage">
+					APP WAIT
+				</div>
+			</div>
+			<div class="container" data-bind="ifnot: authToken">
+				<div class="page" id="loginpage" data-bind="fade: !(authRequest.status() == 'requested')">
+					<div id="loginarea">
+						<div id="loginform">
+							<p><input type="text" id="loginbox" data-bind="value: authRequest.login" placeholder="user name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/></p>
+							<p><input type="password" id="passwordbox" data-bind="value: authRequest.password" placeholder="password"/></p>
+							<p><button id="loginbutton" data-bind="click: $root.loginClick">Login</button></p>
+						</div>
 					</div>
 				</div>
 			</div>
+			<div class="container" data-bind="if: authToken">
+				<div class="page" id="locations" >
+					<div id="recordsarea">
+				    	<div id="records" data-bind="foreach: locations">
+			        		<div class="locrecord record data" data-bind="css: filterStatus(), click: $root.selectLocation">
+								<div class="indicators"></div>
+	        					<div class="locname" data-bind="text: name"></div>
+			        			<div class="locaddr" data-bind="text: address"></div>
+	        					<div class="dist">(<span class="disttext" data-bind="text: distance"></span>)</div>
+	        					<div class="ponum" data-bind="if: pos().length == 1">
+									<span class="number" data-bind="text: pos()[0].number"></span>
+	        					</div>
+								<div class="ponum mult" data-bind="if: pos().length > 1">
+									(<span class="count" data-bind="text: pos().length"></span> POs)
+								</div>
+	      						<div class="rtarrow"></div>
+	        				</div>
+					    </div>
+					</div>
+					<div class="heading">
+				    	<div class="ibar large">
+							<div class="left">
+								<button class="ibtn left" id="logout" data-bind="click: $root.logout">Logout</button>
+							</div>
+							<div class="title" id="maintitle">Locations</div>
+							<div class="right">
+								<button class="ibtnsq" data-bind="click: $root.refreshLocations"><img src="img/svg/refresh.svg"/></button>
+							</div>
+						</div>
+				    	<div class="silverbar">
+							<div class="indicators" data-bind="css: $root.overallStatus()"></div>
+							<div id="search">
+				    			<input id="searchbox" placeholder="search" data-bind="event: {input: $root.locationSearchChange}"/>
+				    		</div>
+				    	</div>
+				    	<div id="sorters">
+					    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
+					    	<div id="sort_by_dist" class="sortbox">sort by distance<div class="arrow"></div></div>
+					    </div>
+				    </div>
+				</div>
+				<div id="testpage" data-bind="if: authToken">
+				</div>
+			</div>
+    		
+    	</div>
+    	
+    	<script id="screen_login" type="text/x-page">
     	</script>
     	
     	
@@ -48,53 +96,16 @@
     	</script>
     	
     	<script id="screen_locations" type="text/x-page">
-    		<div id="locations">
-				<div id="recordsarea">
-			    	<div id="records" data-bind="foreach: locations">
-		        		<div class="locrecord record data" data-bind="css: filterStatus(), click: $root.selectLocation">
-							<div class="indicators"></div>
-        					<div class="locname" data-bind="text: name"></div>
-		        			<div class="locaddr" data-bind="text: address"></div>
-        					<div class="dist">(<span class="disttext" data-bind="text: distance"></span>)</div>
-        					<div class="ponum" data-bind="if: pos().length == 1">
-								<span class="number" data-bind="text: pos()[0].number"></span>
-        					</div>
-							<div class="ponum mult" data-bind="if: pos().length > 1">
-								(<span class="count" data-bind="text: pos().length"></span> POs)
-							</div>
-      						<div class="rtarrow"></div>
-        				</div>
-				    </div>
-				</div>
-				<div id="heading">
-			    	<div class="ibar large">
-						<div class="left">
-							<button class="ibtn left" id="logout" data-bind="click: $root.logout">Logout</button>
-						</div>
-						<div class="title" id="maintitle">InPOsition</div>
-						<div class="right">
-							<button class="ibtnsq" data-bind="click: $root.refreshLocations"><img src="img/svg/refresh.svg"/></button>
-						</div>
-					</div>
-			    	<div class="silverbar">
-						<div class="indicators" data-bind="css: $root.overallStatus()"></div>
-						<div id="search">
-			    			<input id="searchbox" placeholder="search" data-bind="event: {input: $root.locationSearchChange}"/>
-			    		</div>
-			    	</div>
-			    	<div id="sorters">
-				    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
-				    	<div id="sort_by_dist" class="sortbox">sort by distance<div class="arrow"></div></div>
-				    </div>
-			    </div>
-			</div>
+
     	</script>
     	
     	<script id="screen_details" type="text/x-page">
-	    	<div class="ibar">
-	    		<div class="left"><button class="ibtn left" id="detail_cancel" data-bind="click: $root.cancel">Cancel</button></div>
-	    		<div class="title">PO Details</div>
-	    	</div>
+			<div class="heading">
+		    	<div class="ibar">
+		    		<div class="left"><button class="ibtn left" id="detail_cancel" data-bind="click: $root.cancel">Cancel</button></div>
+		    		<div class="title">PO Details</div>
+		    	</div>
+		    </div>
     		<div id="details" data-bind="with: $root.currentPo">
 				<div class="podata">
 					<section>
