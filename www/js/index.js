@@ -19,6 +19,7 @@ function ViewModel() {
 		}
 		return '';
 	}, model);
+	this.syncStatus = ko.observable('ok');
 
 	if (ON_DEVICE) {
 		this.webserviceRoot = 'http://wfalk-desktop:82/ServiceVerificationApp.svc';
@@ -84,6 +85,23 @@ function ViewModel() {
 			options.error(null, null, e);
 		}
 		
+	}
+
+	this.postSync = function(hashes, onsuccess, onfail) {
+		model.syncStatus('waiting');
+		model.post({
+			path: '/purchaseorders/sync',
+			payload: { hashes: hashes },
+			success: function(response) {
+				model.syncStatus('ok');
+				model.receiveSync(response);
+				if (onsuccess)
+					onsuccess(response);
+			},
+			error: function(jqXHR, textStatus) {
+				model.syncStatus('error');
+			},
+		})
 	}
 
 	this.postNote = function(po, note, onsuccess, onfail) {
@@ -443,21 +461,7 @@ function ViewModel() {
 			
 			console.log("Sending sync request");
 			
-			$req = $.ajax({
-				type: 'POST',
-				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/sync',
-				contentType: 'application/json; charset=UTF-8',
-				dataType: 'json',
-				data: JSON.stringify({ hashes: hashes }),
-				success: function(data) {
-						// TODO: hide wait indicator
-						model.receiveSync(data);
-					},
-				error: function(jqXHR, textStatus) {
-						// TODO: hide wait indicator
-						// TODO: do something about the problem here
-					},
-				});
+			model.postSync(hashes);
 		}
 		
 		this.requestDbLoad = function(oncomplete) {
