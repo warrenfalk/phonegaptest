@@ -172,6 +172,12 @@ function ViewModel() {
 		);
 	}
 
+	this.prompt = function(message, title, button, callback) {
+		if (ON_DEVICE)
+			navigator.notification.alert(message, title, button || "OK", callback);
+		else
+			setTimeout(function() { alert(message); if (callback) { callback(); } })
+	}
 	
 	this.login = function() {
 		var $form = $('#loginform');
@@ -181,12 +187,12 @@ function ViewModel() {
 		var password = $('#passwordbox').val();
 		
 		if (login == "") {
-			alert("Please enter a login");
+			model.prompt("Please enter a login", "Login", "OK");
 			return;
 		}
 		
 		if (password == "") {
-			alert("Please enter a password");
+			model.prompt("Please enter a password", "Login", "OK");
 			return;
 		}
 
@@ -196,7 +202,7 @@ function ViewModel() {
 				model.doMainActivity();
 			}
 			var fail = function(message) {
-				alert(message);
+				model.prompt(message, 'Login');
 				$logo.fadeOut("fast", function() {
 				});
 				$form.css('visibility', 'visible');
@@ -252,8 +258,6 @@ function ViewModel() {
 	this.takePic = function() {
 		navigator.camera.getPicture(function(filename) {
 			var url = '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/pic';
-			//alert(filename);
-			//alert(url);
 			var options = new FileUploadOptions();
 			options.fileKey = "image";
 			options.fileName = filename.substr(filename.lastIndexOf('/') + 1);
@@ -271,7 +275,7 @@ function ViewModel() {
 	            deleteFile(filename);
 			}
 			var fail = function(error) {
-				alert("Uploading the image has failed: Code = " + error.code);
+				model.prompt("Uploading the image has failed: Code = " + error.code, "Photo Upload");
 	            console.log("upload error source " + error.source);
 	            console.log("upload error target " + error.target);
 	            deleteFile(filename);
@@ -317,11 +321,12 @@ function ViewModel() {
 					},
 				error: function(jqXHR, textStatus) {
 					// TODO: probably the wrong status here... don't know if we even get here on connection failure
-					alert('There was a problem encountered while sending your note.  Check that you have a signal and a data connection');
-					$notebox.prop('disabled', false);
-					$notebox.focus();
-					},
-				});
+					model.prompt('There was a problem encountered while sending your note.  Check that you have a signal and a data connection', 'Notice', 'OK', function() {
+						$notebox.prop('disabled', false);
+						$notebox.focus();
+					});
+				},
+			});
 		}
 	}
 	
@@ -804,7 +809,7 @@ Screens.define({
 						}
 						var fail = function() {
 							slider.disableWith("Checkin failed");
-							alert('There was a problem encountered while trying to checkin.  Please check your signal and data connection and try again');
+							model.prompt('There was a problem encountered while trying to checkin.  Please check your signal and data connection and try again', 'Notice', 'OK');
 							slider.direction(direction);
 							slider.enable();
 						}
@@ -821,7 +826,7 @@ Screens.define({
 						}
 						var fail = function(jqXHR, textStatus, e) {
 							slider.disableWith("Checkout failed");
-							alert('There was a problem encountered while trying to checkout.  Please check your signal and data connection and try again');
+							model.prompt('There was a problem encountered while trying to checkout.  Please check your signal and data connection and try again', 'Notice', 'OK');
 							slider.enable();
 							slider.direction(direction);
 						}
