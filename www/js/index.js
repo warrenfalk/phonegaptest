@@ -86,6 +86,15 @@ function ViewModel() {
 		
 	}
 
+	this.postNote = function(po, note, onsuccess, onfail) {
+		model.post({
+			path: '/purchaseorders/' + po.id + '/notes',
+			payload: { note: note },
+			success: onsuccess,
+			error: onfail,
+		});
+	}
+
 	this.postCheckin = function(po, onsuccess, onfail) {
 		var pos = model.lastPosition;
 		model.post({
@@ -309,24 +318,18 @@ function ViewModel() {
 		var note = $notebox.val();
 		if (note != '') {
 			$notebox.prop('disabled', true);
-			$req = $.ajax({
-				type: 'POST',
-				url: model.webserviceRoot + '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/notes',
-				contentType: 'application/json; charset=UTF-8',
-				dataType: 'json',
-				data: JSON.stringify({ note: note }),
-				success: function(data) {
-					$noteform.fadeOut();
-					$notebox.val('');
-					},
-				error: function(jqXHR, textStatus) {
-					// TODO: probably the wrong status here... don't know if we even get here on connection failure
-					model.prompt('There was a problem encountered while sending your note.  Check that you have a signal and a data connection', 'Notice', 'OK', function() {
-						$notebox.prop('disabled', false);
-						$notebox.focus();
-					});
-				},
-			});
+			var success = function(response) {
+				$noteform.fadeOut();
+				$notebox.val('');
+			}
+			var fail = function(jqXHR, textStatus, e) {
+				// TODO: probably the wrong status here... don't know if we even get here on connection failure
+				model.prompt('There was a problem encountered while sending your note.  Check that you have a signal and a data connection', 'Notice', 'OK', function() {
+					$notebox.prop('disabled', false);
+					$notebox.focus();
+				});
+			}
+			model.postNote(model.currentPo(), note, success, fail);
 		}
 	}
 	
