@@ -397,11 +397,20 @@ function ViewModel() {
 		model.sortLocations();
 	};
 	
-	this.locationSorters = {
-		'sort_by_cust': function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); },
-		'sort_by_dist': function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); },
+	this.locationSorters = [
+		{ id: 'cust', text: 'sort by customer', func: function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); }},
+		{ id: 'dist', text: 'sort by dist', func: function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); }},
+	];
+
+	this.currentSorter = ko.observable('dist');
+
+	this.sortLocations = function() {
+		var matching = model.locationSorters.filter(function(q) { return q.id == model.currentSorter(); });
+		if (matching && matching.length > 0)
+			model.locations.sort(matching[0].func);
 	};
 	
+	/*	
 	this.selectSort = function(sorter) {
 		var $sortbox = $("#" + sorter);
 		$sortbox.addClass("sortbox_current");
@@ -412,10 +421,7 @@ function ViewModel() {
 		model.sortLocations();
 	};
 	
-	this.sortLocations = function() {
-		model.locations.sort(model.currentSorter);
-	};
-	
+	*/
 	function numberWithCommas(x) {
 		var parts = x.toString().split(".");
 		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -949,4 +955,41 @@ ko.bindingHandlers.fade = {
 	},
 };
 
+ko.bindingHandlers.data = {
+	init: function(element, valueAccessor) {
+		// we need to hook updates to this elements attributes so that if any
+		// data- attributes are changed, corresponding bound observables can
+		// be updated
+		var baseSetAttribute = element.setAttribute;
+		element.setAttribute = function(n,v) {
+			baseSetAttribute.call(element, n, v);
+			var bindings = valueAccessor();
+			for (var dataAttrName in bindings) {
+				var dataAttrValue = bindings[dataAttrName];
+				if (n.indexOf('data-' + dataAttrName) === 0 && ko.isObservable(dataAttrValue) && !dataAttrValue.isComputed) {
+					if (dataAttrValue() !== v)
+						dataAttrValue(v);
+				}
+			}
+		}
+	},
+	update: function(element, valueAccessor) {
+		var items = valueAccessor();
+		for (var name in items) {
+			var val = ko.utils.unwrapObservable(items[name]);
+			var oldval = element.dataset[name];
+			if (val !== oldval)
+				element.dataset[name] = val;
+		}
+	},
+};
+
+ko.bindingHandlers.control = {
+	init: function(element, valueAccessor) {
+		var name = ko.utils.unwrapObservable(valueAccessor());
+		var control = new window[name](element);
+	},
+};
+
 }());
+

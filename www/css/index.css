@@ -150,20 +150,6 @@ body {
 	padding: 12px;
 }
 
-.heading {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width:100%;        
-}
-.silverbar {
-	background: #e9e7ea url(../img/svg/graybar.svg);
-	border-bottom: solid 1px #b9b9b9;
-	text-align: center;
-	height: 44px;
-	font-size: 22px;
-	padding: 4px 10px;
-}
 .page {
 	position: absolute;
 	top: 0;
@@ -173,6 +159,32 @@ body {
 	-webkit-transform: translate3d(0, 0, 0);
 	transform: translate3d(0, 0, 0);
 }
+.heading {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width:100%;   
+}
+#locationsarea {
+	position: absolute;
+	overflow: auto;
+	top: 132px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+
+.silverbar {
+	background: #e9e7ea url(../img/svg/graybar.svg);
+	border-bottom: solid 1px #b9b9b9;
+	text-align: center;
+	height: 44px;
+	font-size: 22px;
+	padding: 4px 10px;
+}
+
+
 .page.left {
     -webkit-transform: translate3d(-100%, 0, 0);
     transform: translate3d(-100%, 0, 0);
@@ -303,10 +315,10 @@ body {
 	color: #e9e9e9;
 	border-right: solid 1px #eeeeee;
 }
-.sortbox_current {
+.sortbox.current {
 	background-color: #39393D;
 }
-.sortbox_current .arrow {
+.sortbox.current .arrow {
 	position: absolute;
 	height: 6px;
 	width: 100%;
@@ -333,10 +345,6 @@ body {
 	position: absolute;
 	min-height: 100%;
 	width: 100%;
-}
-#records {
-	padding-top: 132px;
-	padding-bottom: 30px;
 }
 #polist {
 	padding-top: 75px;
@@ -384,24 +392,6 @@ body {
 	top: 25px;
 	font-size: 15px;
 	min-width: 43%;
-}
-#records.isloading {
-}
-#recordsarea .loading {
-	position: absolute;
-	width: 50%;
-	margin: 45px 25%;
-	text-align: center;
-	min-height: 42px;
-	padding: 11px 10px 11px 40px;
-	font-size: 14px;
-	background: white url('../img/wait.gif') no-repeat;
-	background-position: 5px 5px;
-	color: #808080;
-	border: solid 1px #404040;
-	border-radius: 6px;
-	background-color: white;
-	opacity: 2;
 }
 .record {
 	position: relative;

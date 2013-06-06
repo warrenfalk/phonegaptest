@@ -11,6 +11,7 @@
         <script type="text/javascript" src="js/fixture.js"></script>
         <script type="text/javascript" src="js/moment.js"></script>
         <script type="text/javascript" src="js/slider.js"></script>
+        <script type="text/javascript" src="js/sorter.js"></script>
         <title>Check In</title>
     </head>
     <body ontouchstart="">
@@ -34,23 +35,6 @@
 			</div>
 			<div class="container" data-bind="if: authToken">
 				<div class="page" id="locations" >
-					<div id="recordsarea">
-				    	<div id="records" data-bind="foreach: locations">
-			        		<div class="locrecord record data" data-bind="css: filterStatus(), click: $root.selectLocation">
-								<div class="indicators"></div>
-	        					<div class="locname" data-bind="text: name"></div>
-			        			<div class="locaddr" data-bind="text: address"></div>
-	        					<div class="dist">(<span class="disttext" data-bind="text: distance"></span>)</div>
-	        					<div class="ponum" data-bind="if: pos().length == 1">
-									<span class="number" data-bind="text: pos()[0].number"></span>
-	        					</div>
-								<div class="ponum mult" data-bind="if: pos().length > 1">
-									(<span class="count" data-bind="text: pos().length"></span> POs)
-								</div>
-	      						<div class="rtarrow"></div>
-	        				</div>
-					    </div>
-					</div>
 					<div class="heading">
 				    	<div class="ibar large">
 							<div class="left">
@@ -67,11 +51,25 @@
 				    			<input id="searchbox" placeholder="search" data-bind="event: {input: $root.locationSearchChange}"/>
 				    		</div>
 				    	</div>
-				    	<div id="sorters">
-					    	<div id="sort_by_cust" class="sortbox">sort by customer<div class="arrow"></div></div>
-					    	<div id="sort_by_dist" class="sortbox">sort by distance<div class="arrow"></div></div>
-					    </div>
+				    	<div id="sorters" data-bind="control: 'Sorter', data: { sorters: locationSorters, selected: currentSorter }"></div>
 				    </div>
+					<div id="locationsarea">
+				    	<div id="records" data-bind="foreach: locations">
+			        		<div class="locrecord record data" data-bind="css: filterStatus(), click: $root.selectLocation">
+								<div class="indicators"></div>
+	        					<div class="locname" data-bind="text: name"></div>
+			        			<div class="locaddr" data-bind="text: address"></div>
+	        					<div class="dist">(<span class="disttext" data-bind="text: distance"></span>)</div>
+	        					<div class="ponum" data-bind="if: pos().length == 1">
+									<span class="number" data-bind="text: pos()[0].number"></span>
+	        					</div>
+								<div class="ponum mult" data-bind="if: pos().length > 1">
+									(<span class="count" data-bind="text: pos().length"></span> POs)
+								</div>
+	      						<div class="rtarrow"></div>
+	        				</div>
+					    </div>
+					</div>
 				</div>
 				<div id="testpage" data-bind="if: authToken">
 				</div>
