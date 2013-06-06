@@ -48,14 +48,14 @@
 				    	<div class="silverbar">
 							<div class="indicators" data-bind="css: $root.overallStatus()"></div>
 							<div id="search">
-				    			<input id="searchbox" placeholder="search" data-bind="event: {input: $root.locationSearchChange}"/>
+				    			<input id="searchbox" placeholder="search" data-bind="input: searchText"/>
 				    		</div>
 				    	</div>
-				    	<div id="sorters" data-bind="control: 'Sorter', data: { sorters: locationSorters, selected: currentSorter }"></div>
+				    	<div id="sorters" data-bind="Sorter: { sorters: locationSorters, selected: currentSorter }"></div>
 				    </div>
 					<div id="locationsarea">
-				    	<div id="records" data-bind="foreach: locations">
-			        		<div class="locrecord record data" data-bind="css: filterStatus(), click: $root.selectLocation">
+				    	<div id="records" data-bind="foreach: filteredLocations">
+			        		<div class="locrecord record data" data-bind="css: status, click: $root.selectLocation">
 								<div class="indicators"></div>
 	        					<div class="locname" data-bind="text: name"></div>
 			        			<div class="locaddr" data-bind="text: address"></div>

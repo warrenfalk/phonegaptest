@@ -29,6 +29,12 @@ function ViewModel() {
 	}, model);
 	this.syncStatus = ko.observable('ok');
 	this.webserviceRoot = (ON_DEVICE ? 'http://wfalk-desktop:82' : '/test/webservice') + '/ServiceVerificationApp.svc';
+	this.locationSorters = [
+		{ id: 'cust', text: 'sort by customer', func: function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); }},
+		{ id: 'dist', text: 'sort by dist', func: function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); }},
+	];
+	this.currentSorter = ko.observable('dist');
+	this.searchText = ko.observable('');
 
 	this.doSync = function() {
 		model.poManager.sendSyncRequest();
@@ -55,13 +61,6 @@ function ViewModel() {
 			function() {
 			}
 		);
-	};
-
-	this.locationSearchChange = function() {
-		var $search = $('#searchbox');
-		var searchText = $search.val();
-		$search.toggleClass('filtering', searchText !== '');
-		model.filter(searchText.toLowerCase());
 	};
 	
 	this.post = function(options) {
@@ -396,32 +395,15 @@ function ViewModel() {
 		
 		model.sortLocations();
 	};
-	
-	this.locationSorters = [
-		{ id: 'cust', text: 'sort by customer', func: function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); }},
-		{ id: 'dist', text: 'sort by dist', func: function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); }},
-	];
 
-	this.currentSorter = ko.observable('dist');
+	this.filteredLocations = ko.computed(function() {
+		var locs = this.locations.slice().filter(function(l) { return l.matchesFilter(model.searchText()); });
+		var sorters = model.locationSorters.filter(function(q) { return q.id == model.currentSorter(); });
+		locs.sort(sorters[0].func);
+		return locs;
+	}, model);
+	
 
-	this.sortLocations = function() {
-		var matching = model.locationSorters.filter(function(q) { return q.id == model.currentSorter(); });
-		if (matching && matching.length > 0)
-			model.locations.sort(matching[0].func);
-	};
-	
-	/*	
-	this.selectSort = function(sorter) {
-		var $sortbox = $("#" + sorter);
-		$sortbox.addClass("sortbox_current");
-		if ('previousSort' in model && model.previousSort != sorter)
-			$("#" + model.previousSort).removeClass("sortbox_current");
-		model.previousSort = sorter;
-		model.currentSorter = model.locationSorters[sorter];
-		model.sortLocations();
-	};
-	
-	*/
 	function numberWithCommas(x) {
 		var parts = x.toString().split(".");
 		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -589,8 +571,6 @@ function ViewModel() {
 				}
 			}
 			
-			model.sortLocations();
-			
 			return results;
 		};
 		
@@ -692,21 +672,22 @@ function ViewModel() {
 			if (closed)
 				return 'closed';
 		}, location);
-		location.filterStatus = ko.computed(function() {
-			var f = model.filter();
-			if (f === '')
-				return this.status();
+		location.matchesFilter = function(f) {
+			if (typeof f === 'undefined' || f === '')
+				return true;
+			console.log('FILTER: ' + f);
+			f = f.toLowerCase();
 			for (var i = 0; i < this.pos().length; i++) {
 				var po = this.pos()[i];
 				if (po.number.toLowerCase().indexOf(f) != -1)
-					return this.status();
+					return true;
 			}
 			if (-1 != this.name.toLowerCase().indexOf(f))
-				return this.status();
+				return true;
 			if (-1 != this.address.toLowerCase().indexOf(f))
-				return this.status();
-			return 'filtered';
-		}, location);
+				return true;
+			return false;
+		};
 		return location;
 	};
 	
@@ -955,39 +936,41 @@ ko.bindingHandlers.fade = {
 	},
 };
 
-ko.bindingHandlers.data = {
+ko.bindingHandlers.input = {
+	init: function(input, valueAccessor) {
+		var b = valueAccessor();
+		if (ko.isObservable(b) && !b.isComputed)
+			$(input).on('input', function() { b(this.value); });
+	},
+	update: function(input, valueAccessor) {
+		var v = ko.utils.unwrapObservable(valueAccessor());
+		if (v !== input.value)
+			input.value = v;
+	},
+};
+
+ko.bindingHandlers.Sorter = {
 	init: function(element, valueAccessor) {
-		// we need to hook updates to this elements attributes so that if any
-		// data- attributes are changed, corresponding bound observables can
-		// be updated
-		var baseSetAttribute = element.setAttribute;
-		element.setAttribute = function(n,v) {
-			baseSetAttribute.call(element, n, v);
-			var bindings = valueAccessor();
-			for (var dataAttrName in bindings) {
-				var dataAttrValue = bindings[dataAttrName];
-				if (n.indexOf('data-' + dataAttrName) === 0 && ko.isObservable(dataAttrValue) && !dataAttrValue.isComputed) {
-					if (dataAttrValue() !== v)
-						dataAttrValue(v);
-				}
+		var sorter = new Sorter(element);
+		var bindings = valueAccessor();
+		for (var propname in bindings) {
+			var binding = bindings[propname];
+			if (ko.isObservable(binding) && !binding.isComputed) {
+				sorter.onchange(propname, function(newval) {
+					binding(newval);
+				});
 			}
 		}
 	},
 	update: function(element, valueAccessor) {
-		var items = valueAccessor();
-		for (var name in items) {
-			var val = ko.utils.unwrapObservable(items[name]);
-			var oldval = element.dataset[name];
-			if (val !== oldval)
-				element.dataset[name] = val;
+		var sorter = $(element).data('control');
+		var bindings = valueAccessor();
+		for (var propname in bindings) {
+			var binding = bindings[propname];
+			var val = ko.utils.unwrapObservable(binding);
+			if (val !== sorter[propname]())
+				sorter[propname](val);
 		}
-	},
-};
-
-ko.bindingHandlers.control = {
-	init: function(element, valueAccessor) {
-		var name = ko.utils.unwrapObservable(valueAccessor());
-		var control = new window[name](element);
 	},
 };
 

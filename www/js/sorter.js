@@ -3,8 +3,13 @@ function Sorter(element) {
 	var $e = $(element);
 	$e.addClass('sorters');
 	$e.data('control', control);
-	control.sorters = {}
+	control.sortermap = {}
 	control.currentSorter = null;
+
+	if ('sorters' in element.dataset)
+		sorters(element.dataset.sorters);
+	if ('selected' in element.dataset)
+		selected(element.dataset.selected);
 
 	function createSortBox(text, id) {
 		console.log("Creating sorter " + id);
@@ -12,55 +17,54 @@ function Sorter(element) {
 		$d.text(text);
 		$d.append('<div class="arrow"></div>');
 		$d.on('mousedown', function() {
-			element.setAttribute('data-selected', id);
+			control.selected(id);
 		});
 		return $d;
 	}
 
-	function setSorters(sorters) {
-		if (sorters) {
-			if (typeof sorters == 'string') {
-				sorters = JSON.parse(sorters);
-			}
-			control.sorters = sorters;
-			$.each(sorters, function(i, sorter) {
-				var $d = createSortBox(sorter.text, sorter.id);
-				$e.append($d);
-				sorter.element = $d.get(0);
-				control.sorters[sorter.id] = sorter;
-			});
+	control.sorters = function(sorters) {
+		if (arguments.length === 0)
+			return control._sorters;
+		control._sorters = sorters;
+		if (typeof sorters == 'string') {
+			sorters = JSON.parse(sorters);
 		}
-	}
+		control.sortermap = {};
+		$.each(sorters, function(i, sorter) {
+			var $d = createSortBox(sorter.text, sorter.id);
+			$e.append($d);
+			sorter.element = $d.get(0);
+			control.sortermap[sorter.id] = sorter;
+		});
+	};
 
-	function setSelected(sorter) {
+	control.selected = function(sorter) {
+		if (arguments.length === 0)
+			return control._selected;
+		control._selected = sorter;
 		if (!sorter)
 			return;
 		if (typeof sorter !== 'string')
 			sorter = sorter.id;
 		// find the sorter by the given id
-		sorter = control.sorters[sorter];
+		sorter = control.sortermap[sorter];
 		if (control.currentSorter != null)
 			$(control.currentSorter.element).removeClass('current');
 		if (sorter != null)
 			$(sorter.element).addClass('current');
 		control.currentSorter = sorter;
-	}
-
-	// hook attribute setting
-	var baseSetAttribute = element.setAttribute;
-	var attributeHooks = {
-		'data-sorters': setSorters,
-		'data-selected': setSelected,
-	};
-	element.setAttribute = function(n,v) {
-		baseSetAttribute.call(element, n, v);
-		var func = attributeHooks[n];
-		if (func)
-			func.call(control, v);
+		if (control['onselectedchange'])
+			control['onselectedchange'](sorter.id);
 	};
 
-	for (var hook in attributeHooks) {
-		var func = attributeHooks[hook];
-		func.call(control, element.getAttribute(hook));
-	}
+	control.onchange = function(propname, callback) {
+		var event = 'on' + propname + 'change';
+		var prev = control[event];
+		control[event] = function(newval) {
+			callback(newval);
+			if (prev)
+				prev(newval);
+		};
+	};
+
 }
