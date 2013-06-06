@@ -85,11 +85,12 @@ function ViewModel() {
 		}
 		
 	}
-	
-	this.checkinCurrentPo = function(onsuccess, onfail) {
+
+	this.postCheckin = function(po, onsuccess, onfail) {
+		var pos = model.lastPosition;
 		model.post({
-			path: '/purchaseorders/' + model.currentPo().id + '/status',
-			payload: { newStatus: 'checkedin', latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy },
+			path: '/purchaseorders/' + po.id + '/status',
+			payload: { newStatus: 'checkedin', latitude: pos.latitude, longitude: pos.longitude, accuracy: pos.accuracy },
 			success: function(syncData) {
 				model.receiveSync(syncData);
 				onsuccess(syncData);
@@ -97,17 +98,26 @@ function ViewModel() {
 			error: onfail,
 		});
 	}
-	
-	this.checkoutCurrentPo = function(status, onsuccess, onfail) {
+
+	this.postStatus = function(po, status, onsuccess, onfail) {
+		var pos = model.lastPosition;
 		model.post({
-			path: '/purchaseorders/' + model.currentPo().id + '/status',
-			payload: { newStatus: status, latitude: model.lastPosition.latitude, longitude: model.lastPosition.longitude, accuracy: model.lastPosition.accuracy },
+			path: '/purchaseorders/' + po.id + '/status',
+			payload: { newStatus: status, latitude: pos.latitude, longitude: pos.longitude, accuracy: pos.accuracy },
 			success: function(syncData) {
 				model.receiveSync(syncData);
 				onsuccess(syncData);
 			},
 			error: onfail,
 		})
+	}
+	
+	this.checkinCurrentPo = function(onsuccess, onfail) {
+		model.postStatus(model.currentPo(), 'checkedin', onsuccess, onfail);
+	}
+	
+	this.checkoutCurrentPo = function(status, onsuccess, onfail) {
+		model.postStatus(model.currentPo(), status, onsuccess, onfail);
 	}
 	
 	this.onAuthenticate = function(token, expires) {
