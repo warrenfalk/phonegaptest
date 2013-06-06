@@ -20,13 +20,7 @@ function ViewModel() {
 		return '';
 	}, model);
 	this.syncStatus = ko.observable('ok');
-
-	if (ON_DEVICE) {
-		this.webserviceRoot = 'http://wfalk-desktop:82/ServiceVerificationApp.svc';
-	}
-	else {
-		this.webserviceRoot = '/test/webservice/ServiceVerificationApp.svc';
-	}
+	this.webserviceRoot = (ON_DEVICE ? 'http://wfalk-desktop:82' : '/test/webservice') + '/ServiceVerificationApp.svc';
 	
 	this.doSync = function() {
 		if (model.locations().length == 0)
