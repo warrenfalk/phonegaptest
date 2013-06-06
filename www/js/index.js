@@ -31,12 +31,7 @@ function ViewModel() {
 	this.webserviceRoot = (ON_DEVICE ? 'http://wfalk-desktop:82' : '/test/webservice') + '/ServiceVerificationApp.svc';
 
 	this.doSync = function() {
-		if (model.locations().length === 0) {
-			model.poManager.requestDbLoad(model.poManager.sendSyncRequest);
-			model.poManager.sendSyncRequest();
-		}
-		else
-			model.poManager.sendSyncRequest();
+		model.poManager.sendSyncRequest();
 	};
 	
 	setInterval(function() { model.doSync(); }, 120000);
@@ -213,11 +208,11 @@ function ViewModel() {
 	this.prompt = function(message, title, button, callback) {
 		button = button || "OK";
 		title = title || "In Position";
-		// uses phonegap's alert if we are actually on-device,
-		// otherwise simulate with a fallback message
 		if (ON_DEVICE)
 			navigator.notification.alert(message, callback, title, button);
 		else {
+			// when not on an actual device, we need to simulate
+			// phonegap's alert (which is non-blocking)
 			var $div = $('<div class="alert"/>');
 			var $title = $('<div class="title"/>');
 			$title.text(title);
@@ -485,7 +480,7 @@ function ViewModel() {
 			model.postSync(hashes);
 		};
 		
-		this.requestDbLoad = function(oncomplete) {
+		this.requestDbLoad = function() {
 			var db = model.db();
 			db.transaction(
 				function(tx) {
@@ -499,8 +494,6 @@ function ViewModel() {
 							console.log("database read complete, applying...");
 							mgr.sync(syncData);
 							console.log("database read application complete");
-							if (oncomplete)
-								oncomplete();
 						},
 						function(err) {
 							console.log("db get data failed: " + err);
@@ -931,8 +924,8 @@ var init = function() {
 	model.needPng = 'device' in window && device.platform.toLowerCase() == 'android' && device.version.substring(0, 1) == '2';
 	if (model.needPng)
 		switchToPng();
-	model.logout();
 	ko.applyBindings(model, document.getElementById('application'));
+	model.poManager.requestDbLoad();
 	model.doAppAuth();
 };
 
