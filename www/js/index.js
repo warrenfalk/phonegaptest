@@ -1,14 +1,16 @@
+(function(){
+"use strict";
 var ON_DEVICE = document.URL.indexOf('http://') === -1;
 
 function ViewModel() {
-	var model = this; 
+	var model = this;
 	this.locations = ko.observableArray();
 	this.filter = ko.observable('');
 	this.authRequest = {
 		login: ko.observable(),
 		password: ko.observable(),
 		status: ko.observable('ready'),
-	}
+	};
 	this.authToken = ko.observable();
 	this.authStatus = ko.observable();
 	this.selectionStack = [];
@@ -16,11 +18,11 @@ function ViewModel() {
 	this.currentPo = ko.observable();
 	this.overallStatus = ko.computed(function() {
 		var locs = this.locations();
-		if (!locs || locs.length == 0)
+		if (!locs || locs.length === 0)
 			return '';
 		for (var i = 0; i < locs.length; i++) {
 			var loc = locs[i];
-			if (loc.status() == 'checkedin')
+			if (loc.status() === 'checkedin')
 				return 'checkedin';
 		}
 		return '';
@@ -29,13 +31,13 @@ function ViewModel() {
 	this.webserviceRoot = (ON_DEVICE ? 'http://wfalk-desktop:82' : '/test/webservice') + '/ServiceVerificationApp.svc';
 
 	this.doSync = function() {
-		if (model.locations().length == 0) {
+		if (model.locations().length === 0) {
 			model.poManager.requestDbLoad(model.poManager.sendSyncRequest);
 			model.poManager.sendSyncRequest();
 		}
 		else
 			model.poManager.sendSyncRequest();
-	}
+	};
 	
 	setInterval(function() { model.doSync(); }, 120000);
 	
@@ -50,7 +52,7 @@ function ViewModel() {
 					function(err) {
 						console.log("db store auth data failed: " + err);
 					}
-				)
+				);
 			},
 			function(err) {
 				console.log("db store auth data failed: " + JSON.stringify(err));
@@ -58,20 +60,20 @@ function ViewModel() {
 			function() {
 			}
 		);
-	}
+	};
 
 	this.locationSearchChange = function() {
 		var $search = $('#searchbox');
 		var searchText = $search.val();
-		$search.toggleClass('filtering', searchText != '');
+		$search.toggleClass('filtering', searchText !== '');
 		model.filter(searchText.toLowerCase());
-	}
+	};
 	
 	this.post = function(options) {
 		var event = "POST[" + options.path + "]"; 
 		console.log(event);
 		try {
-			$req = $.ajax({
+			var $req = $.ajax({
 				type: 'POST',
 				url: model.webserviceRoot + ((!model.authToken() || options.noToken) ? '' : '/' + model.authToken().token) + options.path,
 				contentType: 'application/json; charset=UTF-8',
@@ -87,7 +89,7 @@ function ViewModel() {
 			options.error(null, null, e);
 		}
 		
-	}
+	};
 
 	this.postSync = function(hashes, onsuccess, onfail) {
 		model.syncStatus('waiting');
@@ -103,8 +105,8 @@ function ViewModel() {
 			error: function(jqXHR, textStatus) {
 				model.syncStatus('error');
 			},
-		})
-	}
+		});
+	};
 
 	this.postNote = function(po, note, onsuccess, onfail) {
 		model.post({
@@ -113,7 +115,7 @@ function ViewModel() {
 			success: onsuccess,
 			error: onfail,
 		});
-	}
+	};
 
 	this.postCheckin = function(po, onsuccess, onfail) {
 		var pos = model.lastPosition;
@@ -126,7 +128,7 @@ function ViewModel() {
 			},
 			error: onfail,
 		});
-	}
+	};
 
 	this.postStatus = function(po, status, onsuccess, onfail) {
 		var pos = model.lastPosition;
@@ -138,8 +140,8 @@ function ViewModel() {
 				onsuccess(syncData);
 			},
 			error: onfail,
-		})
-	}
+		});
+	};
 
 	this.postLogin = function(auth, data, onsuccess, onfail) {
 		var login = auth.login();
@@ -154,7 +156,7 @@ function ViewModel() {
 				if (response.status == "Authorized") {
 					var expiry = Math.round(parseFloat(response.expires)) + Math.round((new Date().getTime() / 1000));
 					console.log("Received token: " + response.token + " expires in: " + response.expires + ": absolute: " + expiry);
-					model.onAuthenticated(response.token, expiry)
+					model.onAuthenticated(response.token, expiry);
 					onsuccess(response.token, expiry);
 				}
 				else {
@@ -175,16 +177,16 @@ function ViewModel() {
 				else
 					onfail("There was a problem processing this login request (" + e.message + "). Please try again.");
 			},
-		})
-	}
+		});
+	};
 	
 	this.checkinCurrentPo = function(onsuccess, onfail) {
 		model.postStatus(model.currentPo(), 'checkedin', onsuccess, onfail);
-	}
+	};
 	
 	this.checkoutCurrentPo = function(status, onsuccess, onfail) {
 		model.postStatus(model.currentPo(), status, onsuccess, onfail);
-	}
+	};
 	
 	this.onAuthenticated = function(token, expires) {
 		model.authToken({token: token, expires: expires});
@@ -198,7 +200,7 @@ function ViewModel() {
 					function(err) {
 						console.log("db store auth data failed: " + err);
 					}
-				)
+				);
 			},
 			function(err) {
 				console.log("db store auth data failed: " + JSON.stringify(err));
@@ -206,7 +208,7 @@ function ViewModel() {
 			function() {
 			}
 		);
-	}
+	};
 
 	this.prompt = function(message, title, button, callback) {
 		button = button || "OK";
@@ -216,12 +218,12 @@ function ViewModel() {
 		if (ON_DEVICE)
 			navigator.notification.alert(message, callback, title, button);
 		else {
-			$div = $('<div class="alert"/>');
-			$title = $('<div class="title"/>')
+			var $div = $('<div class="alert"/>');
+			var $title = $('<div class="title"/>');
 			$title.text(title);
-			$text = $('<div class="text"/>')
+			var $text = $('<div class="text"/>');
 			$text.text(message);
-			$button = $('<button/>');
+			var $button = $('<button/>');
 			$button.text(button);
 			$div.append($title).append($text).append($button);
 			$(document.body).append($div);
@@ -232,33 +234,33 @@ function ViewModel() {
 					callback();
 				$div.fadeOut(function() {
 					$div.remove();
-				})
+				});
 			});
 			$div.fadeIn();
 		}
-	}
+	};
 	
 	this.loginClick = function() {
 		var auth = model.authRequest;
 		
-		if (auth.login() == null) {
+		if (!auth.login()) {
 			model.prompt("Please enter a login", "Login", "OK");
 			return;
 		}
 		
-		if (auth.password() == null) {
+		if (!auth.password()) {
 			model.prompt("Please enter a password", "Login", "OK");
 			return;
 		}
 
 		var success = function(token, expires) {
-		}
+		};
 		var fail = function(message) {
 			model.prompt(message, 'Login');
-		}
+		};
 		// TODO: add relevant device data below to 'data' param
 		model.postLogin(auth, "", success, fail);
-	}
+	};
 	
 	this.doAppAuth = function() {
 		var db = model.db();
@@ -286,7 +288,7 @@ function ViewModel() {
 					function(err) {
 						console.log("db get auth data failed: " + err);
 					}
-				)
+				);
 			},
 			function(err) {
 				console.log("db get auth data failed: " + JSON.stringify(err));
@@ -294,12 +296,12 @@ function ViewModel() {
 			function() {
 			}
 		);
-	}
+	};
 	
 	this.doLoginScreen = function() {
 		console.log('doLoginScreen');
 		Screens.replace('login', model);
-	}
+	};
 	
 	this.takePic = function() {
 		navigator.camera.getPicture(function(filename) {
@@ -313,19 +315,19 @@ function ViewModel() {
 				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs) {
 					fs.root.remove(filename, function() { console.log("local pic deleted"); }, function(err) { console.log("local pic delete failed: " + err); });
 				}, null);
-			}
+			};
 			var success = function(r) {
 				console.log("Code = " + r.responseCode);
-	            console.log("Response = " + r.response);
-	            console.log("Sent = " + r.bytesSent);
-	            deleteFile(filename);
-			}
+				console.log("Response = " + r.response);
+				console.log("Sent = " + r.bytesSent);
+				deleteFile(filename);
+			};
 			var fail = function(error) {
 				model.prompt("Uploading the image has failed: Code = " + error.code, "Photo Upload");
-	            console.log("upload error source " + error.source);
-	            console.log("upload error target " + error.target);
-	            deleteFile(filename);
-			}
+				console.log("upload error source " + error.source);
+				console.log("upload error target " + error.target);
+				deleteFile(filename);
+			};
 			var ft = new FileTransfer();
 			ft.upload(filename, model.webserviceRoot + url, success, fail, options);
 		},
@@ -338,7 +340,7 @@ function ViewModel() {
 			targetWidth: 1080,
 			targetHeight: 1080,
 		});
-	}
+	};
 	
 	this.addNote = function() {
 		$noteform = $('#noteform');
@@ -347,35 +349,35 @@ function ViewModel() {
 		$noteform.fadeIn(function() {
 			$notebox.focus();
 		});
-	}
+	};
 	
 	this.sendNote = function() {
 		$noteform = $('#noteform');
 		$notebox = $('#notebox');
 		var note = $notebox.val();
-		if (note != '') {
+		if (note !== '') {
 			$notebox.prop('disabled', true);
 			var success = function(response) {
 				$noteform.fadeOut();
 				$notebox.val('');
-			}
+			};
 			var fail = function(jqXHR, textStatus, e) {
 				// TODO: probably the wrong status here... don't know if we even get here on connection failure
 				model.prompt('There was a problem encountered while sending your note.  Check that you have a signal and a data connection', 'Notice', 'OK', function() {
 					$notebox.prop('disabled', false);
 					$notebox.focus();
 				});
-			}
+			};
 			model.postNote(model.currentPo(), note, success, fail);
 		}
-	}
+	};
 	
 	this.cancelNote = function() {
 		$noteform = $('#noteform');
 		$noteform.fadeOut(function() {
 			$('#notebox').val('');	
 		});
-	}
+	};
 	
 	this.lastPosition = false;
 	this.onPositionUpdate = function(position) {
@@ -398,12 +400,12 @@ function ViewModel() {
 		}
 		
 		model.sortLocations();
-	}
+	};
 	
 	this.locationSorters = {
 		'sort_by_cust': function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); },
 		'sort_by_dist': function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); },
-	}
+	};
 	
 	this.selectSort = function(sorter) {
 		var $sortbox = $("#" + sorter);
@@ -413,16 +415,16 @@ function ViewModel() {
 		model.previousSort = sorter;
 		model.currentSorter = model.locationSorters[sorter];
 		model.sortLocations();
-	}
+	};
 	
 	this.sortLocations = function() {
 		model.locations.sort(model.currentSorter);
-	}
+	};
 	
 	function numberWithCommas(x) {
-	    var parts = x.toString().split(".");
-	    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-	    return parts.join(".");
+		var parts = x.toString().split(".");
+		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		return parts.join(".");
 	}
 	
 	this.myDistanceTo = function(lat, long) {
@@ -440,7 +442,7 @@ function ViewModel() {
 		var a = shdy * shdy + shdx * shdx * Math.cos(y1) * Math.cos(y2);
 		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 		return 6371000 * c;
-	}
+	};
 	
 	this.formatDistance = function(meters) {
 		if (meters == -1)
@@ -453,9 +455,9 @@ function ViewModel() {
 			return numberWithCommas(mi) + ' mi';
 		else
 			return mi + '.' + tenths + ' mi';
-	}
+	};
 	
-	this.poManager = new function() {
+	function PoManager() {
 		var mgr = this;
 		
 		this.poByHash = {};
@@ -481,7 +483,7 @@ function ViewModel() {
 			console.log("Sending sync request");
 			
 			model.postSync(hashes);
-		}
+		};
 		
 		this.requestDbLoad = function(oncomplete) {
 			var db = model.db();
@@ -503,7 +505,7 @@ function ViewModel() {
 						function(err) {
 							console.log("db get data failed: " + err);
 						}
-					)
+					);
 				},
 				function(err) {
 					
@@ -512,7 +514,7 @@ function ViewModel() {
 					
 				}
 			);
-		}
+		};
 		
 		this.sync = function (syncData) {
 			// sync data is in two parts, "minus" and "plus".
@@ -535,9 +537,10 @@ function ViewModel() {
 			var plus = syncData.plus;
 			for (var i = 0; i < plus.length; i++) {
 				var syncPo = plus[i];
+				var po;
 				if (syncPo.id in this.poById) {
 					// update existing PO
-					var po = this.poById[syncPo.id];
+					po = this.poById[syncPo.id];
 					model.map(model.maps.po, syncPo, po);
 					this.poByHash[po.hash] = po;
 					results.upd.push(syncPo);
@@ -545,7 +548,7 @@ function ViewModel() {
 				}
 				else {
 					// insert new PO
-					var po = {};
+					po = {};
 					model.map(model.maps.po, syncPo, po);
 					this.poById[syncPo.id] = po;
 					this.poByHash[syncPo.hash] = po;
@@ -579,7 +582,7 @@ function ViewModel() {
 					if (!(po.hash in this.poByHash)) {
 						loc.pos.splice(j, 1);
 						console.log('removed po ' + po.number + ' from loc');
-						if (loc.pos().length == 0) {
+						if (loc.pos().length === 0) {
 							model.locations.splice(i, 1);
 							console.log('removed loc ' + loc.name);
 						}
@@ -590,7 +593,7 @@ function ViewModel() {
 			model.sortLocations();
 			
 			return results;
-		}
+		};
 		
 		this.updateDb = function(operations) {
 			var db = model.db();
@@ -615,8 +618,10 @@ function ViewModel() {
 				function() {
 				}
 			);
-		}
-	}
+		};
+	};
+
+	this.poManager = new PoManager();
 	
 	this.db = function() {
 		if (!('dbhandle' in model)) {
@@ -630,16 +635,16 @@ function ViewModel() {
 			},
 			function() {
 				console.log("db opened");
-			})
+			});
 		}
 		return model.dbhandle;
-	}
+	};
 	
 	this.receiveSync = function(syncData) {
 		console.log("Sync data received");
 		var results = model.poManager.sync(syncData);
 		model.poManager.updateDb(results);
-	}
+	};
 	
 	this.createLocation = function(po) {
 		var dist = model.myDistanceTo(po.latitude, po.longitude);
@@ -660,7 +665,7 @@ function ViewModel() {
 			var pos = this.pos();
 			if (pos.length == 1)
 				return pos[0].status();
-			else if (pos.length == 0)
+			else if (pos.length === 0)
 				return 'closed';
 			// if any PO is checked in, then the status is checked in
 			// if all are closed, then status is closed
@@ -690,7 +695,7 @@ function ViewModel() {
 		}, location);
 		location.filterStatus = ko.computed(function() {
 			var f = model.filter();
-			if (f == '')
+			if (f === '')
 				return this.status();
 			for (var i = 0; i < this.pos().length; i++) {
 				var po = this.pos()[i];
@@ -704,54 +709,54 @@ function ViewModel() {
 			return 'filtered';
 		}, location);
 		return location;
-	}
+	};
 	
 	this.refreshLocations = function() {
 		model.doSync();
-	}
+	};
 	
 	this.selectLocation = function(location) {
 		model.currentLocation(location);
 		var pos = model.currentLocation().pos();
 		if (pos.length == 1)
 			model.currentPo(pos[0]);
-	}
+	};
 	
 	this.checkin = function() {
 		model.currentPo().status('checkedin');
 		model.currentPo(null);
 		var screen = Screens.pop();
-	}
+	};
 	
 	this.completeJob = function() {
 		model.currentPo().status('closed');
 		model.currentPo(null);
 		var screen = Screens.pop();
-	}
+	};
 	
 	this.incompleteJob = function() {
 		model.currentPo().status('incomplete');
 		model.currentPo(null);
 		var screen = Screens.pop();
-	}
+	};
 	
 	this.cancel = function() {
 		var screen = Screens.pop();
 		screen.cancel();
-	}
+	};
 	
 	this.selectPo = function(po) {
 		model.currentPo(po);
 		var screen = Screens.push('details');
 		screen.cancel = function() {
 			model.currentPo(null);
-		}
-	}
+		};
+	};
 	
 	this.map = function(map, jso, modelo) {
-		var rules = map['rules'];
+		var rules = map.rules;
 		var stat = map['static'];
-		for (prop in jso) {
+		for (var prop in jso) {
 			if (prop in rules) {
 				var rule = rules[prop];
 				if (typeof(rule) == "function")
@@ -763,11 +768,11 @@ function ViewModel() {
 				modelo[prop] = jso[prop];
 			}
 		}
-		for (s in stat) {
+		for (var s in stat) {
 			if (!(s in modelo))
 				modelo[s] = stat[s];
 		}
-	}
+	};
 
 	this.maps = {
 		po: {
@@ -778,7 +783,7 @@ function ViewModel() {
 			},
 		},
 	};
-};
+}
 
 /*
 Screens.define({
@@ -889,11 +894,12 @@ Handlebars.registerHelper('getStatus', function(item, options) {
 //  usage: {{dateFormat creation_date format="MMMM YYYY"}}
 Handlebars.registerHelper('dateFormat', function(context, block) {
   if (window.moment) {
-    var f = block.hash.format || "MMM Do, YYYY";
-    return moment(Date(context)).format(block.hash.format || "MMM Do, YYYY");
-  }else{
-    return context;   //  moment plugin not available. return data as is.
-  };
+	var f = block.hash.format || "MMM Do, YYYY";
+	return moment(Date(context)).format(block.hash.format || "MMM Do, YYYY");
+  }
+  else {
+	return context;   //  moment plugin not available. return data as is.
+  }
 });
 
 function switchToPng() {
@@ -928,7 +934,7 @@ var init = function() {
 	model.logout();
 	ko.applyBindings(model, document.getElementById('application'));
 	model.doAppAuth();
-}
+};
 
 if (ON_DEVICE)
 	document.addEventListener('deviceready', init, false);
@@ -943,6 +949,11 @@ ko.bindingHandlers.fade = {
 	},
 	update: function(element, valueAccessor) {
 		var visible = ko.utils.unwrapObservable(valueAccessor());
-		visible ? $(element).fadeIn() : $(element).fadeOut();
+		if (visible)
+			$(element).fadeIn();
+		else
+			$(element).fadeOut();
 	},
 };
+
+}());
