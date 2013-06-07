@@ -112,7 +112,7 @@ function ViewModel() {
 	};
 
 	this.postCheckin = function(po, onsuccess, onfail) {
-		var pos = model.lastPosition;
+		var pos = model.lastPosition();
 		model.post({
 			path: '/purchaseorders/' + po.id + '/status',
 			payload: { newStatus: 'checkedin', latitude: pos.latitude, longitude: pos.longitude, accuracy: pos.accuracy },
@@ -125,7 +125,7 @@ function ViewModel() {
 	};
 
 	this.postStatus = function(po, status, onsuccess, onfail) {
-		var pos = model.lastPosition;
+		var pos = model.lastPosition();
 		model.post({
 			path: '/purchaseorders/' + po.id + '/status',
 			payload: { newStatus: status, latitude: pos.latitude, longitude: pos.longitude, accuracy: pos.accuracy },
@@ -373,28 +373,29 @@ function ViewModel() {
 		});
 	};
 	
-	this.lastPosition = false;
+	this.lastPosition = ko.observable(false);
 	this.onPositionUpdate = function(position) {
 		var c = position.coords;
-		if (!model.lastPosition)
-			model.lastPosition = {};
-		var p = model.lastPosition;
-		if (!ON_DEVICE) {
+		var p = model.lastPosition() || {};
+		if (!ON_DEVICE)
 			c = { latitude: 39.97231, longitude: -104.83427, accuracy: 40.1 };
-		}
 		p.latitude = c.latitude;
 		p.longitude = c.longitude;
 		p.accuracy = c.accuracy;
-		console.log(c);
-		
-		for (var i = model.locations().length - 1; i >= 0; i--) {
-			var loc = model.locations()[i];
-			loc.dist = model.myDistanceTo(loc.latitude, loc.longitude);
-			loc.distance(model.formatDistance(loc.dist));
-		}
-		
-		model.sortLocations();
+		p.at = new Date().getTime();
+		console.log("Position: " + JSON.stringify(p));
+		model.lastPosition(p);
 	};
+
+	navigator.geolocation.watchPosition(
+		function(position) {
+			model.onPositionUpdate(position);
+		},
+		function() {
+			// TODO: add indicator for bad GPS
+		},
+		{ frequency: 3000, maximumAge: 60000, timeout: 60000, enableHighAccuracy: true }
+	);
 
 	this.filteredLocations = ko.computed(function() {
 		var locs = this.locations.slice().filter(function(l) { return l.matchesFilter(model.searchText()); });
@@ -411,7 +412,7 @@ function ViewModel() {
 	}
 	
 	this.myDistanceTo = function(lat, long) {
-		var p = model.lastPosition;
+		var p = model.lastPosition();
 		if (!p)
 			return -1;
 		var x1 = long * Math.PI / 180;
@@ -635,9 +636,16 @@ function ViewModel() {
 			longitude: po.longitude,
 			radius: po.radius,
 			pos: ko.observableArray(),
-			dist: dist,
-			distance: ko.observable(model.formatDistance(dist)),
 		};
+		location.dist = ko.computed(function() {
+			var p = model.lastPosition();
+			if (!p)
+				return -1;
+			return model.myDistanceTo(p.latitude, p.longitude)
+		}, location);
+		location.distance = ko.computed(function() {
+			return model.formatDistance(this.dist());
+		}, location);
 		location.status = ko.computed(function() {
 			if (!this.pos)
 				return 'undefined';
