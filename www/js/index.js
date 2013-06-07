@@ -42,6 +42,9 @@ function ViewModel() {
 			return 'location';
 		return 'locations';
 	}, model);
+	this.noteDraft = ko.observable('');
+	this.editingNote = ko.observable(false);
+	this.sendingNote = ko.observable(false);
 
 	this.doSync = function() {
 		model.poManager.sendSyncRequest();
@@ -344,40 +347,32 @@ function ViewModel() {
 	};
 	
 	this.addNote = function() {
-		$noteform = $('#noteform');
-		$notebox = $('#notebox');
-		$notebox.prop('disabled', false);
-		$noteform.fadeIn(function() {
-			$notebox.focus();
-		});
+		model.noteDraft('');
+		model.editingNote(true);
 	};
 	
 	this.sendNote = function() {
-		$noteform = $('#noteform');
-		$notebox = $('#notebox');
-		var note = $notebox.val();
+		var note = model.noteDraft();
 		if (note !== '') {
-			$notebox.prop('disabled', true);
+			model.sendingNote(true);
+			//$notebox.prop('disabled', true);
 			var success = function(response) {
-				$noteform.fadeOut();
-				$notebox.val('');
+				model.sendingNote(false);
+				model.noteDraft('');
+				model.editingNote(false);
 			};
 			var fail = function(jqXHR, textStatus, e) {
+				model.sendingNote(false);
 				// TODO: probably the wrong status here... don't know if we even get here on connection failure
-				model.prompt('There was a problem encountered while sending your note.  Check that you have a signal and a data connection', 'Notice', 'OK', function() {
-					$notebox.prop('disabled', false);
-					$notebox.focus();
-				});
+				model.prompt('There was a problem encountered while sending your note.  Check that you have a signal and a data connection', 'Notice', 'OK');
 			};
 			model.postNote(model.currentPo(), note, success, fail);
 		}
 	};
 	
 	this.cancelNote = function() {
-		$noteform = $('#noteform');
-		$noteform.fadeOut(function() {
-			$('#notebox').val('');	
-		});
+		model.noteDraft('');
+		model.editingNote(false);
 	};
 	
 	this.lastPosition = ko.observable(false);

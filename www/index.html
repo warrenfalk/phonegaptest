@@ -127,15 +127,16 @@
 			        	</div>
 						<div class="actions" data-bind="with: $root.currentPo">
 							<div data-bind="ifnot: status() == 'closed'">
-								<div class="slider" id="checkinout" data-left="slide to check out" data-right="slide to check in" data-direction="reverse"></div>
+								<div id="checkinout" data-bind="slider: { }"
+									data-left="slide to check out" data-right="slide to check in" data-direction="reverse"></div>
 							</div>
 							<button id="takepictures" data-bind="click: $root.takePic">Take Pictures</button>
 							<button id="addnote" data-bind="click: $root.addNote">Add Note</button>
 						</div>
-						<div id="noteform" data-bind="with: $root.currentPo">
+						<div id="noteform" data-bind="fade: $root.requestAddNote, with: $root.currentPo">
 							<div class="note">
 								<label for="notebox" class="caption">Note for <span data-bind="text: number">this PO</span></p>
-								<textarea id="notebox"></textarea>
+								<textarea id="notebox" data-bind="value: $root.noteDraft, disable: $root.sendingNote"></textarea>
 							</div>
 							<div class="actions">
 								<button id="cancelnote" data-bind="click: $root.cancelNote">Cancel</button>
