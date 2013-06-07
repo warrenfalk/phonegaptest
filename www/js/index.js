@@ -28,13 +28,20 @@ function ViewModel() {
 		return '';
 	}, model);
 	this.syncStatus = ko.observable('ok');
-	this.webserviceRoot = (ON_DEVICE ? 'http://wfalk-desktop:82' : '/test/webservice') + '/ServiceVerificationApp.svc';
+	this.webserviceRoot = (ON_DEVICE ? 'http://wfalk-desktop.Divisions.asp:82' : '/test/webservice') + '/ServiceVerificationApp.svc';
 	this.locationSorters = [
 		{ id: 'cust', text: 'sort by customer', func: function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); }},
 		{ id: 'dist', text: 'sort by dist', func: function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); }},
 	];
 	this.currentSorter = ko.observable('dist');
 	this.searchText = ko.observable('');
+	this.uiphase = ko.computed(function() {
+		if (model.currentPo())
+			return 'po';
+		if (model.currentLocation())
+			return 'location';
+		return 'locations';
+	}, model);
 
 	this.doSync = function() {
 		model.poManager.sendSyncRequest();
@@ -638,10 +645,7 @@ function ViewModel() {
 			pos: ko.observableArray(),
 		};
 		location.dist = ko.computed(function() {
-			var p = model.lastPosition();
-			if (!p)
-				return -1;
-			return model.myDistanceTo(p.latitude, p.longitude)
+			return model.myDistanceTo(this.latitude, this.longitude)
 		}, location);
 		location.distance = ko.computed(function() {
 			return model.formatDistance(this.dist());
@@ -728,10 +732,15 @@ function ViewModel() {
 		var screen = Screens.pop();
 	};
 	
-	this.cancel = function() {
-		var screen = Screens.pop();
-		screen.cancel();
+	this.cancelLocation = function() {
+		model.currentLocation(null);
 	};
+
+	this.cancelPo = function() {
+		model.currentPo(null);
+		if (model.currentLocation().pos().length == 1)
+			model.currentLocation(null);
+	}
 	
 	this.selectPo = function(po) {
 		model.currentPo(po);

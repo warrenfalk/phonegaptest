@@ -16,9 +16,11 @@ function Sorter(element) {
 		var $d = $('<div class="sortbox"/>');
 		$d.text(text);
 		$d.append('<div class="arrow"></div>');
-		$d.on('mousedown', function() {
+		var activate = function() {
 			control.selected(id);
-		});
+		};
+		$d.on('touchstart', activate);
+		$d.on('mousedown', activate);
 		return $d;
 	}
 
@@ -41,6 +43,8 @@ function Sorter(element) {
 	control.selected = function(sorter) {
 		if (arguments.length === 0)
 			return control._selected;
+		if (control.__selected === sorter)
+			return;
 		control._selected = sorter;
 		if (!sorter)
 			return;

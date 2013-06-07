@@ -15,15 +15,14 @@
         <title>Check In</title>
     </head>
     <body ontouchstart="">
-	
     	<div id="application">
 			<div class="container">
-				<div class="page" id="waitpage">
+				<div class="page background" id="waitpage">
 					APP WAIT
 				</div>
 			</div>
 			<div class="container" data-bind="ifnot: authToken">
-				<div class="page" id="loginpage" data-bind="fade: !(authRequest.status() == 'requested')">
+				<div class="page current" id="loginpage" data-bind="fade: !(authRequest.status() == 'requested')">
 					<div id="loginarea">
 						<div id="loginform">
 							<p><input type="text" id="loginbox" data-bind="value: authRequest.login" placeholder="user name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/></p>
@@ -34,7 +33,7 @@
 				</div>
 			</div>
 			<div class="container" data-bind="if: authToken">
-				<div class="page" id="locations" >
+				<div class="page" id="locations" data-bind="css: { current: !currentLocation() }">
 					<div class="heading">
 				    	<div class="ibar large">
 							<div class="left">
@@ -53,8 +52,8 @@
 				    	</div>
 				    	<div id="sorters" data-bind="Sorter: { sorters: locationSorters, selected: currentSorter }"></div>
 				    </div>
-					<div id="locationsarea">
-				    	<div id="records" data-bind="foreach: filteredLocations">
+					<div class="locationsarea">
+				    	<div data-bind="foreach: filteredLocations">
 			        		<div class="locrecord record data" data-bind="css: status, click: $root.selectLocation">
 								<div class="indicators"></div>
 	        					<div class="locname" data-bind="text: name"></div>
@@ -71,8 +70,80 @@
 					    </div>
 					</div>
 				</div>
-				<div id="testpage" data-bind="if: authToken">
+				<div class="container" data-bind="with: currentLocation">
+					<div class="page" id="polist" data-bind="css: { current: !$root.currentPo() }">
+		    			<div class="heading">
+				    		<div class="ibar">
+		    					<div class="left"><button class="ibtn left" id="polist_cancel" data-bind="click: $root.cancelLocation">Cancel</button></div>
+		    					<div class="title">Select PO</div>
+		    				</div>
+							<div class="location" data-bind="with: $root.currentLocation">
+								<div class="value">
+									<div class="locname" data-bind="text: name"></div>
+									<div class="locaddr" data-bind="text: address"></div>
+								</div>
+							</div>
+		    			</div>
+		    			<div class="body">
+			    			<div class="polist list" data-bind="foreach: pos">
+								<div class="record porecord" data-bind="css: status(), click: $root.selectPo">
+									<div class="indicators"></div>
+									<div class="po"><span class="number" data-bind="text: number"></span></div>
+			    					<div class="type" data-bind="text: serviceType"></div>
+			    					<div class="due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(followUpBy)).format('MM/DD')"></span></div>
+									<div class="rtarrow"></div>
+								</div>
+			    			</div>
+		    			</div>
+					</div>
 				</div>
+				<div class="container" data-bind="with: currentPo">
+					<div class="page current" id="podetails" data-bind="css: status()">
+						<div class="heading">
+					    	<div class="ibar">
+					    		<div class="left"><button class="ibtn left" id="detail_cancel" data-bind="click: $root.cancelPo">Cancel</button></div>
+					    		<div class="title">PO Details</div>
+					    	</div>
+					    </div>
+			    		<div class="body">
+							<div class="podata">
+								<section>
+									<div class="ponum"><span class="value" data-bind="text: number"></span></div>
+									<div class="location" data-bind="with: $root.currentLocation">
+										<span class="name">Location:</span>
+										<div class="value">
+											<div class="locname" data-bind="text: name"></div>
+											<div class="locaddr" data-bind="text: address"></div>
+										</div>
+									</div>
+								</section>
+								<section>
+									<div class="servicetype"><span class="name">Contract Type:</span> <span class="value" data-bind="text: serviceType"></span></div>
+								</section>
+								<section>
+									<div class="section notes"><span class="name">Scope:</span> <div class="value" data-bind="text: scope"></span></div>
+								</section>
+							</div>
+			        	</div>
+						<div class="actions" data-bind="with: $root.currentPo">
+							<div data-bind="ifnot: status() == 'closed'">
+								<div class="slider" id="checkinout" data-left="slide to check out" data-right="slide to check in" data-direction="reverse"></div>
+							</div>
+							<button id="takepictures" data-bind="click: $root.takePic">Take Pictures</button>
+							<button id="addnote" data-bind="click: $root.addNote">Add Note</button>
+						</div>
+						<div id="noteform" data-bind="with: $root.currentPo">
+							<div class="note">
+								<label for="notebox" class="caption">Note for <span data-bind="text: number">this PO</span></p>
+								<textarea id="notebox"></textarea>
+							</div>
+							<div class="actions">
+								<button id="cancelnote" data-bind="click: $root.cancelNote">Cancel</button>
+								<button id="sendnote" data-bind="click: $root.sendNote">Send</button>
+							</div>
+						</div>
+			        </div>
+			    </div>
 			</div>
     		
     	</div>
@@ -98,49 +169,6 @@
     	</script>
     	
     	<script id="screen_details" type="text/x-page">
-			<div class="heading">
-		    	<div class="ibar">
-		    		<div class="left"><button class="ibtn left" id="detail_cancel" data-bind="click: $root.cancel">Cancel</button></div>
-		    		<div class="title">PO Details</div>
-		    	</div>
-		    </div>
-    		<div id="details" data-bind="with: $root.currentPo">
-				<div class="podata">
-					<section>
-						<div class="ponum"><span class="value" data-bind="text: number"></span></div>
-						<div class="location" data-bind="with: $root.currentLocation">
-							<span class="name">Location:</span>
-							<div class="value">
-								<div class="locname" data-bind="text: name"></div>
-								<div class="locaddr" data-bind="text: address"></div>
-							</div>
-						</div>
-					</section>
-					<section>
-						<div class="servicetype"><span class="name">Contract Type:</span> <span class="value" data-bind="text: serviceType"></span></div>
-					</section>
-					<section>
-						<div class="section notes"><span class="name">Scope:</span> <div class="value" data-bind="text: scope"></span></div>
-					</section>
-				</div>
-				<div class="actions">
-					<div data-bind="ifnot: status() == 'closed'">
-						<div class="slider" id="checkinout" data-left="slide to check out" data-right="slide to check in" data-direction="reverse"></div>
-					</div>
-					<button id="takepictures" data-bind="click: $root.takePic">Take Pictures</button>
-					<button id="addnote" data-bind="click: $root.addNote">Add Note</button>
-				</div>
-				<div id="noteform">
-					<div class="note">
-						<label for="notebox" class="caption">Note for <span data-bind="text: number">this PO</span></p>
-						<textarea id="notebox"></textarea>
-					</div>
-					<div class="actions">
-						<button id="cancelnote" data-bind="click: $root.cancelNote">Cancel</button>
-						<button id="sendnote" data-bind="click: $root.sendNote">Send</button>
-					</div>
-				</div>
-        	</div>
     	</script>
     	
     	<script id="screen_checkedin" type="text/x-page">
@@ -171,29 +199,6 @@
     	</script>
     	
     	<script id="screen_polist" type="text/x-handlebars-template">
-			<div data-bind="with: currentLocation">
-    			<div id="polist" class="list" data-bind="foreach: pos">
-					<div class="record porecord" data-bind="css: status(), click: $root.selectPo">
-						<div class="indicators"></div>
-						<div class="po"><span class="number" data-bind="text: number"></span></div>
-    					<div class="type" data-bind="text: serviceType"></div>
-    					<div class="due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(followUpBy)).format('MM/DD')"></span></div>
-						<div class="rtarrow"></div>
-					</div>
-    			</div>
-    			<div id="heading">
-		    		<div class="ibar">
-    					<div class="left"><button class="ibtn left" id="polist_cancel" data-bind="click: $root.cancel">Cancel</button></div>
-    					<div class="title">Select PO</div>
-    				</div>
-					<div class="location" data-bind="with: $root.currentLocation">
-						<div class="value">
-							<div class="locname" data-bind="text: name"></div>
-							<div class="locaddr" data-bind="text: address"></div>
-						</div>
-					</div>
-    			</div>
-			</div>
     	</script>
     	
     	<script id="po_record" type="text/x-handlebars-template">
