@@ -133,7 +133,7 @@
 							<button id="takepictures" data-bind="click: $root.takePic">Take Pictures</button>
 							<button id="addnote" data-bind="click: $root.addNote">Add Note</button>
 						</div>
-						<div id="noteform" data-bind="fade: $root.requestAddNote, with: $root.currentPo">
+						<div id="noteform" data-bind="fade: $root.editingNote, with: $root.currentPo">
 							<div class="note">
 								<label for="notebox" class="caption">Note for <span data-bind="text: number">this PO</span></p>
 								<textarea id="notebox" data-bind="value: $root.noteDraft, disable: $root.sendingNote"></textarea>

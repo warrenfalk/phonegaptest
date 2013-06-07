@@ -50,8 +50,6 @@ function ViewModel() {
 		model.poManager.sendSyncRequest();
 	};
 	
-	setInterval(function() { model.doSync(); }, 120000);
-	
 	this.logout = function() {
 		model.authToken(false);
 		var db = model.db();
@@ -389,16 +387,6 @@ function ViewModel() {
 		model.lastPosition(p);
 	};
 
-	navigator.geolocation.watchPosition(
-		function(position) {
-			model.onPositionUpdate(position);
-		},
-		function() {
-			// TODO: add indicator for bad GPS
-		},
-		{ frequency: 3000, maximumAge: 60000, timeout: 60000, enableHighAccuracy: true }
-	);
-
 	this.filteredLocations = ko.computed(function() {
 		var locs = this.locations.slice().filter(function(l) { return l.matchesFilter(model.searchText()); });
 		var sorters = model.locationSorters.filter(function(q) { return q.id == model.currentSorter(); });
@@ -703,6 +691,7 @@ function ViewModel() {
 	};
 	
 	this.selectLocation = function(location) {
+		console.log("Select Location: " + location.name);
 		model.currentLocation(location);
 		var pos = model.currentLocation().pos();
 		if (pos.length == 1)
@@ -779,31 +768,6 @@ function ViewModel() {
 
 /*
 Screens.define({
-	locations: {
-		activate: function(model) {
-			model.doSync();
-		},
-		initialize: function(e, model) {
-			console.log('initialize');
-			// Setup sorters
-			// Select sort-by-distance as default
-			model.selectSort("sort_by_dist");
-			// Setup event handler for changing sort
-			$(".sortbox").touchstart(function() {
-				model.selectSort(this.id);
-			});
-			
-			navigator.geolocation.watchPosition(function(position) {
-				model.onPositionUpdate(position);
-			}, function() {
-				// TODO: add indicator for bad GPS
-			}, { frequency: 3000, maximumAge: 60000, timeout: 60000, enableHighAccuracy: true });
-		}
-	},
-	checkedin : {
-		initialize: function() {
-		},
-	},
 	details: {
 		initialize: function(e, model) {
 			$sliderdiv = $('#checkinout');
@@ -919,13 +883,56 @@ function switchToPng() {
 var init = function() {
 	console.log("device ready");
 	var model = new ViewModel();
+	
+	var startBackground = function() {
+		console.log("START BG");
+		if (!model.bgsync)
+			model.bgsync = setInterval(function() { model.doSync(); }, 900000);
+		if (!model.bggps) {
+			model.bggps = navigator.geolocation.watchPosition(
+				function(position) {
+					model.onPositionUpdate(position);
+				},
+				function() {
+					// TODO: add indicator for bad GPS
+				},
+				{ maximumAge: 180000, enableHighAccuracy: true }
+			);
+		}
+		model.doSync();
+	};
+
+	var stopBackground = function() {
+		console.log("STOP BG");
+		navigator.geolocation.clearWatch(model.bggps);
+		delete model.bggps;
+		clearInterval(model.bgsync);
+		delete model.bgsync;
+	};
+
+	var onbackbutton = function() {
+		console.log("DEVICE BACK BUTTON");
+		if (model.editingNote())
+			return model.cancelNote();
+		if (model.currentPo())
+			return model.cancelPo();
+		if (model.currentLocation())
+			return model.cancelLocation();
+		stopBackground();
+		navigator.app.exitApp();
+	};
+
 	// detect and handle android 2 (lack of svg)
 	model.needPng = 'device' in window && device.platform.toLowerCase() == 'android' && device.version.substring(0, 1) == '2';
 	if (model.needPng)
 		switchToPng();
+	document.addEventListener('backbutton', onbackbutton, false);
+	document.addEventListener('pause', stopBackground, false);
+	document.addEventListener('resume', startBackground, false);
 	ko.applyBindings(model, document.getElementById('application'));
 	model.poManager.requestDbLoad();
 	model.doAppAuth();
+	startBackground();
 };
 
 if (ON_DEVICE)
