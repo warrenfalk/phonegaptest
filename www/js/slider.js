@@ -38,7 +38,15 @@ function Slider(div) {
 		if (typeof target == 'function')
 			div.addEventListener(propname, target, false);
 	}
-	
+
+	if (typeof CustomEvent === 'undefined') {
+		var CustomEvent = function(type, dict) {
+			var event = document.createEvent('CustomEvent');
+			event.initCustomEvent(type, dict['bubbles'], dict['cancelable'], dict['detail']);
+			return event;
+		};
+	}
+
 	this.handleComplete = function(d, option) {
 		var side = d == 1 ? 'right' : 'left';
 		var event = new CustomEvent('slide' + side, { detail: { control: this, option: option, direction: d }});
