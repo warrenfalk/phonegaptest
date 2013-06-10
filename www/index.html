@@ -16,13 +16,8 @@
     </head>
     <body ontouchstart="">
     	<div id="application">
-			<div class="container">
-				<div class="page background" id="waitpage">
-					APP WAIT
-				</div>
-			</div>
 			<div class="container" data-bind="ifnot: authToken">
-				<div class="page current" id="loginpage" data-bind="fade: !(authRequest.status() == 'requested')">
+				<div class="page current" id="loginpage">
 					<div id="loginarea">
 						<div id="loginform">
 							<p><input type="text" id="loginbox" data-bind="value: authRequest.login" placeholder="user name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/></p>
@@ -149,7 +144,12 @@
 			        </div>
 			    </div>
 			</div>
-    		
+    		<div class="container">
+				<div class="page show" id="waitpage" data-bind="css: { show: $root.appwait }">
+					<div class="tagline"></div>
+				</div>
+			</div>
+
     	</div>
     	
     	<script id="screen_login" type="text/x-page">

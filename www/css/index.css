@@ -84,15 +84,34 @@ body {
 .container .page.current {
 	display: block;
 }
-.container .page.background {
+.container #waitpage.show {
 	display: block;
+}
+#waitpage {
+	z-index: 50;
+	background-color: #1b3461;
+	background-image: url(../img/svg/login-bg.svg);
+	background-size: 100%;
+	background-repeat: no-repeat;
+}
+#waitpage .tagline {
+	background-color: transparent;
+	background-image: url(../img/svg/login-tagline.svg);
+	background-size: 100%;
+	background-repeat: no-repeat;
+	background-position: left bottom;
+	height: 200px;
+	width: 100%;
+	position: absolute;
+	left: 0;
+	bottom: 75px;
 }
 
 .heading {
 	position: absolute;
 	top: 0;
 	left: 0;
-	width:100%;   
+	width:100%;
 }
 .page.left {
     -webkit-transform: translate3d(-100%, 0, 0);
@@ -275,7 +294,7 @@ body {
 	background-image: url(../img/svg/dnarrow.svg);
 	background-repeat: no-repeat;
 	background-position: 50%;
-	z-index: 100;
+	z-index: 5;
 }
 
 

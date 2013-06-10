@@ -45,6 +45,10 @@ function ViewModel() {
 	this.noteDraft = ko.observable('');
 	this.editingNote = ko.observable(false);
 	this.sendingNote = ko.observable(false);
+	this.initializing = ko.observable(true);
+	this.appwait = ko.computed(function() {
+		return model.initializing() || model.authRequest.status() == 'requested';
+	});
 
 	this.doSync = function() {
 		model.poManager.sendSyncRequest();
@@ -300,7 +304,7 @@ function ViewModel() {
 		model.postLogin(auth, "", success, fail);
 	};
 	
-	this.doAppAuth = function() {
+	this.doAppAuth = function(done) {
 		var db = model.db();
 		var expiry = (new Date().getTime() / 1000) + 60;
 		db.transaction(
@@ -308,6 +312,7 @@ function ViewModel() {
 				tx.executeSql('DELETE FROM TOKEN WHERE expires <= ?', [expiry]);
 				tx.executeSql('SELECT token FROM TOKEN WHERE expires > ? ORDER BY expires DESC', [expiry],
 					function(tx, results) {
+						done();
 						if (results.rows.length > 0) {
 							var r = results.rows.item(0);
 							model.authToken({token: r.token, expires: r.expires});
@@ -316,7 +321,7 @@ function ViewModel() {
 							if (recheck <= 0)
 								recheck = 1;
 							setTimeout(function() {
-								model.doAppAuth();
+								model.doAppAuth(function() {});
 							}, recheck);
 						}
 						else {
@@ -324,21 +329,18 @@ function ViewModel() {
 						}
 					},
 					function(err) {
+						done();
 						console.log("db get auth data failed: " + err);
 					}
 				);
 			},
 			function(err) {
+				done();
 				console.log("db get auth data failed: " + JSON.stringify(err));
 			},
 			function() {
 			}
 		);
-	};
-	
-	this.doLoginScreen = function() {
-		console.log('doLoginScreen');
-		Screens.replace('login', model);
 	};
 	
 	this.takePic = function() {
@@ -915,7 +917,7 @@ function switchToPng() {
 var init = function() {
 	console.log("device ready");
 	var model = new ViewModel();
-	
+
 	var startBackground = function() {
 		console.log("START BG");
 		if (!model.bgsync)
@@ -963,7 +965,7 @@ var init = function() {
 	document.addEventListener('resume', startBackground, false);
 	ko.applyBindings(model, document.getElementById('application'));
 	model.poManager.requestDbLoad();
-	model.doAppAuth();
+	model.doAppAuth(function() { model.initializing(false); });
 	startBackground();
 };
 
