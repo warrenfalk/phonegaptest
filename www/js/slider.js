@@ -7,8 +7,11 @@ function touchCoords(e) {
 	return c;
 }
 
-function Slider($div) {
+function Slider(div) {
+	var $div = $(div);
+	$div.addClass('slider');
 	var control = this;
+	$div.data('control', control);
 	this.grabbed = false;
 	this.endOptions = {};
 	this.optionsMode = false; // true when dragging vertically for options
@@ -24,11 +27,22 @@ function Slider($div) {
 		control.grab = { originX: c.pageX, originY: c.pageY };
 		control.dragWidth = control.calcDragWidth();
 	}
+
+	this.reverse = function(isReverse) {
+		this.direction(isReverse ? -1 : 1);
+	}
 	
 	this.calcDragWidth = function() { return control.$div.width() - control.$handle.outerWidth(); };
+
+	this.bind = function(propname, target) {
+		if (typeof target == 'function')
+			div.addEventListener(propname, target, false);
+	}
 	
 	this.handleComplete = function(d, option) {
-		control.onSlid(d, option);
+		var side = d == 1 ? 'right' : 'left';
+		var event = new CustomEvent('slide' + side, { detail: { control: this, option: option, direction: d }});
+		div.dispatchEvent(event);
 	}
 	
 	this.ungrabHandle = function() {
@@ -239,7 +253,6 @@ function Slider($div) {
 	$div.on('webkitTransitionEnd', function(event) {
 		var e = event.originalEvent;
 		if (e.propertyName == 'height' && e.target == $div.get(0)) {
-			console.log('test');
 			control.animating = false;
 			control.dragHeight = control.$div.height() - control.$handle.outerHeight();
 		}
@@ -254,6 +267,12 @@ function Slider($div) {
 	this.$div = $div;
 	this.$handle = $handle;
 	this.$caption = $caption;
-	this.direction($div.data('direction') == "reverse" ? -1 : 1);
+	this.reverse(div.dataset.direction == 'reverse');
+	if (div.dataset.rightOptions) {
+		var opts = JSON.parse(div.dataset.rightOptions);
+		this.setEndOptions(1, opts);
+	}
+	if (div.dataset.leftOptions)
+		this.setEndOptions(-1, JSON.parse(div.dataset.leftOptions));
 	$caption.css('top', (($div.height() - $caption.height()) / 2) + 'px');
 }

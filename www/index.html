@@ -127,8 +127,11 @@
 			        	</div>
 						<div class="actions" data-bind="with: $root.currentPo">
 							<div data-bind="ifnot: status() == 'closed'">
-								<div id="checkinout" data-bind="slider: { }"
-									data-left="slide to check out" data-right="slide to check in" data-direction="reverse"></div>
+								<div id="checkinout" data-bind="Slider: { slideleft: $root.tryCheckinCurrentPo, slideright: $root.tryCheckoutCurrentPo, reverse: status() != 'checkedin' }"
+									data-right-options='["Job Complete", "Requires Authorization", "Follow-up Required"]'
+									data-left="slide to check out"
+									data-right="slide to check in">
+								</div>
 							</div>
 							<button id="takepictures" data-bind="click: $root.takePic">Take Pictures</button>
 							<button id="addnote" data-bind="click: $root.addNote">Add Note</button>

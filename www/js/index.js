@@ -31,7 +31,7 @@ function ViewModel() {
 	this.webserviceRoot = (ON_DEVICE ? 'http://wfalk-desktop.Divisions.asp:82' : '/test/webservice') + '/ServiceVerificationApp.svc';
 	this.locationSorters = [
 		{ id: 'cust', text: 'sort by customer', func: function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); }},
-		{ id: 'dist', text: 'sort by dist', func: function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); }},
+		{ id: 'dist', text: 'sort by distance', func: function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); }},
 	];
 	this.currentSorter = ko.observable('dist');
 	this.searchText = ko.observable('');
@@ -181,14 +181,50 @@ function ViewModel() {
 			},
 		});
 	};
-	
+
 	this.checkinCurrentPo = function(onsuccess, onfail) {
 		model.postStatus(model.currentPo(), 'checkedin', onsuccess, onfail);
 	};
 	
+	this.tryCheckinCurrentPo = function(event) {
+		var slider = event.detail.control;
+		slider.disableWith("Checking in...");
+		var success = function() {
+			slider.enable();
+			slider.direction(-event.detail.direction);
+		}
+		var fail = function() {
+			slider.disableWith("Checkin failed");
+			model.prompt('There was a problem encountered while trying to checkin.  Please check your signal and data connection and try again', 'Notice', 'OK');
+			slider.direction(event.detail.direction);
+			slider.enable();
+		}
+		model.checkinCurrentPo(success, fail)
+	}
+	
 	this.checkoutCurrentPo = function(status, onsuccess, onfail) {
 		model.postStatus(model.currentPo(), status, onsuccess, onfail);
 	};
+
+	this.tryCheckoutCurrentPo = function(event) {
+		var slider = event.detail.control;
+		var statuses = ['closed', 'reqauth', 'reqfollowup'];
+		var status = statuses[event.detail.option.index];
+		slider.disableWith("Checking out...");
+		var success = function(syncData) {
+			slider.enable();
+			if (model.currentPo().status == 'closed')
+				$sliderdiv.hide();
+			slider.direction(-event.detail.direction);
+		}
+		var fail = function(jqXHR, textStatus, e) {
+			slider.disableWith("Checkout failed");
+			model.prompt('There was a problem encountered while trying to checkout.  Please check your signal and data connection and try again', 'Notice', 'OK');
+			slider.enable();
+			slider.direction(event.detail.direction);
+		}
+		model.checkoutCurrentPo(status, success, fail);
+	}
 	
 	this.onAuthenticated = function(token, expires) {
 		model.authToken({token: token, expires: expires});
@@ -728,10 +764,6 @@ function ViewModel() {
 	
 	this.selectPo = function(po) {
 		model.currentPo(po);
-		var screen = Screens.push('details');
-		screen.cancel = function() {
-			model.currentPo(null);
-		};
 	};
 	
 	this.map = function(map, jso, modelo) {
@@ -992,6 +1024,27 @@ ko.bindingHandlers.Sorter = {
 		}
 	},
 };
+
+ko.bindingHandlers.Slider = {
+	init: function(element, valueAccessor) {
+		var slider = new Slider(element);
+		var bindings = valueAccessor();
+		for (var propname in bindings) {
+			slider.bind(propname, bindings[propname]);
+		}
+	},
+	update: function(element, valueAccessor) {
+		var slider = $(element).data('control');
+		var bindings = valueAccessor();
+		for (var propname in bindings) {
+			var binding = bindings[propname];
+			console.log('PROPNAME: ' + propname + ', ' + (typeof binding) + ', ' + (typeof slider));
+			var val = ko.utils.unwrapObservable(binding);
+			if (typeof slider[propname] === 'function' && val !== slider[propname]())
+				slider[propname](val);
+		}
+	},
+}
 
 }());
 
