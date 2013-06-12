@@ -23,14 +23,11 @@
         
         <gap:splash src="img/launch.png" gap:platform="ios" width="640" height="920"/>
         
-        <access origin="http://192.168.101.14:82" subdomains="true"/>
-        <access origin="http://192.168.101.14:81" subdomains="true"/>
-        <access origin="http://192.168.101.14" subdomains="true"/>
-        <access origin="http://10.10.11.6:82" subdomains="true"/>
-        <access origin="http://10.10.11.6:81" subdomains="true"/>
-        <access origin="http://10.10.11.6" subdomains="true"/>
         <access origin="http://divisionsinc.com:82" subdomains="true"/>
         <access origin="http://divisionsinc.com:81" subdomains="true"/>
         <access origin="http://divisionsinc.com" subdomains="true"/>
+        <access origin="http://divisions.asp:82" subdomains="true"/>
+        <access origin="http://divisions.asp:81" subdomains="true"/>
+        <access origin="http://divisions.asp" subdomains="true"/>
         <access origin="http://localhost:81" subdomains="true"/>
 </widget>

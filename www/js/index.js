@@ -28,7 +28,7 @@ function ViewModel() {
 		return '';
 	}, model);
 	this.syncStatus = ko.observable('ok');
-	this.webserviceRoot = (ON_DEVICE ? 'http://wfalk-desktop.Divisions.asp:82' : '/test/webservice') + '/ServiceVerificationApp.svc';
+	this.webserviceRoot = (ON_DEVICE ? 'http://wfalk-desktop.divisions.asp:82' : '/test/webservice') + '/ServiceVerificationApp.svc';
 	this.locationSorters = [
 		{ id: 'cust', text: 'sort by customer', func: function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); }},
 		{ id: 'dist', text: 'sort by distance', func: function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); }},
