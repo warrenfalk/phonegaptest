@@ -49,8 +49,13 @@ function ViewModel() {
 	this.appwait = ko.computed(function() {
 		return model.initializing() || model.authRequest.status() == 'requested';
 	});
+	this.rightNow = function() { return (new Date().getTime() / 1000); }
 
 	this.doSync = function() {
+		if (model.authToken() && model.authToken.expires < model.rightNow())
+			model.authToken(false);
+		if (!model.authToken())
+			return;
 		model.poManager.sendSyncRequest();
 	};
 	
@@ -306,7 +311,7 @@ function ViewModel() {
 	
 	this.doAppAuth = function(done) {
 		var db = model.db();
-		var expiry = (new Date().getTime() / 1000) + 60;
+		var expiry = model.rightNow() + 60;
 		db.transaction(
 			function(tx) {
 				tx.executeSql('DELETE FROM TOKEN WHERE expires <= ?', [expiry]);

@@ -6,11 +6,6 @@ function Sorter(element) {
 	control.sortermap = {}
 	control.currentSorter = null;
 
-	if ('sorters' in element.dataset)
-		sorters(element.dataset.sorters);
-	if ('selected' in element.dataset)
-		selected(element.dataset.selected);
-
 	function createSortBox(text, id) {
 		console.log("Creating sorter " + id);
 		var $d = $('<div class="sortbox"/>');
