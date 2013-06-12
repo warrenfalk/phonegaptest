@@ -144,6 +144,7 @@ function Slider(div) {
 	this.enable = function() {
 		control.disabled = false;
 		control.$div.removeClass('disabled');
+		control.dragWidth = control.calcDragWidth();
 		control.disableMessage = null;
 		control.updateCaption();
 		if (!control.grabbed)
