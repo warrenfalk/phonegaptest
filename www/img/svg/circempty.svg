@@ -19,14 +19,13 @@
   <defs
      id="defs4">
     <linearGradient
-       inkscape:collect="always"
        id="linearGradient3755">
       <stop
-         style="stop-color:#d6d6d6;stop-opacity:1"
+         style="stop-color:#d0cd00;stop-opacity:1;"
          offset="0"
          id="stop3757" />
       <stop
-         style="stop-color:#5c5c5c;stop-opacity:0"
+         style="stop-color:#fffd61;stop-opacity:1;"
          offset="1"
          id="stop3760" />
     </linearGradient>
@@ -58,16 +57,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="12.554983"
-     inkscape:cx="-1.1533952"
+     inkscape:zoom="29.278613"
+     inkscape:cx="0.55921199"
      inkscape:cy="8.5059364"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="950"
      inkscape:window-height="764"
-     inkscape:window-x="2299"
-     inkscape:window-y="108"
+     inkscape:window-x="679"
+     inkscape:window-y="121"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata7">
@@ -88,7 +87,7 @@
      transform="translate(0,-1039.3622)">
     <path
        sodipodi:type="arc"
-       style="color:#000000;fill:url(#linearGradient3762);fill-opacity:1;fill-rule:nonzero;stroke:#333333;stroke-width:0.40000001000000002;stroke-miterlimit:4;stroke-opacity:0.75531918;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;opacity:0.76548673000000000"
+       style="color:#000000;fill:url(#linearGradient3762);fill-opacity:1;fill-rule:nonzero;stroke:#646600;stroke-width:0.40000001000000002;stroke-miterlimit:4;stroke-opacity:0.75531918;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;opacity:0.76548673000000000"
        id="path2987"
        sodipodi:cx="12.994927"
        sodipodi:cy="23.913696"
