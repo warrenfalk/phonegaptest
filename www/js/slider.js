@@ -32,24 +32,44 @@ function Slider(div) {
 		this.direction(isReverse ? -1 : 1);
 	}
 	
-	this.calcDragWidth = function() { return control.$div.width() - control.$handle.outerWidth(); };
+	this.calcDragWidth = function() { return control.$div.width() - control.$handle.outerWidth(true); };
 
 	this.bind = function(propname, target) {
 		if (typeof target == 'function')
 			div.addEventListener(propname, target, false);
 	}
 
+	var createCustomEvent;
 	if (typeof CustomEvent === 'undefined') {
-		var CustomEvent = function(type, dict) {
+		createCustomEvent = function(type, dict) {
+			var e = document.createEvent('Event');
+			e.initEvent(type, dict['bubbles'], dict['cancelable']);
+			if (dict.detail) {
+				if (!e.detail)
+					e.detail = {};
+				for (q in dict.detail)
+					e.detail[q] = dict.detail[q];
+			}
+			return e;
+		};
+		/*
+		createCustomEvent = function(type, dict) {
+			console.log("Falling back to document.createEvent()");
 			var event = document.createEvent('CustomEvent');
 			event.initCustomEvent(type, dict['bubbles'], dict['cancelable'], dict['detail']);
 			return event;
-		};
+		}
+		*/
+	}
+	else {
+		createCustomEvent = function(type, dict) {
+			return new CustomEvent(type, dict);
+		}
 	}
 
 	this.handleComplete = function(d, option) {
 		var side = d == 1 ? 'right' : 'left';
-		var event = new CustomEvent('slide' + side, { detail: { control: this, option: option, direction: d }});
+		var event = createCustomEvent('slide' + side, { detail: { control: this, option: option, direction: d }});
 		div.dispatchEvent(event);
 	}
 	
@@ -132,7 +152,7 @@ function Slider(div) {
 	
 	this.enterOptionsMode = function(o) {
 		control.optionsMode = true;
-		control.normalHeight = control.$div.height();
+		control.normalHeight = control.$div.outerHeight();
 		var activeOptions = [];
 		var $list = $('<div class="optionlist"/>');
 		var side = control.direction() == 1 ? 'right' : 'left';
@@ -149,8 +169,8 @@ function Slider(div) {
 		for (var i = 0; i < activeOptions.length; i++)
 			activeOptions[i].index = i;
 		control.$div.prepend($list);
-		var newHeight = control.normalHeight + $list.height();
 		control.$div.addClass('optionsmode');
+		var newHeight = control.normalHeight + $list.height();
 		control.$optionsList = $list;
 		control.activeOptions = activeOptions;
 		control.animating = true;
@@ -161,9 +181,9 @@ function Slider(div) {
 	this.exitOptionsMode = function() {
 		control.moveHandleY(0);
 		control.optionsMode = false;
-		control.$div.height(control.normalHeight);
+		control.$div.css({overflow: 'visible'});
 		control.$optionsList.remove();
-		control.$div.removeClass('optionsmode');
+		control.$div.outerHeight(control.normalHeight);
 		control.currentOption = null;
 		delete control.activeOptions;
 	}
@@ -181,6 +201,7 @@ function Slider(div) {
 	}
 	
 	this.moveHandleY = function(dy) {
+		control.dragWidth = control.calcDragWidth();
 		var dx = control.direction() == 1 ? control.dragWidth : 0;
 		control.$handle.css({'left': dx + 'px', 'bottom': -dy + 'px', '-webkit-transform': 'translate3d(0,0,0)'});
 		// try to see which option is current
@@ -218,7 +239,9 @@ function Slider(div) {
 	
 	this.direction = function(b) {
 		if (b && control.dir != b) {
+			control.$div.removeClass(control.dir === 1 ? 'left' : 'right');
 			control.dir = b;
+			control.$div.addClass(control.dir === 1 ? 'left' : 'right');
 			control.updateCaption();
 			control.dragWidth = control.calcDragWidth();
 			control.moveHandle(0);
@@ -262,7 +285,9 @@ function Slider(div) {
 		var e = event.originalEvent;
 		if (e.propertyName == 'height' && e.target == $div.get(0)) {
 			control.animating = false;
-			control.dragHeight = control.$div.height() - control.$handle.outerHeight();
+			control.dragHeight = control.$div.height() - control.$handle.outerHeight(true);
+			if (!control.optionsMode)
+				control.$div.removeClass('optionsmode');
 		}
 		else if (e.propertyName == 'left' && e.target == $handle.get(0)) {
 			// the following works around an apparent bug in webkit whereby visual updates of a class
@@ -275,12 +300,18 @@ function Slider(div) {
 	this.$div = $div;
 	this.$handle = $handle;
 	this.$caption = $caption;
-	this.reverse(div.dataset.direction == 'reverse');
-	if (div.dataset.rightOptions) {
-		var opts = JSON.parse(div.dataset.rightOptions);
+	this.reverse($div.data('direction') == 'reverse');
+	if ($div.data('right-options')) {
+		var opts = $div.data('right-options');
+		if (typeof opts === 'string')
+			opts = JSON.parse(opts);
 		this.setEndOptions(1, opts);
 	}
-	if (div.dataset.leftOptions)
-		this.setEndOptions(-1, JSON.parse(div.dataset.leftOptions));
+	if ($div.data('left-options')) {
+		var opts = $div.data('left-options');
+		if (typeof opts === 'string')
+			opts = JSON.parse(opts);
+		this.setEndOptions(-1, opts);
+	}
 	$caption.css('top', (($div.height() - $caption.height()) / 2) + 'px');
 }

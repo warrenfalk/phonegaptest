@@ -7,6 +7,7 @@ import shutil
 
 svgdir = "../www/img/svg"
 pngdir = "../www/img/gen"
+png2dir = "../www/img/gen/dbl"
 icondir = "../www/icons"
 inkscape = 'c:\Program Files (x86)\InkScape\inkscape.exe'
 
@@ -28,6 +29,8 @@ def genPngs():
 	# make dir if necessary
 	if not path.exists(pngdir):
 		os.makedirs(pngdir)
+	if not path.exists(png2dir):
+		os.makedirs(png2dir)
 	for filename in os.listdir(svgdir):
 		outname = re.sub('\.svg$', '.png', filename)
 		filepath = path.abspath(path.join(svgdir, filename))
@@ -36,6 +39,12 @@ def genPngs():
 			cmd = [inkscape, '--file=' + filepath, '--export-png=' + outpath, '--export-area-page', '--export-background-opacity=0']
 			print(" GENPNG   " + filename)
 			subprocess.call(cmd)
+		outpath = path.abspath(path.join(png2dir, outname));
+		if (outdated(filepath, outpath)):
+			cmd = [inkscape, '--file=' + filepath, '--export-png=' + outpath, '--export-area-page', '--export-background-opacity=0', '--export-dpi=180']
+			print(" GENPNG2  " + filename)
+			subprocess.call(cmd)
+
 
 def copy(source, target):
 	if outdated(source, target):

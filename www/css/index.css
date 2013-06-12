@@ -633,27 +633,52 @@ body {
 
 .slider {
 	position: relative;
+	/*
 	border: solid 1px black;
 	border-radius: 12px;
-	padding: 2px;
 	background-color: #627292;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#627292), to(#1b3461));
+	background: -webkit-linear-gradient(top, #1b3461, #627292);
+	background: linear-gradient(top, #1b3461, #627292);
+	*/
+	border: 15px solid transparent;
+	-webkit-border-image: url(../img/gen/dbl/slidegroove.png) 30 30 round;
 }
 .slider.disabled {
 	background-color: #808080;
 }
 .slider.optionsmode {
 	background-color: white;
+	border: solid 1px black;
+	border-radius: 12px;
+	-webkit-border-image: none;
 }
 .slider > .handle {
 	position: absolute;
 	left: 0;
 	bottom: 0;
-	margin: 2px;
+	margin: -12px;
 	height: 44px;
 	width: 68px;
 	border: solid 1px black;
 	border-radius: 11px;
 	background-color: #e0e0e0;
+	z-index: 5;
+}
+.slider.optionsmode > .handle {
+	margin: 2px;
+}
+.slider.right > .handle {
+	border: none;
+	background-color: transparent;
+	background-image: url(../img/gen/dbl/slidelefthandle.png);
+	background-size: 100% 100%;
+}
+.slider.left > .handle {
+	border: none;
+	background-color: transparent;
+	background-image: url(../img/gen/dbl/sliderighthandle.png);
+	background-size: 100% 100%;
 }
 .slider.grabbed > .handle {
 	background-color: #808080;
