@@ -4,6 +4,7 @@ var ON_DEVICE = document.URL.indexOf('http://') === -1;
 
 function ViewModel() {
 	var model = this;
+	model.config = {};
 	this.locations = ko.observableArray();
 	this.filter = ko.observable('');
 	this.authRequest = {
@@ -51,6 +52,83 @@ function ViewModel() {
 	});
 	this.rightNow = function() { return (new Date().getTime() / 1000); }
 
+	this.setConfig = function(name, val, fromdb) {
+		if (fromdb && name in model.config)
+			return;
+		model.config[name] = val;
+		if (name === 'lastlogin')
+			model.authRequest.login(val);
+		if (!fromdb)
+			this.saveConfig(name, val);
+	};
+
+	this.saveConfig = function(name, val) {
+		var db = model.db();
+		db.transaction(
+			function(tx) {
+				tx.executeSql('INSERT OR REPLACE INTO CONFIG (configname, configval) VALUES (?, ?)', [name, val]);
+			},
+			function(err) {
+				console.log("db store save config value failed: " + err);
+			},
+			function() {
+			}
+		);
+	};
+
+	this.requestConfig = function(oncomplete) {
+		// go ahead and start the load from the database
+		var db = model.db();
+		var dbwait = true;
+		var getwait = true;
+		var complete = function() {
+			if (dbwait || getwait)
+				return;
+			oncomplete();
+		}
+		db.transaction(
+			function(tx) {
+				tx.executeSql('SELECT configname, configval FROM CONFIG', [],
+					function(tx, results) {
+						dbwait = false;
+						complete();
+						for (var i = 0; i < results.rows.length; i++) {
+							var item = results.rows.item(i);
+							model.setConfig(item.configname, item.configval, true);
+						}
+					},
+					function(err) {
+						dbwait = false;
+						complete();
+						console.log("db store config read failed: " + err);
+					}
+				);
+			},
+			function(err) {
+				dbwait = false;
+				complete();
+				console.log("db store config read tx failed: " + err);
+			},
+			function() {
+			}
+		);
+		// also call out to the web service
+		model.get({path: '/config', noToken: true, 
+			success: function(payload) {
+				getwait = false;
+				complete();
+				if (payload && payload.config)
+					for (name in payload.config)
+						model.setConfig(name, payload.config[name], false);
+			},
+			error: function(jqXHR, textStatus, e) {
+				getwait = false;
+				complete();
+				console.log("WARNING: unable to get updated config from server: " + textStatus);
+			},
+		})
+	};
+
 	this.doSync = function() {
 		if (model.authToken() && model.authToken.expires < model.rightNow())
 			model.authToken(false);
@@ -79,19 +157,29 @@ function ViewModel() {
 			}
 		);
 	};
-	
+
+	this.get = function(options) {
+		options.method = 'GET';
+		return model.request(options);
+	}
+
 	this.post = function(options) {
+		options.method = 'POST';
+		return model.request(options);
+	}
+
+	this.request = function(options) {
 		var event = "POST[" + options.path + "]"; 
 		console.log(event);
 		try {
 			var $req = $.ajax({
-				type: 'POST',
+				type: options.method,
 				url: model.webserviceRoot + ((!model.authToken() || options.noToken) ? '' : '/' + model.authToken().token) + options.path,
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
-				data: JSON.stringify(options.payload),
+				data: options.payload ? JSON.stringify(options.payload) : null,
 				success: function(a,b) { console.log(event + " success"); options.success(a,b); },
-				error: function(a,b) { console.log(event + " error " + b); options.error(a,b); },
+				error: function(a,b,c) { console.log(event + " error " + b); options.error(a,b,c); },
 				timeout: options.timeout || 8000,
 			});
 		}
@@ -299,6 +387,8 @@ function ViewModel() {
 			model.prompt("Please enter a password", "Login", "OK");
 			return;
 		}
+
+		model.setConfig('lastlogin', auth.login(), false);
 
 		var success = function(token, expires) {
 		};
@@ -642,6 +732,7 @@ function ViewModel() {
 			db.transaction(function(tx) {
 				tx.executeSql('CREATE TABLE IF NOT EXISTS PURCHORD (id unique, data)');
 				tx.executeSql('CREATE TABLE IF NOT EXISTS TOKEN (token unique, expires)');
+				tx.executeSql('CREATE TABLE IF NOT EXISTS CONFIG (configname unique, configval)');
 			},
 			function(err) {
 				console.log("db open failed: " + err);
@@ -904,8 +995,10 @@ var init = function() {
 	document.addEventListener('pause', stopBackground, false);
 	document.addEventListener('resume', startBackground, false);
 	ko.applyBindings(model, document.getElementById('application'));
-	model.poManager.requestDbLoad();
-	model.doAppAuth(function() { model.initializing(false); });
+	model.requestConfig(function() {
+		model.poManager.requestDbLoad();
+		model.doAppAuth(function() { model.initializing(false); });
+	});
 	startBackground();
 };
 
