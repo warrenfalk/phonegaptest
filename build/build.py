@@ -31,8 +31,11 @@ def genPngs():
 		os.makedirs(pngdir)
 	if not path.exists(png2dir):
 		os.makedirs(png2dir)
+	names = set()
 	for filename in os.listdir(svgdir):
-		outname = re.sub('\.svg$', '.png', filename)
+		name = re.sub('\.svg$', '', filename)
+		names.add(name)
+		outname = name + '.png'
 		filepath = path.abspath(path.join(svgdir, filename))
 		outpath = path.abspath(path.join(pngdir, outname))
 		if outdated(filepath, outpath):
@@ -44,6 +47,20 @@ def genPngs():
 			cmd = [inkscape, '--file=' + filepath, '--export-png=' + outpath, '--export-area-page', '--export-background-opacity=0', '--export-dpi=180']
 			print(" GENPNG2  " + filename)
 			subprocess.call(cmd)
+	for filename in os.listdir(pngdir):
+		filepath = path.join(pngdir, filename)
+		if not path.isdir(filepath):
+			name = re.sub('\.png$', '', filename)
+			if not name in names:
+				print(" DELETE   " + filename)
+				os.remove(filepath)
+	for filename in os.listdir(png2dir):
+		filepath = path.join(png2dir, filename)
+		if not path.isdir(filepath):
+			name = re.sub('\.png$', '', filename)
+			if not name in names:
+				print(" DELETE   " + filename)
+				os.remove(filepath)
 
 
 def copy(source, target):
