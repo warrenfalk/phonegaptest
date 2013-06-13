@@ -4,7 +4,10 @@ var ON_DEVICE = document.URL.indexOf('http://') === -1;
 
 function ViewModel() {
 	var model = this;
-	model.config = {};
+	model.config = {
+		fromserver: false,
+		custsvcphone: 'tel:851-375-5572',
+	};
 	this.locations = ko.observableArray();
 	this.filter = ko.observable('');
 	this.authRequest = {
@@ -55,6 +58,7 @@ function ViewModel() {
 	this.setConfig = function(name, val, fromdb) {
 		if (fromdb && name in model.config)
 			return;
+		console.log((fromdb ? '[d]' : '[w]') + name + ' = ' + val);
 		model.config[name] = val;
 		if (name === 'lastlogin')
 			model.authRequest.login(val);
@@ -76,6 +80,10 @@ function ViewModel() {
 		);
 	};
 
+	this.getConfig = function(name) {
+		return model.config[name];
+	};
+
 	this.requestConfig = function(oncomplete) {
 		// go ahead and start the load from the database
 		var db = model.db();
@@ -90,24 +98,24 @@ function ViewModel() {
 			function(tx) {
 				tx.executeSql('SELECT configname, configval FROM CONFIG', [],
 					function(tx, results) {
-						dbwait = false;
-						complete();
 						for (var i = 0; i < results.rows.length; i++) {
 							var item = results.rows.item(i);
 							model.setConfig(item.configname, item.configval, true);
 						}
-					},
-					function(err) {
 						dbwait = false;
 						complete();
+					},
+					function(err) {
 						console.log("db store config read failed: " + err);
+						dbwait = false;
+						complete();
 					}
 				);
 			},
 			function(err) {
+				console.log("db store config read tx failed: " + err);
 				dbwait = false;
 				complete();
-				console.log("db store config read tx failed: " + err);
 			},
 			function() {
 			}
@@ -115,16 +123,17 @@ function ViewModel() {
 		// also call out to the web service
 		model.get({path: '/config', noToken: true, 
 			success: function(payload) {
+				model.setConfig('fromserver', true, false);
+				if (payload && payload.config)
+					for (var i = 0; i < payload.config.length; i++)
+						model.setConfig(payload.config[i].name, payload.config[i].value, false);
 				getwait = false;
 				complete();
-				if (payload && payload.config)
-					for (name in payload.config)
-						model.setConfig(name, payload.config[name], false);
 			},
 			error: function(jqXHR, textStatus, e) {
+				console.log("WARNING: unable to get updated config from server: " + textStatus);
 				getwait = false;
 				complete();
-				console.log("WARNING: unable to get updated config from server: " + textStatus);
 			},
 		})
 	};
@@ -825,7 +834,7 @@ function ViewModel() {
 	};
 
 	this.callSupport = function() {
-		window.location.href = 'tel:513-252-3255';
+		window.location.href = model.getConfig('custsvcphone');
 	}
 	
 	this.selectLocation = function(location) {
@@ -995,10 +1004,29 @@ var init = function() {
 	document.addEventListener('pause', stopBackground, false);
 	document.addEventListener('resume', startBackground, false);
 	ko.applyBindings(model, document.getElementById('application'));
-	model.requestConfig(function() {
-		model.poManager.requestDbLoad();
-		model.doAppAuth(function() { model.initializing(false); });
-	});
+	function Initialize() {
+		var initializer = this;
+		this.configStep = function() {
+			model.requestConfig(function() {
+				if (!model.getConfig('fromserver')) {
+					model.prompt('Unable to reach server, please make sure you have a signal and a data connection', 'Setup', 'OK', function() {
+						setTimeout(function() { initializer.configStep(); }, 1000);
+					});
+					return;
+				}
+				initializer.initStep();
+			})
+		};
+		this.initStep = function() {
+			model.poManager.requestDbLoad();
+			model.doAppAuth(function() { model.initializing(false); });
+		};
+		this.run = function() {
+			initializer.configStep();
+		};
+	}
+	var initializer = new Initialize();
+	initializer.run();
 	startBackground();
 };
 
