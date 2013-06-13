@@ -133,7 +133,6 @@ function Slider(div) {
 		if (!control.disabled) {
 			control.disabled = true;
 			control.$div.addClass('disabled');
-			control.$caption.css('opacity', 1);
 		}
 		control.disableMessage = message;
 		control.updateCaption();
@@ -197,8 +196,8 @@ function Slider(div) {
 		var d = control.dir;
 		if (Math.abs(dx) > Math.abs(control.dragWidth / 2))
 			d = -d;
-		control.$caption.css('marginLeft', d == 1 ? control.$handle.width() : 0);
-		control.$caption.css('marginRight', d == -1 ? control.$handle.width() : 0);
+		control.$caption.toggleClass('left', d == 1);
+		control.$caption.toggleClass('right', d == -1);
 	}
 	
 	this.moveHandleY = function(dy) {
@@ -258,9 +257,10 @@ function Slider(div) {
 	
 	this.updateCaption = function() {
 		if (control.disabled)
-			control.$caption.text(control.disableMessage);
+			control.$captiontext.text(control.disableMessage);
 		else
-			control.$caption.text(control.$div.data(control.dir == 1 ? 'left' : 'right'))
+			control.$captiontext.text(control.$div.data(control.dir == 1 ? 'left' : 'right'))
+		this.$captiontext.css('top', ((this.$caption.outerHeight() - this.$captiontext.outerHeight()) / 2) + 'px');
 	}
 	
 	this.setEndOptions = function(forDirection, options) {
@@ -271,9 +271,10 @@ function Slider(div) {
 	$handle = $('<div class="handle"/>');
 	
 	$caption = $('<div class="caption"/>');
+	$captiontext = $('<div class="text"/>');
+	$caption.append($captiontext);
 	
 	$div.append($caption);
-	$caption.css('position', 'relative');
 	
 	$handle.touchstart(function(e) { if (!control.grabbed) { control.grabHandle(e); } });
 	$handle.touchend(function() { if (control.grabbed) { control.ungrabHandle(); } });
@@ -301,6 +302,7 @@ function Slider(div) {
 	this.$div = $div;
 	this.$handle = $handle;
 	this.$caption = $caption;
+	this.$captiontext = $captiontext;
 	this.reverse($div.data('direction') == 'reverse');
 	if ($div.data('right-options')) {
 		var opts = $div.data('right-options');
@@ -314,5 +316,6 @@ function Slider(div) {
 			opts = JSON.parse(opts);
 		this.setEndOptions(-1, opts);
 	}
-	$caption.css('top', (($div.height() - $caption.height()) / 2) + 'px');
+	$caption.height($div.outerHeight());
+	this.updateCaption();
 }

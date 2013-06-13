@@ -717,8 +717,36 @@ body {
 	background-color: #808080;
 }
 .slider > .caption {
+	text-align: center;
+	border: solid 1px white;
+	position: absolute;
+	bottom: -15px;
+	left: -15px;
+	right: -15px;
 	color: white;
 	font-size: 18px;
+}
+.slider > .caption.right {
+	padding-right: 68px;
+}
+.slider > .caption.left {
+	padding-left: 68px;
+}
+.slider.disabled > .caption {
+	bottom: -2px;
+	left: -2px;
+	right: -2px;
+	padding-left: 0;
+	padding-right: 0;
+}
+.slider > .caption.right {
+	padding-right: 68px;
+}
+.slider > .caption.left {
+	padding-left: 68px;
+}
+.slider > .caption > .text {
+	position: relative;
 }
 .slider.grabbed > .caption {
 	-webkit-transition: opacity 0.3s ease-out;
