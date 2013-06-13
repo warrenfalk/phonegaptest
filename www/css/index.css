@@ -364,11 +364,11 @@ body {
 	position: relative;
 	height: 44px;
 }
-#search {
+.search {
 	position: absolute;
 	left: 30px;
 	top: 4;
-	width: 220px;
+	right: 96px;
 }
 #searchbox {
 	background: white url(../img/svg/mag.svg) no-repeat scroll 100% 50%;
@@ -379,9 +379,45 @@ body {
 	border-radius: 12px;
 	padding: 2px 30px 2px 8px;
 	font-size: 20px;
-	width: 220px;
+	width: 100%;
 }
 #searchbox.filtering {
+}
+.silverbar .buttons {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 44px;
+	width: 89px;
+	border-left: solid 1px #CCCCCC;
+}
+.silverbar > .buttons > button {
+	position: absolute;
+	top: 0;
+	display: inline-block;
+	width: 44px;
+	height: 44px;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-left: solid 1px white;
+	border-right: solid 1px #CCCCCC;
+	background-position: -1px 0;
+}
+.silverbar > .buttons > button:active {
+	background-position: -1px -44px;
+	border-left: solid 1px transparent;
+	border-right: solid 1px transparent;
+}
+.silvbtn.phone {
+	right: 44px;
+	background: transparent url(../img/svg/phone.svg) no-repeat scroll;
+}
+.silvbtn.refresh {
+	right: 0;
+	background: transparent url(../img/svg/refresh.svg) no-repeat scroll;
+}
+.silvbtn.refresh:active {
 }
 .locrecord .locname {
 	position: absolute;

@@ -36,13 +36,16 @@
 							</div>
 							<div class="title" id="maintitle">Locations</div>
 							<div class="right">
-								<button class="ibtnsq" data-bind="click: $root.refreshLocations"><img src="img/svg/refresh.svg"/></button>
 							</div>
 						</div>
 				    	<div class="silverbar">
 							<div class="indicators" data-bind="css: $root.overallStatus()"></div>
-							<div id="search">
+							<div class="search">
 				    			<input id="searchbox" placeholder="search" data-bind="input: searchText"/>
+				    		</div>
+				    		<div class="buttons">
+				    			<button class="silvbtn phone" data-bind="click: $root.callSupport"></button>
+				    			<button class="silvbtn refresh" data-bind="click: $root.refreshLocations"></button>
 				    		</div>
 				    	</div>
 				    	<div id="sorters" data-bind="Sorter: { sorters: locationSorters, selected: currentSorter }"></div>
