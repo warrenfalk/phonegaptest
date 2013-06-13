@@ -732,6 +732,10 @@ function ViewModel() {
 	this.refreshLocations = function() {
 		model.doSync();
 	};
+
+	this.callSupport = function() {
+		window.location.href = 'tel:513-252-3255';
+	}
 	
 	this.selectLocation = function(location) {
 		console.log("Select Location: " + location.name);
