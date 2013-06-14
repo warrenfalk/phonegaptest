@@ -6,7 +6,7 @@ function ViewModel() {
 	var model = this;
 	model.config = {
 		fromserver: false,
-		custsvcphone: 'tel:851-375-5572',
+		custsvcphone: 'tel:859-448-9730',
 	};
 	this.locations = ko.observableArray();
 	this.filter = ko.observable('');
