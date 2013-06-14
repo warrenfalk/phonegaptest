@@ -143,15 +143,22 @@ body {
 }
 #loginarea {
 	position: absolute;
-	top: 25%;
-	width: 100%;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	top: 140px;
 	text-align: center;
 }
 #loginform {
-	position: absolute;
-	left: 0;
-	top: 0;
 	width: 100%;
+	height: 100%;
+}
+#loginform p {
+	font-size: 21px;
+	color: black;
+	margin: 0;
+	text-shadow: 0px 1px white;
+	padding: 8px;
 }
 #loginform input {
 	font-size: 22px;
@@ -159,36 +166,129 @@ body {
 	border-radius: 6px;
 	padding: 6px;
 }
+#loginform #provideridbox {
+	position: absolute;
+	top: 0;
+	left: 60px;
+	right: 60px;
+}
+#loginform #loginbox {
+	position: absolute;
+	top: 60px;
+	left: 60px;
+	right: 60px;
+}
 #loginform button {
-	height: 89px;
-	width: 274px;
-	background: url(../img/svg/btn-login.svg);
-	background-repeat: no-repeat;
-	background-position: 0 0;
-	border: none;
-	color: black;
-	text-shadow: 0px 1px white;
+	position: absolute;
+	top: 120px;
+	left: 60px;
+	right: 60px;
+	height: 68px;
+	border-radius: 15px;
+	font-size: 17px;
+}
+#pinform {
+	position: absolute;
+	top: 120px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	border: solid 1px white;
+}
+#pinform .pinkeypad {
+	position: absolute;
+	top: 50px;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+.pinkeypad {
+	text-align: center;
+}
+#pinform .keypad {
+	position: absolute;
+	top: 60px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+#pinform .prompt {
+	font-size: 20px;
+	color: white;
+	text-shadow: 0px -1px #4f6c8b;
+	background-color: rgba(0, 0, 0, 0.2);
+	display: block;
+	padding: 8px;
+	margin: 0;
+	text-align: center;
+}
+#pinform .prompt .login {
 	font-weight: bold;
-	margin: 3px;
-	font-size: 30px;
 }
-#loginform button:active {
-	background-repeat: no-repeat, no-repeat;
-	background-position: 0 100%;
-}
-#loginlogo {
+#pinform button.cancel {
+	background: transparent url(../img/svg/pincancel.svg);
+	background-position: 4px 4px;
+	background-repeat: no-repeat;
+	width: 44px;
+	height: 44px;
+	background-repeat: repeat-none;
+	border: none;
+	padding: none;
 	position: absolute;
 	left: 0;
 	top: 0;
-	width: 100%;
-	text-align: center; 
-	display: none;
 }
-#loginlogo img {
-	width: 60%;
-	height: auto;
+.pinkeypad .keypad {
+	overflow: hidden;
+	background-color: #333333;
+}
+.pinkeypad .key {
+	position: absolute;
+	text-align: center;
+	background: #333333;
+	top: 50%;
+	border: none;
+	color: white;
+	border-right: solid 1px #333333;
+	background: -webkit-linear-gradient(top, #333333 0%, #222222 49%, #111111 50%, #111111 100%);
+}
+.pinkeypad .key:active {
+	transition: none;
+	background: black;
+	color: yellow;
+}
+.pinkeypad .key1 { left:   0; width: 33%; top:   0; height: 25%; }
+.pinkeypad .key2 { left: 33%; width: 33%; top:   0; height: 25%; }
+.pinkeypad .key3 { left: 66%; width: 34%; top:   0; height: 25%; }
+
+.pinkeypad .key4 { left:   0; width: 33%; top: 25%; height: 25%; }
+.pinkeypad .key5 { left: 33%; width: 33%; top: 25%; height: 25%; }
+.pinkeypad .key6 { left: 66%; width: 34%; top: 25%; height: 25%; }
+
+.pinkeypad .key7 { left:   0; width: 33%; top: 50%; height: 25%; }
+.pinkeypad .key8 { left: 33%; width: 33%; top: 50%; height: 25%; }
+.pinkeypad .key9 { left: 66%; width: 34%; top: 50%; height: 25%; }
+
+.pinkeypad .key0 { left: 33%; width: 33%; top: 75%; height: 25%; }
+
+.pinkeypad .key .text {
+	font-size: 20px;
 }
 
+.pinkeypad .feedback {
+	margin: 0 auto;
+}
+
+.pinkeypad .feedback .cell {
+	display: inline-block;
+	width: 16%;
+	height: 50px;
+	border: solid 1px white;
+	margin: 1%;
+}
+.pinkeypad .feedback .cell.filled {
+	background-color: black;
+}
 
 /* TOP BAR */
 

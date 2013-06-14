@@ -11,9 +11,10 @@ function ViewModel() {
 	this.locations = ko.observableArray();
 	this.filter = ko.observable('');
 	this.authRequest = {
+		company: ko.observable(),
 		login: ko.observable(),
-		password: ko.observable(),
-		status: ko.observable('ready'),
+		password: ko.observable(''),
+		status: ko.observable('need login'),
 	};
 	this.authToken = ko.observable();
 	this.authStatus = ko.observable();
@@ -62,6 +63,8 @@ function ViewModel() {
 		model.config[name] = val;
 		if (name === 'lastlogin')
 			model.authRequest.login(val);
+		if (name == 'lastcompanyid')
+			model.authRequest.company(val);
 		if (!fromdb)
 			this.saveConfig(name, val);
 	};
@@ -148,6 +151,7 @@ function ViewModel() {
 	
 	this.logout = function() {
 		model.authToken(false);
+		model.authRequest.status('need login');
 		var db = model.db();
 		db.transaction(
 			function(tx) {
@@ -252,22 +256,24 @@ function ViewModel() {
 	};
 
 	this.postLogin = function(auth, data, onsuccess, onfail) {
+		var company = auth.company();
 		var login = auth.login();
 		var password = auth.password();
 		auth.status('requested');
 		model.post({
 			noToken: true,
-			path: '/auth/' + login,
+			path: '/auth/' + company + '/' + login,
 			payload: {password: password, data: data},
 			success: function(response) {
-				auth.status('ready');
 				if (response.status == "Authorized") {
+					auth.status('ready');
 					var expiry = Math.round(parseFloat(response.expires)) + Math.round((new Date().getTime() / 1000));
 					console.log("Received token: " + response.token + " expires in: " + response.expires + ": absolute: " + expiry);
 					model.onAuthenticated(response.token, expiry);
 					onsuccess(response.token, expiry);
 				}
 				else {
+					auth.status('need pin');
 					if (response.status == "Authorization failed")
 						onfail("Authorization failed, please try again");
 					else
@@ -275,7 +281,7 @@ function ViewModel() {
 				}
 			},
 			error: function(jqXHR, textStatus, e) {
-				auth.status('ready');
+				auth.status('need pin');
 				if (textStatus == "error")
 					onfail("There was an unexpected problem processing this login request.  Please try again");
 				else if (textStatus == "timeout")
@@ -383,20 +389,35 @@ function ViewModel() {
 			$div.fadeIn();
 		}
 	};
-	
-	this.loginClick = function() {
+
+	this.acceptLogin = function() {
 		var auth = model.authRequest;
+
+		if (!auth.company()) {
+			model.prompt("Please enter a company id", "Login", "OK");
+			return;
+		}
 		
 		if (!auth.login()) {
 			model.prompt("Please enter a login", "Login", "OK");
 			return;
 		}
 		
-		if (!auth.password()) {
-			model.prompt("Please enter a password", "Login", "OK");
-			return;
-		}
+		model.authRequest.status('need pin');
+	};
 
+	this.cancelPin = function() {
+		model.authRequest.status('need login');
+	}
+	
+	this.loginClick = function(e) {
+		console.log('LOGIN');
+		var auth = model.authRequest;
+
+		console.log(e);
+		auth.password(e.detail.pin);
+		
+		model.setConfig('lastcompanyid', auth.company(), false);
 		model.setConfig('lastlogin', auth.login(), false);
 
 		var success = function(token, expires) {
@@ -1009,7 +1030,7 @@ var init = function() {
 		this.configStep = function() {
 			model.requestConfig(function() {
 				if (!model.getConfig('fromserver')) {
-					model.prompt('Unable to reach server, please make sure you have a signal and a data connection', 'Setup', 'OK', function() {
+					model.prompt('Unable to reach server, please make sure you have a signal and a data connection.  Some features may not work correctly', 'No Connection', 'OK', function() {
 						setTimeout(function() { initializer.configStep(); }, 1000);
 					});
 					return;
@@ -1018,6 +1039,8 @@ var init = function() {
 			})
 		};
 		this.initStep = function() {
+			if (model.authRequest.login() && model.authRequest.company() && model.authRequest.status() == 'need login')
+				model.authRequest.status('need pin');
 			model.poManager.requestDbLoad();
 			model.doAppAuth(function() { model.initializing(false); });
 		};
@@ -1105,6 +1128,27 @@ ko.bindingHandlers.Slider = {
 			var val = ko.utils.unwrapObservable(binding);
 			if (typeof slider[propname] === 'function' && val !== slider[propname]())
 				slider[propname](val);
+		}
+	},
+}
+
+ko.bindingHandlers.PinKeyPad = {
+	init: function(element, valueAccessor) {
+		var pkp = new PinKeyPad(element);
+		var bindings = valueAccessor();
+		for (var propname in bindings) {
+			pkp.bind(propname, bindings[propname]);
+		}
+	},
+	update: function(element, valueAccessor) {
+		var pkp = $(element).data('control');
+		var bindings = valueAccessor();
+		for (var propname in bindings) {
+			var binding = bindings[propname];
+			console.log('PROPNAME: ' + propname + ', ' + (typeof binding) + ', ' + (typeof pkp));
+			var val = ko.utils.unwrapObservable(binding);
+			if (typeof pkp[propname] === 'function' && val !== pkp[propname]())
+				pkp[propname](val);
 		}
 	},
 }

@@ -11,6 +11,7 @@
         <script type="text/javascript" src="js/fixture.js"></script>
         <script type="text/javascript" src="js/moment.js"></script>
         <script type="text/javascript" src="js/slider.js"></script>
+        <script type="text/javascript" src="js/pinkeypad.js"></script>
         <script type="text/javascript" src="js/sorter.js"></script>
         <title>Check In</title>
     </head>
@@ -18,11 +19,17 @@
     	<div id="application">
 			<div class="container" data-bind="ifnot: authToken">
 				<div class="page current" id="loginpage">
-					<div id="loginarea">
+					<div id="loginarea" data-bind="if: $root.authRequest.status() == 'need login'">
 						<div id="loginform">
-							<p><input type="text" id="loginbox" data-bind="value: authRequest.login" placeholder="user name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/></p>
-							<p><input type="password" id="passwordbox" data-bind="value: authRequest.password" placeholder="PIN"/></p>
-							<p><button id="loginbutton" data-bind="click: $root.loginClick">Login</button></p>
+							<input type="text" id="provideridbox" data-bind="value: authRequest.company" placeholder="company id" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+							<input type="text" id="loginbox" data-bind="value: authRequest.login" placeholder="user name" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+							<button data-bind="click: $root.acceptLogin">Continue</button>
+						</div>
+					</div>
+					<div id="pinarea" data-bind="if: $root.authRequest.status() == 'need pin'">
+						<div id="pinform">
+							<p class="prompt"><button class="cancel" data-bind="click: $root.cancelPin"></button> Enter pin for <span class="login">wfalk</span></p>
+							<div data-bind="PinKeyPad: { enter: $root.loginClick }" data-pin-length="5"></div>
 						</div>
 					</div>
 				</div>

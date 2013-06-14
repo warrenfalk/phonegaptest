@@ -52,14 +52,6 @@ function Slider(div) {
 			}
 			return e;
 		};
-		/*
-		createCustomEvent = function(type, dict) {
-			console.log("Falling back to document.createEvent()");
-			var event = document.createEvent('CustomEvent');
-			event.initCustomEvent(type, dict['bubbles'], dict['cancelable'], dict['detail']);
-			return event;
-		}
-		*/
 	}
 	else {
 		createCustomEvent = function(type, dict) {
