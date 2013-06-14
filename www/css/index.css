@@ -818,13 +818,23 @@ body {
 }
 .slider > .caption {
 	text-align: center;
-	border: solid 1px white;
 	position: absolute;
 	bottom: -15px;
 	left: -15px;
 	right: -15px;
 	color: white;
 	font-size: 18px;
+}
+.slider.optionsmode > .caption {
+	bottom: -1px;
+	left: -1px;
+	right: -1px;
+}
+.slider > .caption.right {
+	padding-right: 68px;
+}
+.slider > .caption.left {
+	padding-left: 68px;
 }
 .slider > .caption.right {
 	padding-right: 68px;
@@ -838,12 +848,6 @@ body {
 	right: -2px;
 	padding-left: 0;
 	padding-right: 0;
-}
-.slider > .caption.right {
-	padding-right: 68px;
-}
-.slider > .caption.left {
-	padding-left: 68px;
 }
 .slider > .caption > .text {
 	position: relative;

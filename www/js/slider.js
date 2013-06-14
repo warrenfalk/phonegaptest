@@ -84,7 +84,7 @@ function Slider(div) {
 		}
 		delete control.grab;
 		if (!control.disabled)
-			control.moveHandle(0);
+			control.moveHandle(0, true);
 	}
 	
 	this.dragHandle = function(e) {
@@ -173,6 +173,7 @@ function Slider(div) {
 	this.exitOptionsMode = function() {
 		control.moveHandleY(0);
 		control.optionsMode = false;
+		control.animating = true;
 		control.$div.css({overflow: 'visible'});
 		control.$optionsList.remove();
 		control.$div.outerHeight(control.normalHeight);
@@ -180,10 +181,10 @@ function Slider(div) {
 		delete control.activeOptions;
 	}
 	
-	this.moveHandle = function(dx) {
+	this.moveHandle = function(dx, animate) {
 		var tx = (control.dir == 1) ? dx : control.dragWidth - dx;
 		var css = {'left': tx + 'px', '-webkit-transform': 'translate3d(0,0,0)'};
-		css['-webkit-transition'] = control.grabbed ? '' : 'left 0.1s ease-out';
+		css['-webkit-transition'] = animate ? 'left 0.1s ease-out' : '';
 		control.$handle.css(css);
 		var d = control.dir;
 		if (Math.abs(dx) > Math.abs(control.dragWidth / 2))
@@ -191,7 +192,7 @@ function Slider(div) {
 		control.$caption.toggleClass('left', d == 1);
 		control.$caption.toggleClass('right', d == -1);
 	}
-	
+
 	this.moveHandleY = function(dy) {
 		control.dragWidth = control.calcDragWidth();
 		var dx = control.direction() == 1 ? control.dragWidth : 0;
@@ -236,13 +237,13 @@ function Slider(div) {
 			control.$div.addClass(control.dir === 1 ? 'left' : 'right');
 			control.updateCaption();
 			control.dragWidth = control.calcDragWidth();
-			control.moveHandle(0);
 			var eo = control.endOptions[b];
 			var hasOptions = eo && eo.length;
 			if (hasOptions)
 				control.$div.addClass('hasoptions');
 			else
 				control.$div.removeClass('hasoptions');
+			control.moveHandle(0);
 		}
 		return control.dir;
 	}
