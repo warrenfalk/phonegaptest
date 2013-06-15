@@ -29,7 +29,7 @@
 					<div id="pinarea" data-bind="if: $root.authRequest.status() == 'need pin'">
 						<div id="pinform">
 							<p class="prompt"><button class="cancel" data-bind="click: $root.cancelPin"></button> Enter pin for <span class="login">wfalk</span></p>
-							<div data-bind="PinKeyPad: { enter: $root.loginClick }" data-pin-length="5"></div>
+							<div data-bind="PinKeyPad: { enter: $root.loginClick, cancel: $root.cancelPin }" data-pin-length="5"></div>
 						</div>
 					</div>
 				</div>

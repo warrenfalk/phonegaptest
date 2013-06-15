@@ -269,10 +269,16 @@ body {
 .pinkeypad .key8 { left: 33%; width: 33%; top: 50%; height: 25%; }
 .pinkeypad .key9 { left: 66%; width: 34%; top: 50%; height: 25%; }
 
+.pinkeypad .keyL { left:   0; width: 33%; top: 75%; height: 25%; }
 .pinkeypad .key0 { left: 33%; width: 33%; top: 75%; height: 25%; }
+.pinkeypad .keyR { left: 66%; width: 34%; top: 75%; height: 25%; }
 
 .pinkeypad .key .text {
 	font-size: 20px;
+}
+.pinkeypad .keyL .text ,
+.pinkeypad .keyR .text {
+	font-size: 16px;
 }
 
 .pinkeypad .feedback {
