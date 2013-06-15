@@ -291,9 +291,12 @@ body {
 	height: 50px;
 	border: solid 1px white;
 	margin: 1%;
+	border-radius: 10px;
+	background-color: rgba(0, 0, 0, 0.2);
 }
 .pinkeypad .feedback .cell.filled {
-	background-color: black;
+	background-image: url(../img/svg/asterisk.svg);
+	background-size: 100% 100%;
 }
 
 /* TOP BAR */
