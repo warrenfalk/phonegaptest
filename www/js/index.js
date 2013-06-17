@@ -908,7 +908,6 @@ function ViewModel() {
 		location.matchesFilter = function(f) {
 			if (typeof f === 'undefined' || f === '')
 				return true;
-			console.log('FILTER: ' + f);
 			f = f.toLowerCase();
 			for (var i = 0; i < this.pos().length; i++) {
 				var po = this.pos()[i];
@@ -1232,11 +1231,17 @@ ko.bindingHandlers.iscroll = {
 		var $e = $(element);
 		$e.addClass('iscroll');
 		$e.height($e.parent().height());
-		setTimeout(function() {
-			var control = new iScroll($e.get(0));
-		}, 100);
+		var control = new iScroll($e.get(0));
+		$e.data('control', control);
 	},
 	update: function(element, valueAccessor) {
+		ko.utils.unwrapObservable(valueAccessor());
+		var $e = $(element);
+		var control = $e.data('control');
+		console.log('REFRESHING...' + control);
+		setTimeout(function() {
+			control.refresh();
+		}, 100);
 	},
 }
 

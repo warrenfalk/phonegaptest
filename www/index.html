@@ -60,7 +60,7 @@
 				    	<div id="sorters" data-bind="Sorter: { sorters: locationSorters, selected: currentSorter }"></div>
 				    </div>
 					<div class="locationsarea">
-						<div data-bind="iscroll: true">
+						<div data-bind="iscroll: filteredLocations">
 					    	<div data-bind="foreach: filteredLocations">
 				        		<div class="locrecord record data" data-bind="css: status, click: $root.selectLocation">
 									<div class="indicators"></div>
@@ -94,7 +94,7 @@
 							</div>
 		    			</div>
 		    			<div class="body">
-		    				<div data-bind="iscroll: true">
+		    				<div data-bind="iscroll: pos">
 				    			<div class="polist list" data-bind="foreach: pos">
 									<div class="record porecord" data-bind="css: status(), click: $root.selectPo">
 										<div class="indicators"></div>
