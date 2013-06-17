@@ -1084,7 +1084,7 @@ var init = function() {
 	};
 
 	// detect and handle android 2 (lack of svg)
-	model.needPng = 'device' in window && device.platform.toLowerCase() == 'android' && device.version.substring(0, 1) == '2';
+	model.needPng = 'device' in window && window.device.platform && device.platform.toLowerCase() == 'android' && device.version.substring(0, 1) == '2';
 	if (model.needPng)
 		switchToPng();
 	document.addEventListener('backbutton', onbackbutton, false);
