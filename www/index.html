@@ -30,7 +30,7 @@
 					<div id="pinarea" data-bind="if: ['need pin', 'change pin', 'confirm pin'].indexOf($root.authRequest.status()) != -1">
 						<p class="prompt" data-bind="text: $root.authRequest.prompt"></prompt>
 						<div id="pinform">
-							<p class="login">wfalk<button class="cancel" data-bind="click: $root.cancelPin">Change</button></p>
+							<p class="login"><span data-bind="text: $root.authRequest.login()">Login</span><button class="cancel" data-bind="click: $root.cancelPin">Change</button></p>
 							<div data-bind="PinKeyPad: { enter: $root.loginClick, cancel: $root.cancelPin }" data-pin-length="5"></div>
 						</div>
 					</div>
