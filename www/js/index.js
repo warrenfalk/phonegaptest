@@ -16,6 +16,15 @@ function ViewModel() {
 		password: ko.observable(''),
 		status: ko.observable('need login'),
 	};
+	this.authRequest.prompt = ko.computed(function() {
+		if (this.status() == 'need pin')
+			return 'Enter your pin';
+		else if (this.status() == 'change pin')
+			return 'Please enter a new pin';
+		else if (this.status() == 'confirm pin')
+			return 'Please confirm your new pin';
+	}, this.authRequest);
+
 	this.authToken = ko.observable();
 	this.authStatus = ko.observable();
 	this.selectionStack = [];
@@ -193,7 +202,7 @@ function ViewModel() {
 				data: options.payload ? JSON.stringify(options.payload) : null,
 				success: function(a,b) { console.log(event + " success"); options.success(a,b); },
 				error: function(a,b,c) { console.log(event + " error " + b); options.error(a,b,c); },
-				timeout: options.timeout || 8000,
+				timeout: options.timeout || 12000,
 			});
 		}
 		catch (e) {
@@ -202,6 +211,25 @@ function ViewModel() {
 		}
 		
 	};
+
+	this.postPinChange = function(onsuccess, onfail) {
+		model.authRequest.status('requested');
+		model.post({
+			path: '/changepass/' + model.authRequest.company() + '/' + model.authRequest.login(),
+			payload: { newpass: model.pinCandidate, oldpass: model.authRequest.password() },
+			success: function(response) {
+				if (response.errors)
+					return onfail(null, response.errors[0], null);
+				model.authRequest.status('ready');
+				model.authRequest.password(model.pinCandidate);
+				delete model.pinCandidate;
+				onsuccess();
+			},
+			error: function(jqXHR, textStatus, e) {
+				onfail(jqXHR, textStatus, e);
+			},
+		})
+	}
 
 	this.postSync = function(hashes, onsuccess, onfail) {
 		model.syncStatus('waiting');
@@ -265,16 +293,27 @@ function ViewModel() {
 			path: '/auth/' + company + '/' + login,
 			payload: {password: password, data: data},
 			success: function(response) {
-				if (response.status == "Authorized") {
-					auth.status('ready');
+				var authStatus = response.status.split(/ /);
+				if (authStatus.indexOf("Authorized") != -1) {
+					var finalAuth = function() { 
+						auth.status('ready');
+						model.onAuthenticated(response.token, expiry);
+						onsuccess(response.token, expiry);
+					};
 					var expiry = Math.round(parseFloat(response.expires)) + Math.round((new Date().getTime() / 1000));
 					console.log("Received token: " + response.token + " expires in: " + response.expires + ": absolute: " + expiry);
-					model.onAuthenticated(response.token, expiry);
-					onsuccess(response.token, expiry);
+					if (authStatus.indexOf('PinChangeRequired') != -1) {
+						auth.status('change pin');
+						model.prompt('Please create a new pin for ' + auth.login());
+						model.onpinchange = finalAuth;
+					}
+					else {
+						finalAuth();
+					}
 				}
 				else {
 					auth.status('need pin');
-					if (response.status == "Authorization failed")
+					if (authStatus[0] == "Unauthorized")
 						onfail("Authorization failed, please try again");
 					else
 						onfail(response.status);
@@ -411,22 +450,49 @@ function ViewModel() {
 	}
 	
 	this.loginClick = function(e) {
-		console.log('LOGIN');
-		var auth = model.authRequest;
+		if (model.authRequest.status() == 'need pin') {
+			console.log('LOGIN');
+			var auth = model.authRequest;
 
-		console.log(e);
-		auth.password(e.detail.pin);
-		
-		model.setConfig('lastcompanyid', auth.company(), false);
-		model.setConfig('lastlogin', auth.login(), false);
+			console.log(e);
+			auth.password(e.detail.pin);
+			
+			model.setConfig('lastcompanyid', auth.company(), false);
+			model.setConfig('lastlogin', auth.login(), false);
 
-		var success = function(token, expires) {
-		};
-		var fail = function(message) {
-			model.prompt(message, 'Login');
-		};
-		// TODO: add relevant device data below to 'data' param
-		model.postLogin(auth, "", success, fail);
+			var success = function(token, expires) {
+			};
+			var fail = function(message) {
+				model.prompt(message, 'Login');
+			};
+			// TODO: add relevant device data below to 'data' param
+			model.postLogin(auth, "", success, fail);
+		}
+		else if (model.authRequest.status() == 'change pin') {
+			model.pinCandidate = e.detail.pin;
+			if (['12345','11111','00000'].indexOf(model.pinCandidate) != -1) {
+				model.prompt("Sorry, your pin cannot be 12345, 00000, or 11111.  Please try again");
+			}
+			else {
+				model.authRequest.status('confirm pin');
+			}
+		}
+		else if (model.authRequest.status() == 'confirm pin') {
+			if (model.pinCandidate != e.detail.pin) {
+				model.prompt("The second pin you entered did not match the first.  Please begin again");
+				model.authRequest.status('change pin');
+			}
+			else {
+				var success = function() {
+					model.onpinchange();
+				}
+				var failure = function() {
+					model.prompt("Changing your pin failed.  Please make sure you have a data connection and try again.");
+					model.authRequest.status('change pin');
+				}
+				model.postPinChange(success, failure);
+			}
+		}
 	};
 	
 	this.doAppAuth = function(done) {

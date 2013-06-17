@@ -45,30 +45,34 @@ function PinKeyPad(div) {
 	var $keypad = $('<div class="keypad"/>');
 	$div.append($keypad);
 
+	var updateFeedback = function() {
+		$.each(control.feedbackCells, function(i,v) {
+			v.cell.toggleClass('filled', control.currentPin.length > i);
+		});
+	};
+
 	this.keyClick = function(key) {
 		var keynum = key.index;
 		if (key.index < 10) {
 			// number key was pressed
 			control.currentPin = control.currentPin + ('' + keynum);
-			$.each(control.feedbackCells, function(i,v) {
-				v.cell.toggleClass('filled', control.currentPin.length > i);
-			});
+			updateFeedback();
 			if (control.currentPin.length == pinLength) {
-				var event = createCustomEvent('enter', { detail: { control: control, pin: this.currentPin }});
-				div.dispatchEvent(event);
+				(function(pin) {
+					var event = createCustomEvent('enter', { detail: { control: control, pin: pin }});
+					div.dispatchEvent(event);
+				})(this.currentPin);
+				this.currentPin = '';
+				updateFeedback();
 			}
 		}
 		else if (key.index == 11) {
 			control.currentPin = '';
-			$.each(control.feedbackCells, function(i,v) {
-				v.cell.removeClass('filled');
-			});
+			updateFeedback();
 		}
 		else if (key.index == 10) {
 			control.currentPin = '';
-			$.each(control.feedbackCells, function(i,v) {
-				v.cell.removeClass('filled');
-			});
+			updateFeedback();
 			var event = createCustomEvent('cancel', { detail: { control: control }});
 			div.dispatchEvent(event);
 		}

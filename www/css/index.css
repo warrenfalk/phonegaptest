@@ -187,13 +187,25 @@ body {
 	border-radius: 15px;
 	font-size: 17px;
 }
+#pinarea .prompt {
+	position: absolute;
+	top: 130px;
+	text-align: center;
+	font-size: 20px;
+	margin: 0 auto;
+	width: 100%;
+	text-shadow: 0px 1px white;
+	color: #1f3759;
+}
 #pinform {
 	position: absolute;
-	top: 120px;
-	bottom: 0;
-	left: 0;
-	right: 0;
+	top: 170px;
+	bottom: 8px;
+	left: 8px;
+	right: 8px;
+	border-radius: 15px;
 	border: solid 1px white;
+	overflow: hidden;
 }
 #pinform .pinkeypad {
 	position: absolute;
@@ -212,7 +224,7 @@ body {
 	left: 0;
 	right: 0;
 }
-#pinform .prompt {
+#pinform .login {
 	font-size: 20px;
 	color: white;
 	text-shadow: 0px -1px #4f6c8b;
@@ -221,21 +233,17 @@ body {
 	padding: 8px;
 	margin: 0;
 	text-align: center;
-}
-#pinform .prompt .login {
 	font-weight: bold;
 }
 #pinform button.cancel {
-	background: transparent url(../img/svg/pincancel.svg);
-	background-position: 4px 4px;
-	background-repeat: no-repeat;
-	width: 44px;
-	height: 44px;
-	background-repeat: repeat-none;
-	border: none;
-	padding: none;
+	height: 30px;
+	border: solid 1px white;
+	border-radius: 10px;
+	background-color: rgba(255, 255, 255, 0.4);
+	margin: 5px;
+	padding: 0 5px;
 	position: absolute;
-	left: 0;
+	right: 0;
 	top: 0;
 }
 .pinkeypad .keypad {
