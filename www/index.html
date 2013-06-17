@@ -170,62 +170,6 @@
 
     	</div>
     	
-    	<script id="screen_login" type="text/x-page">
-    	</script>
-    	
-    	
-    	<script id="hold" type="text/x-page">
-			<div id="loginarea" class="step0">
-				<div id="loginlogo"></div>
-				<div id="loginspinner">
-					<div id="loginwaitpanel">
-						<img src="img/spinner.gif" width="75" height="75"/>
-						<p>Please wait...</p>
-					</div>
-				</div>
-			</div>
-    	</script>
-    	
-    	<script id="screen_locations" type="text/x-page">
-
-    	</script>
-    	
-    	<script id="screen_details" type="text/x-page">
-    	</script>
-    	
-    	<script id="screen_checkedin" type="text/x-page">
-	    	<div class="ibar">
-	    		<div class="left"><button class="ibtn left" id="detail_cancel" data-bind="click: $root.cancel">Cancel</button></div>
-	    		<div class="title">Check Out</div>
-	    	</div>
-    		<div id="details" data-bind="with: $root.currentPo">
-				<div class="podata">
-					<section>
-						<div class="ponum"><span class="name">PO:</span><span class="value" data-bind="text: number"></span></div>
-						<div class="location" data-bind="with: $root.currentLocation">
-							<span class="name">Location:</span>
-							<div class="value">
-								<div class="locname" data-bind="text: name"></div>
-								<div class="locaddr" data-bind="text: address"></div>
-							</div>
-						</div>
-					</section>
-				</div>
-				<div class="actions">
-					<button class="bigbtn jobcomplete" data-bind="click: $root.completeJob">CHECK OUT<br/>(job complete)</button>
-					<button class="bigbtn incomplete" data-bind="click: $root.incompleteJob">CHECK OUT<br/>(requires authentication)</button>
-					<button class="bigbtn incomplete" data-bind="click: $root.incompleteJob">CHECK OUT<br/>(follow up required)</button>
-					<button class="bigbtn contact" data-bind="click: $root.contactCustomerService">CALL<br/>CUSTOMER SERVICE</button>
-				</div>
-        	</div>
-    	</script>
-    	
-    	<script id="screen_polist" type="text/x-handlebars-template">
-    	</script>
-    	
-    	<script id="po_record" type="text/x-handlebars-template">
-    	</script>
-    	
         <script type="text/javascript" src="cordova.js"></script>
     	<script type="text/javascript" src="js/index.js"></script>
     </body>
