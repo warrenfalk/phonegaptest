@@ -645,6 +645,11 @@ body {
 	background-position: 7px 50%;
 	background-repeat: no-repeat
 }
+.locked .indicators, .indicators.locked {
+	background-image: url(../img/svg/padlock.svg);
+	background-position: 7px 50%;
+	background-repeat: no-repeat
+}
 .closed .indicators, .indicators.closed {
 	background-image: url(../img/svg/checkgray.svg);
 	background-position: 7px 50%;

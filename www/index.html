@@ -132,7 +132,7 @@
 							</div>
 			        	</div>
 						<div class="actions" data-bind="with: $root.currentPo">
-							<div data-bind="ifnot: status() == 'closed'">
+							<div data-bind="ifnot: ['closed', 'locked'].indexOf(status()) != -1">
 								<div id="checkinout" data-bind="Slider: { slideleft: $root.tryCheckinCurrentPo, slideright: $root.tryCheckoutCurrentPo, reverse: status() != 'checkedin' }"
 									data-right-options='["Job Complete", "Requires Authorization", "Follow-up Required"]'
 									data-left="slide to check out"
