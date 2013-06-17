@@ -364,8 +364,16 @@ function ViewModel() {
 		slider.disableWith("Checking out...");
 		var success = function(syncData) {
 			slider.enable();
-			if (model.currentPo().status == 'closed')
-				$sliderdiv.hide();
+			if (model.currentPo().status() == 'reqauth') {
+				model.prompt("You will now be connected to Divisions customer service by phone to provide additional information.", 'Checkout', 'Continue', function() {
+					model.callCustService();
+				});
+			}
+			else if (model.currentPo().status() == 'reqfollowup') {
+				model.prompt("You will now be connected to Divisions customer service by phone to provide additional information.", 'Checkout', 'Continue', function() {
+					model.callCustService();
+				});
+			}
 			slider.direction(-event.detail.direction);
 		}
 		var fail = function(jqXHR, textStatus, e) {
@@ -920,7 +928,7 @@ function ViewModel() {
 		model.doSync();
 	};
 
-	this.callSupport = function() {
+	this.callCustService = function() {
 		window.location.href = model.getConfig('custsvcphone');
 	}
 	
