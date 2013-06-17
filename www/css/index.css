@@ -94,18 +94,32 @@ body {
 	background-size: 100%;
 	background-repeat: no-repeat;
 }
-#waitpage .tagline {
-	background-color: transparent;
-	background-image: url(../img/svg/login-tagline.svg);
-	background-size: 100%;
-	background-repeat: no-repeat;
-	background-position: left bottom;
-	height: 200px;
-	width: 100%;
+#waitpage .ring {
+	opacity: 0.5;
+	-webkit-transition: opacity 0.6s ease-in-out;
+    -webkit-animation-direction: normal;
+    -webkit-animation-duration: 1.5s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;   
 	position: absolute;
 	left: 0;
-	bottom: 75px;
+	top: 45%;
+	width: 100%
 }
+#waitpage .pin {
+	position: absolute; left: 8%; top: 24%; width: 84%;
+}
+#waitpage .ring.r0 { -webkit-animation-name: fade0; }
+#waitpage .ring.r1 { -webkit-animation-name: fade1; }
+#waitpage .ring.r2 { -webkit-animation-name: fade2; }
+#waitpage .ring.r3 { -webkit-animation-name: fade3; }
+#waitpage .ring.r4 { -webkit-animation-name: fade4; }
+
+@-webkit-keyframes 'fade0' { 0% { opacity:0; } 20% { opacity:1; } 40% { opacity:0; } 60% { opacity:0; } 80% { opacity: 0; }  100% { opacity:0; } }
+@-webkit-keyframes 'fade1' { 0% { opacity:0; } 20% { opacity:0; } 40% { opacity:1; } 60% { opacity:0; } 80% { opacity: 0; }  100% { opacity:0; } }
+@-webkit-keyframes 'fade2' { 0% { opacity:0; } 20% { opacity:0; } 40% { opacity:0; } 60% { opacity:1; } 80% { opacity: 0; }  100% { opacity:0; } }
+@-webkit-keyframes 'fade3' { 0% { opacity:0; } 20% { opacity:0; } 40% { opacity:0; } 60% { opacity:0; } 80% { opacity: 1; }  100% { opacity:0; } }
+@-webkit-keyframes 'fade4' { 0% { opacity:1; } 20% { opacity:0; } 40% { opacity:0; } 60% { opacity:0; } 80% { opacity: 0; }  100% { opacity:1; } }
 
 .heading {
 	position: absolute;
