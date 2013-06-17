@@ -21,6 +21,8 @@
 				
         <author href="http://www.divisionsinc.com/" email="wfalk@divisionsinc.com">Warren Falk</author>
         <preference name="orientation" value="portrait"/>
+        <preference name="webviewbounce" value="false" />
+        <preference name="prerendered-icon" value="true" />
         
         <gap:splash src="img/launch.png" gap:platform="ios" width="640" height="920"/>
         
