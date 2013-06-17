@@ -1031,7 +1031,7 @@ function switchToPng() {
 	$style = $(style);
 	$style.attr('type', 'text/css');
 	var sss = document.styleSheets;
-	expr = /\/img\/svg\/(.*?)\.svg/g;
+	var expr = /\/img\/svg\/(.*?)\.svg/g;
 	var overrides = '';
 	for (var i = 0; i < sss.length; i++) {
 		var ss = sss[i];
