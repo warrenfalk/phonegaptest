@@ -13,6 +13,7 @@
         <script type="text/javascript" src="js/slider.js"></script>
         <script type="text/javascript" src="js/pinkeypad.js"></script>
         <script type="text/javascript" src="js/sorter.js"></script>
+        <script type="text/javascript" src="js/iscroll.js"></script>
         <title>Check In</title>
     </head>
     <body ontouchstart="">
@@ -59,21 +60,23 @@
 				    	<div id="sorters" data-bind="Sorter: { sorters: locationSorters, selected: currentSorter }"></div>
 				    </div>
 					<div class="locationsarea">
-				    	<div data-bind="foreach: filteredLocations">
-			        		<div class="locrecord record data" data-bind="css: status, click: $root.selectLocation">
-								<div class="indicators"></div>
-	        					<div class="locname" data-bind="text: name"></div>
-			        			<div class="locaddr" data-bind="text: address"></div>
-	        					<div class="dist">(<span class="disttext" data-bind="text: distance"></span>)</div>
-	        					<div class="ponum" data-bind="if: pos().length == 1">
-									<span class="number" data-bind="text: pos()[0].number"></span>
-	        					</div>
-								<div class="ponum mult" data-bind="if: pos().length > 1">
-									(<span class="count" data-bind="text: pos().length"></span> POs)
-								</div>
-	      						<div class="rtarrow"></div>
-	        				</div>
-					    </div>
+						<div data-bind="iscroll: true">
+					    	<div data-bind="foreach: filteredLocations">
+				        		<div class="locrecord record data" data-bind="css: status, click: $root.selectLocation">
+									<div class="indicators"></div>
+		        					<div class="locname" data-bind="text: name"></div>
+				        			<div class="locaddr" data-bind="text: address"></div>
+		        					<div class="dist">(<span class="disttext" data-bind="text: distance"></span>)</div>
+		        					<div class="ponum" data-bind="if: pos().length == 1">
+										<span class="number" data-bind="text: pos()[0].number"></span>
+		        					</div>
+									<div class="ponum mult" data-bind="if: pos().length > 1">
+										(<span class="count" data-bind="text: pos().length"></span> POs)
+									</div>
+		      						<div class="rtarrow"></div>
+		        				</div>
+						    </div>
+						</div>
 					</div>
 				</div>
 				<div class="container" data-bind="with: currentLocation">
@@ -91,14 +94,16 @@
 							</div>
 		    			</div>
 		    			<div class="body">
-			    			<div class="polist list" data-bind="foreach: pos">
-								<div class="record porecord" data-bind="css: status(), click: $root.selectPo">
-									<div class="indicators"></div>
-									<div class="po"><span class="number" data-bind="text: number"></span></div>
-			    					<div class="type" data-bind="text: serviceType"></div>
-			    					<div class="due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(followUpBy)).format('MM/DD')"></span></div>
-									<div class="rtarrow"></div>
-								</div>
+		    				<div data-bind="iscroll: true">
+				    			<div class="polist list" data-bind="foreach: pos">
+									<div class="record porecord" data-bind="css: status(), click: $root.selectPo">
+										<div class="indicators"></div>
+										<div class="po"><span class="number" data-bind="text: number"></span></div>
+				    					<div class="type" data-bind="text: serviceType"></div>
+				    					<div class="due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(followUpBy)).format('MM/DD')"></span></div>
+										<div class="rtarrow"></div>
+									</div>
+				    			</div>
 			    			</div>
 		    			</div>
 					</div>

@@ -1227,5 +1227,18 @@ ko.bindingHandlers.PinKeyPad = {
 	},
 }
 
+ko.bindingHandlers.iscroll = {
+	init: function(element, valueAccessor) {
+		var $e = $(element);
+		$e.addClass('iscroll');
+		$e.height($e.parent().height());
+		setTimeout(function() {
+			var control = new iScroll($e.get(0));
+		}, 100);
+	},
+	update: function(element, valueAccessor) {
+	},
+}
+
 }());
 

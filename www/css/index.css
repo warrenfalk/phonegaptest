@@ -459,8 +459,7 @@ body {
 
 
 #locations .locationsarea {
-	position: absolute;
-	overflow: auto;
+	position: absolute;	
 	top: 132px;
 	left: 0;
 	right: 0;
