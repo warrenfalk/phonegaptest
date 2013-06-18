@@ -88,7 +88,7 @@ function PinKeyPad(div) {
 			index: i,
 			down: false,
 		};
-		var actuate = function() { 
+		var actuate = function() {
 			if (key.down)
 				return;
 			key.down = true;
@@ -99,8 +99,8 @@ function PinKeyPad(div) {
 				return;
 			key.down = false;
 		};
-		$key.on('mousedown', actuate);
-		$key.on('touchstart', actuate);
+		$key.on('mousedown', function() { if (control.touch) { return; } actuate(); });
+		$key.on('touchstart', function() { control.touch = true; actuate(); });
 		$key.on('mouseup', deactuate);
 		$key.on('touchend', deactuate);
 		$key.on('touchcancel', deactuate);
