@@ -83,8 +83,28 @@ function PinKeyPad(div) {
 		$key.addClass('key' + k);
 		var $keytext = $('<span class="text"/>');
 		$key.append($keytext);
-		var key = { button: $key, index: i };
-		$key.mousedown(function() { control.keyClick(key); })
+		var key = { 
+			button: $key, 
+			index: i,
+			down: false,
+		};
+		var actuate = function() { 
+			if (key.down)
+				return;
+			key.down = true;
+			control.keyClick(key);
+		};
+		var deactuate = function() {
+			if (!key.down)
+				return;
+			key.down = false;
+		};
+		$key.on('mousedown', actuate);
+		$key.on('touchstart', actuate);
+		$key.on('mouseup', deactuate);
+		$key.on('touchend', deactuate);
+		$key.on('touchcancel', deactuate);
+		$key.mousedown(function() { key.actuate(key); })
 		switch (k) {
 			case "R":
 				$keytext.text("Clear");
