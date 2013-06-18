@@ -807,14 +807,16 @@ body {
 	height: 50px;
 	/*
 	border: solid 1px black;
-	border-radius: 12px;
 	background-color: #627292;
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#627292), to(#1b3461));
-	background: -webkit-linear-gradient(top, #1b3461, #627292);
-	background: linear-gradient(top, #1b3461, #627292);
 	*/
 	border: 15px solid transparent;
 	-webkit-border-image: url(../img/gen/dbl/slidegroove.png) 30 30 round;
+	border-image: url(../img/gen/dbl/slidegroove.png) 30 30 round;
+	border-radius: 15px;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#627292), to(#1b3461));
+	background: -webkit-linear-gradient(top, #1b3461, #627292);
+	background: linear-gradient(top, #1b3461, #627292);
+	background-origin: border-box;
 }
 .slider.optionsmode {
 	background-color: white;

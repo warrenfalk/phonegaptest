@@ -94,6 +94,15 @@
        id="linearGradient3813"
        xlink:href="#linearGradient3761"
        inkscape:collect="always" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3776">
+      <path
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.5;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         d="m 0,1002.375 0,50 247,0 0,-50 -247,0 z m 15,15 217,0 0,20 -217,0 0,-20 z"
+         id="path3778"
+         inkscape:connector-curvature="0" />
+    </clipPath>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -102,9 +111,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.1358658"
-     inkscape:cx="237.65983"
-     inkscape:cy="126.93707"
+     inkscape:zoom="2.4447737"
+     inkscape:cx="118.34114"
+     inkscape:cy="45.129906"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -141,6 +150,7 @@
        height="49.010921"
        x="0.49453858"
        y="1002.8568"
-       ry="14.703275" />
+       ry="14.703275"
+       clip-path="url(#clipPath3776)" />
   </g>
 </svg>
