@@ -804,6 +804,7 @@ body {
 
 .slider {
 	position: relative;
+	height: 50px;
 	/*
 	border: solid 1px black;
 	border-radius: 12px;
