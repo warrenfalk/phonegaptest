@@ -27,6 +27,10 @@
         <gap:splash src="launch/320x480.png" gap:platform="ios" width="320" height="480"/>
         <gap:splash src="launch/640x960.png" gap:platform="ios" width="640" height="960"/>
         <gap:splash src="launch/640x1136.png" gap:platform="ios" width="640" height="1136"/>
+        <gap:splash src="launch/ldpi-portrait.png" gap:platform="android" gap:density="ldpi"/>
+        <gap:splash src="launch/hdpi-portrait.png" gap:platform="android" gap:density="hdpi"/>
+        <gap:splash src="launch/mpi-portrait.png" gap:platform="android" gap:density="mdpi"/>
+        <gap:splash src="launch/xhdpi-portrait.png" gap:platform="android" gap:density="xhdpi"/>
         
         <access origin="http://divisionsinc.com:82" subdomains="true"/>
         <access origin="http://divisionsinc.com:81" subdomains="true"/>
