@@ -7,6 +7,9 @@ function ViewModel() {
 	model.config = {
 		fromserver: false,
 		custsvcphone: 'tel:859-448-9730',
+		imgcapturequality: 40,
+		imgcapturewidth: 1080,
+		imgcaptureheight: 1080,
 	};
 	this.locations = ko.observableArray();
 	this.filter = ko.observable('');
@@ -133,7 +136,13 @@ function ViewModel() {
 			}
 		);
 		// also call out to the web service
-		model.get({path: '/config', noToken: true, 
+		var d = window.device;
+		if (!d)
+			d = { platform: 'unknown', version: '0' };
+		model.get({
+			path: '/config', 
+			noToken: true, 
+			payload: { platform: d.platform, version: d.version},
 			success: function(payload) {
 				model.setConfig('fromserver', true, false);
 				if (payload && payload.config)
@@ -573,11 +582,11 @@ function ViewModel() {
 		function(data) {
 		},
 		{
-			quality: 40, 
+			quality: model.config.imgcapturequality, 
 			destinationType: Camera.DestinationType.FILE_URI, 
 			correctOrientation: true,
-			targetWidth: 1080,
-			targetHeight: 1080,
+			targetWidth: model.config.imgcapturewidth,
+			targetHeight: model.config.imgcaptureheight,
 		});
 	};
 	
