@@ -267,26 +267,20 @@ function ViewModel() {
 	};
 
 	this.postCheckin = function(po, onsuccess, onfail) {
-		var pos = model.lastPosition();
-		model.post({
-			path: '/purchaseorders/' + po.id + '/status',
-			payload: { newStatus: 'checkedin', latitude: pos.latitude, longitude: pos.longitude, accuracy: pos.accuracy },
-			success: function(syncData) {
-				model.receiveSync(syncData);
-				onsuccess(syncData);
-			},
-			error: onfail,
-		});
+		return model.postStatus(po, 'checkedin', onsuccess, onfail);
 	};
 
 	this.postStatus = function(po, status, onsuccess, onfail) {
 		var pos = model.lastPosition();
 		model.post({
 			path: '/purchaseorders/' + po.id + '/status',
-			payload: { newStatus: status, latitude: pos.latitude, longitude: pos.longitude, accuracy: pos.accuracy },
+			payload: { hash: po.hash, newStatus: status, latitude: pos.latitude, longitude: pos.longitude, accuracy: pos.accuracy },
 			success: function(syncData) {
 				model.receiveSync(syncData);
-				onsuccess(syncData);
+				if (syncData.errors && syncData.errors.length)
+					onfail(null, syncData.errors[0], null);
+				else
+					onsuccess(syncData);
 			},
 			error: onfail,
 		});
@@ -387,7 +381,11 @@ function ViewModel() {
 		}
 		var fail = function(jqXHR, textStatus, e) {
 			slider.disableWith("Checkout failed");
-			model.prompt('There was a problem encountered while trying to checkout.  Please check your signal and data connection and try again', 'Notice', 'OK');
+			if (e || textStatus == "timeout")
+				textStatus = "Please check your signal and data connection and try again";
+			else if (textStatus == "error")
+				textStatus = "Unexpected failure, please try again";
+			model.prompt('There was a problem encountered while trying to checkout: ' + textStatus, 'Notice', 'OK');
 			slider.enable();
 			slider.direction(event.detail.direction);
 		}
