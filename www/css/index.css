@@ -917,7 +917,7 @@ body {
 	border: solid 1px black;
 	border-radius: 12px;
 	-webkit-border-image: none;
-	background-color: #808080;
+	background: #808080;
 }
 .slider.disabled > .handle {
 	visibility: hidden;
