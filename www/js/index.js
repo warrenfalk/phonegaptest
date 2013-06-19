@@ -365,7 +365,7 @@ function ViewModel() {
 		var statuses = ['closed', 'reqauth', 'reqfollowup'];
 		var status = statuses[event.detail.option.index];
 		slider.disableWith("Checking out...");
-		var updateSliderDirection = function() {
+		var updateSlider = function() {
 			slider.direction(model.currentPo().status() == 'checkedin' ? -1 : 1);
 		}
 		var success = function(syncData) {
