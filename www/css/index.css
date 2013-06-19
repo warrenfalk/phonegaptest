@@ -827,7 +827,7 @@ body {
 	background-origin: border-box;
 }
 .slider.optionsmode {
-	background-color: white;
+	background: white;
 	border: solid 1px black;
 	border-radius: 12px;
 	-webkit-border-image: none;
