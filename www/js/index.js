@@ -211,7 +211,7 @@ function ViewModel() {
 				data: options.payload ? JSON.stringify(options.payload) : null,
 				success: function(a,b) { console.log(event + " success"); options.success(a,b); },
 				error: function(a,b,c) { console.log(event + " error " + b); options.error(a,b,c); },
-				timeout: options.timeout || 12000,
+				timeout: options.timeout || 30000,
 			});
 		}
 		catch (e) {
