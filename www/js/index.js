@@ -365,6 +365,9 @@ function ViewModel() {
 		var statuses = ['closed', 'reqauth', 'reqfollowup'];
 		var status = statuses[event.detail.option.index];
 		slider.disableWith("Checking out...");
+		var updateSliderDirection = function() {
+			slider.direction(model.currentPo().status() == 'checkedin' ? -1 : 1);
+		}
 		var success = function(syncData) {
 			slider.enable();
 			if (model.currentPo().status() == 'reqauth') {
@@ -377,7 +380,7 @@ function ViewModel() {
 					model.callCustService();
 				});
 			}
-			slider.direction(-event.detail.direction);
+			updateSlider();
 		}
 		var fail = function(jqXHR, textStatus, e) {
 			slider.disableWith("Checkout failed");
@@ -387,7 +390,7 @@ function ViewModel() {
 				textStatus = "Unexpected failure, please try again";
 			model.prompt('There was a problem encountered while trying to checkout: ' + textStatus, 'Notice', 'OK');
 			slider.enable();
-			slider.direction(event.detail.direction);
+			updateSlider();
 		}
 		model.checkoutCurrentPo(status, success, fail);
 	}
