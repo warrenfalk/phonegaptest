@@ -60,10 +60,13 @@ function PinKeyPad(div) {
 			if (control.currentPin.length == pinLength) {
 				(function(pin) {
 					var event = createCustomEvent('enter', { detail: { control: control, pin: pin }});
-					div.dispatchEvent(event);
+					// slight delay on firing the event so that the last digit feedback is updated
+					setTimeout(function() { 
+						this.currentPin = '';
+						updateFeedback();
+						div.dispatchEvent(event);
+					}, 100);
 				})(this.currentPin);
-				this.currentPin = '';
-				updateFeedback();
 			}
 		}
 		else if (key.index == 11) {
