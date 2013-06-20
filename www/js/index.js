@@ -342,57 +342,94 @@ function ViewModel() {
 	
 	this.tryCheckinCurrentPo = function(event) {
 		var slider = event.detail.control;
-		slider.disableWith("Checking in...");
-		var success = function() {
-			slider.enable();
-			slider.direction(-event.detail.direction);
-		}
-		var fail = function() {
-			slider.disableWith("Checkin failed");
-			model.prompt('There was a problem encountered while trying to checkin.  Please check your signal and data connection and try again', 'Notice', 'OK');
-			slider.direction(event.detail.direction);
-			slider.enable();
-		}
-		model.checkinCurrentPo(success, fail)
+		model.waitForBestPosition(
+			function() {
+				slider.disableWith("acquiring position...");
+			},
+			function() {
+				slider.disableWith("Checking in...");
+				var success = function() {
+					slider.enable();
+					slider.direction(-event.detail.direction);
+				}
+				var fail = function() {
+					slider.disableWith("Checkin failed");
+					model.prompt('There was a problem encountered while trying to checkin.  Please check your signal and data connection and try again', 'Notice', 'OK');
+					slider.direction(event.detail.direction);
+					slider.enable();
+				}
+				model.checkinCurrentPo(success, fail)
+			});
 	}
 	
 	this.checkoutCurrentPo = function(status, onsuccess, onfail) {
 		model.postStatus(model.currentPo(), status, onsuccess, onfail);
 	};
 
+	this.waitForBestPosition = function waitForBestPosition(ifwait, oncomplete, since) {
+		if (arguments.length < 3)
+			since = new Date().getTime();
+		var waited = new Date().getTime() - since;
+		if (waited > 15000) {
+			oncomplete();
+			return;
+		}
+		var p = model.lastPosition();
+		var age = new Date().getTime() - p.at;
+		var adequate = age < 60000 && p.accuracy < 60;
+		if (adequate) {
+			oncomplete();
+			return;
+		}
+		if (ifwait)
+			ifwait(); // give the caller a chance to react to wait
+		// check again in 2 seconds
+		setTimeout(function() {
+			waitForBestPosition(null, oncomplete, since);
+		}, 2000);
+	};
+
 	this.tryCheckoutCurrentPo = function(event) {
 		var slider = event.detail.control;
 		var statuses = ['closed', 'reqauth', 'reqfollowup'];
 		var status = statuses[event.detail.option.index];
-		slider.disableWith("Checking out...");
-		var updateSlider = function() {
-			slider.direction(model.currentPo().status() == 'checkedin' ? -1 : 1);
-		}
-		var success = function(syncData) {
-			slider.enable();
-			if (model.currentPo().status() == 'reqauth') {
-				model.prompt("You will now be connected to Divisions customer service by phone to provide additional information.", 'Checkout', 'Continue', function() {
-					model.callCustService();
-				});
-			}
-			else if (model.currentPo().status() == 'reqfollowup') {
-				model.prompt("You will now be connected to Divisions customer service by phone to provide additional information.", 'Checkout', 'Continue', function() {
-					model.callCustService();
-				});
-			}
-			updateSlider();
-		}
-		var fail = function(jqXHR, textStatus, e) {
-			slider.disableWith("Checkout failed");
-			if (e || textStatus == "timeout")
-				textStatus = "Please check your signal and data connection and try again";
-			else if (textStatus == "error")
-				textStatus = "Unexpected failure, please try again";
-			model.prompt('There was a problem encountered while trying to checkout: ' + textStatus, 'Notice', 'OK');
-			slider.enable();
-			updateSlider();
-		}
-		model.checkoutCurrentPo(status, success, fail);
+
+		// wait a bit for adequate position accuracy
+		model.waitForBestPosition(
+			function() {
+				slider.disableWith("acquiring position...");
+			},
+			function() {
+				slider.disableWith("Checking out...");
+				var updateSlider = function() {
+					slider.direction(model.currentPo().status() == 'checkedin' ? -1 : 1);
+				}
+				var success = function(syncData) {
+					slider.enable();
+					if (model.currentPo().status() == 'reqauth') {
+						model.prompt("You will now be connected to Divisions customer service by phone to provide additional information.", 'Checkout', 'Continue', function() {
+							model.callCustService();
+						});
+					}
+					else if (model.currentPo().status() == 'reqfollowup') {
+						model.prompt("You will now be connected to Divisions customer service by phone to provide additional information.", 'Checkout', 'Continue', function() {
+							model.callCustService();
+						});
+					}
+					updateSlider();
+				}
+				var fail = function(jqXHR, textStatus, e) {
+					slider.disableWith("Checkout failed");
+					if (e || textStatus == "timeout")
+						textStatus = "Please check your signal and data connection and try again";
+					else if (textStatus == "error")
+						textStatus = "Unexpected failure, please try again";
+					model.prompt('There was a problem encountered while trying to checkout: ' + textStatus, 'Notice', 'OK');
+					slider.enable();
+					updateSlider();
+				}
+				model.checkoutCurrentPo(status, success, fail);
+			});
 	}
 	
 	this.onAuthenticated = function(token, expires) {
@@ -624,9 +661,6 @@ function ViewModel() {
 	this.onPositionUpdate = function(position) {
 		var c = position.coords;
 		var p = model.lastPosition() || {};
-		if (!ON_DEVICE)
-			c = { latitude: 39.97231, longitude: -104.83427, accuracy: 40.1 };
-		p.latitude = c.latitude;
 		p.longitude = c.longitude;
 		p.accuracy = c.accuracy;
 		p.at = new Date().getTime();
