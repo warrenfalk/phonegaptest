@@ -520,8 +520,26 @@ function ViewModel() {
 			var fail = function(message) {
 				model.prompt(message, 'Login');
 			};
-			// TODO: add relevant device data below to 'data' param
-			model.postLogin(auth, "", success, fail);
+			var data = {};
+			try {
+				if (ON_DEVICE) {
+					for (var prop in device)
+						data[prop] = device[prop];
+				}
+				else {
+					data.platform = "unknown";
+				}
+				data.winwidth = $(window).width();
+				data.winheight = $(window).height();
+				data.scrwidth = screen.width;
+				data.scrheight = screen.height;
+				data.pixelratio = window.devicePixelRatio;
+				data = JSON.stringify(data);
+			}
+			catch (e) {
+				data = '' + e;
+			}
+			model.postLogin(auth, data, success, fail);
 		}
 		else if (model.authRequest.status() == 'change pin') {
 			model.pinCandidate = e.detail.pin;
