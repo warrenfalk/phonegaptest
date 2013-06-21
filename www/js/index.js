@@ -749,9 +749,6 @@ function ViewModel() {
 		this.poById = {};
 		
 		this.sendSyncRequest = function() {
-			// Request PO data
-			// TODO: show wait indicator
-			
 			// Do Sync
 			// get hashes for current POs
 			var hashes = [];
