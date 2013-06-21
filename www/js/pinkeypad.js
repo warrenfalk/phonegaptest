@@ -107,7 +107,6 @@ function PinKeyPad(div) {
 		$key.on('mouseup', deactuate);
 		$key.on('touchend', deactuate);
 		$key.on('touchcancel', deactuate);
-		$key.mousedown(function() { key.actuate(key); })
 		switch (k) {
 			case "R":
 				$keytext.text("Clear");
