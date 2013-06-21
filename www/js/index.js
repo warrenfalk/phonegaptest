@@ -713,13 +713,25 @@ function ViewModel() {
 		var shdy = Math.sin(dy/2);
 		var shdx = Math.sin(dx/2);
 		var a = shdy * shdy + shdx * shdx * Math.cos(y1) * Math.cos(y2);
+		if (a < 0)
+			return -2;
+		if (a > 1)
+			return -3;
 		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 		return 6371000 * c;
 	};
 	
 	this.formatDistance = function(meters) {
-		if (meters == -1)
-			return '?';
+		if (meters < 0) {
+			var s = '';
+			while(meters < 0) {
+				meters++;
+				s += '?';
+			}
+			return s;
+		}
+		if (isNaN(meters))
+			return 'E';
 		var mi = meters * 0.000621504;
 		var m = mi;
 		var tenths = Math.floor((mi % 1) * 10);
