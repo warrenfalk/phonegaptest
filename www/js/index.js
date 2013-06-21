@@ -69,7 +69,7 @@ function ViewModel() {
 	this.rightNow = function() { return (new Date().getTime() / 1000); }
 
 	this.setConfig = function(name, val, fromdb) {
-		if (fromdb && name in model.config)
+		if (fromdb && model.serverConfigLoaded && name in model.config)
 			return;
 		console.log((fromdb ? '[d]' : '[w]') + name + ' = ' + val);
 		model.config[name] = val;
@@ -85,12 +85,10 @@ function ViewModel() {
 		var db = model.db();
 		db.transaction(
 			function(tx) {
-				tx.executeSql('INSERT OR REPLACE INTO CONFIG (configname, configval) VALUES (?, ?)', [name, val]);
+				tx.executeSql('INSERT OR REPLACE INTO CONFIG (configname, configval) VALUES (?, ?)', [name, JSON.stringify(val)]);
 			},
 			function(err) {
 				console.log("db store save config value failed: " + err);
-			},
-			function() {
 			}
 		);
 	};
@@ -115,7 +113,7 @@ function ViewModel() {
 					function(tx, results) {
 						for (var i = 0; i < results.rows.length; i++) {
 							var item = results.rows.item(i);
-							model.setConfig(item.configname, item.configval, true);
+							model.setConfig(item.configname, JSON.parse(item.configval), true);
 						}
 						dbwait = false;
 						complete();
@@ -144,6 +142,7 @@ function ViewModel() {
 			noToken: true, 
 			payload: { platform: d.platform, version: d.version},
 			success: function(payload) {
+				model.serverConfigLoaded = true;
 				model.setConfig('fromserver', true, false);
 				if (payload && payload.config)
 					for (var i = 0; i < payload.config.length; i++)
@@ -1173,9 +1172,12 @@ var init = function() {
 		var initializer = this;
 		this.configStep = function() {
 			model.requestConfig(function() {
-				if (!model.getConfig('fromserver')) {
+				if (!model.serverConfigLoaded) {
 					model.prompt('Unable to reach server, please make sure you have a signal and a data connection.  Some features may not work correctly', 'No Connection', 'OK', function() {
-						setTimeout(function() { initializer.configStep(); }, 1000);
+						if (!model.getConfig('fromserver')) {
+							setTimeout(function() { initializer.configStep(); }, 1000);
+						}
+						initializer.initStep();
 					});
 					return;
 				}
