@@ -10,6 +10,7 @@ function ViewModel() {
 		imgcapturequality: 40,
 		imgcapturewidth: 1080,
 		imgcaptureheight: 1080,
+		server: 'http://webservices.divisionsinc.com/ServiceVerificationApp.svc',
 	};
 	this.locations = ko.observableArray();
 	this.filter = ko.observable('');
@@ -45,7 +46,6 @@ function ViewModel() {
 		return '';
 	}, model);
 	this.syncStatus = ko.observable('ok');
-	this.webserviceRoot = (ON_DEVICE ? 'http://testwebservices.divisionsinc.com' : '/test/webservice') + '/ServiceVerificationApp.svc';
 	this.locationSorters = [
 		{ id: 'cust', text: 'sort by customer', func: function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); }},
 		{ id: 'dist', text: 'sort by distance', func: function(a,b) { return a.dist() == b.dist() ? 0 : (a.dist() < b.dist() ? -1 : 1); }},
@@ -188,6 +188,12 @@ function ViewModel() {
 		);
 	};
 
+	this.serverUrl = function(relpath) {
+		if (!ON_DEVICE)
+			return '/test/webservice/ServiceVerificationApp.svc' + relpath;
+		return model.getConfig('server') + relpath;
+	}
+
 	this.get = function(options) {
 		options.method = 'GET';
 		return model.request(options);
@@ -204,7 +210,7 @@ function ViewModel() {
 		try {
 			var $req = $.ajax({
 				type: options.method,
-				url: model.webserviceRoot + ((!model.authToken() || options.noToken) ? '' : '/' + model.authToken().token) + options.path,
+				url: model.serverUrl(((!model.authToken() || options.noToken) ? '' : '/' + model.authToken().token) + options.path),
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
 				data: options.payload ? JSON.stringify(options.payload) : null,
@@ -632,7 +638,7 @@ function ViewModel() {
 				deleteFile(filename);
 			};
 			var ft = new FileTransfer();
-			ft.upload(filename, model.webserviceRoot + url, success, fail, options);
+			ft.upload(filename, model.serverUrl(url), success, fail, options);
 		},
 		function(data) {
 		},
