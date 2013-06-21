@@ -35,10 +35,13 @@
         <access origin="http://divisionsinc.com:82" subdomains="true"/>
         <access origin="http://divisionsinc.com:81" subdomains="true"/>
         <access origin="http://divisionsinc.com" subdomains="true"/>
+        <access origin="http://testwebservices.divisionsinc.com"/>
+        <access origin="*"/>
         <access origin="http://divisions.asp:82" subdomains="true"/>
         <access origin="http://divisions.asp:81" subdomains="true"/>
         <access origin="http://divisions.asp" subdomains="true"/>
-        <access origin="http://localhost:81" subdomains="true"/>
+        <access origin="http://localhost*"/>
+        <access origin=".*"/>
 
         <feature name="http://api.phonegap.com/1.0/camera"/>
         <feature name="http://api.phonegap.com/1.0/file"/>
