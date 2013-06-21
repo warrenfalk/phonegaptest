@@ -663,7 +663,6 @@ function ViewModel() {
 			};
 			var fail = function(jqXHR, textStatus, e) {
 				model.sendingNote(false);
-				// TODO: probably the wrong status here... don't know if we even get here on connection failure
 				model.prompt('There was a problem encountered while sending your note.  Check that you have a signal and a data connection', 'Notice', 'OK');
 			};
 			model.postNote(model.currentPo(), note, success, fail);
