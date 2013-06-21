@@ -48,7 +48,7 @@ function ViewModel() {
 	this.webserviceRoot = (ON_DEVICE ? 'http://testwebservices.divisionsinc.com' : '/test/webservice') + '/ServiceVerificationApp.svc';
 	this.locationSorters = [
 		{ id: 'cust', text: 'sort by customer', func: function(a,b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); }},
-		{ id: 'dist', text: 'sort by distance', func: function(a,b) { return a.dist == b.dist ? 0 : (a.dist < b.dist ? -1 : 1); }},
+		{ id: 'dist', text: 'sort by distance', func: function(a,b) { return a.dist() == b.dist() ? 0 : (a.dist() < b.dist() ? -1 : 1); }},
 	];
 	this.currentSorter = ko.observable('dist');
 	this.searchText = ko.observable('');
@@ -679,6 +679,7 @@ function ViewModel() {
 		var c = position.coords;
 		var p = model.lastPosition() || {};
 		p.longitude = c.longitude;
+		p.latitude = c.latitude;
 		p.accuracy = c.accuracy;
 		p.at = new Date().getTime();
 		console.log("Position: " + JSON.stringify(p));
