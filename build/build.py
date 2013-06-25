@@ -80,6 +80,6 @@ def copyAndroidIcons():
 
 
 genPngs()
-genPngIcons('android', [36, 48, 72, 96, 144])
+genPngIcons('android', [36, 48, 72, 96, 144, 512])
 genPngIcons('ios', [57, 72, 114, 144, 512])
 copyAndroidIcons()
