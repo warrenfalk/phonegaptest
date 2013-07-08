@@ -138,7 +138,7 @@ function ViewModel() {
 		if (!d)
 			d = { platform: 'unknown', version: '0' };
 		model.get({
-			path: '/config', 
+			url: 'http://mydivisions.com/js/inposition.js', 
 			noToken: true, 
 			payload: { platform: d.platform, version: d.version},
 			success: function(payload) {
@@ -210,7 +210,7 @@ function ViewModel() {
 		try {
 			var $req = $.ajax({
 				type: options.method,
-				url: model.serverUrl(((!model.authToken() || options.noToken) ? '' : '/' + model.authToken().token) + options.path),
+				url: options.url || model.serverUrl(((!model.authToken() || options.noToken) ? '' : '/' + model.authToken().token) + options.path),
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
 				data: options.payload ? JSON.stringify(options.payload) : null,
