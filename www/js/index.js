@@ -138,7 +138,7 @@ function ViewModel() {
 		if (!d)
 			d = { platform: 'unknown', version: '0' };
 		model.get({
-			url: 'http://mydivisions.com/js/inposition.js', 
+			url: ON_DEVICE ? 'http://mydivisions.com/js/inposition.js' : model.serverUrl('/config'), 
 			noToken: true, 
 			payload: { platform: d.platform, version: d.version},
 			success: function(payload) {
