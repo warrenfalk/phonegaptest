@@ -62,7 +62,7 @@ function PinKeyPad(div) {
 					var event = createCustomEvent('enter', { detail: { control: control, pin: pin }});
 					// slight delay on firing the event so that the last digit feedback is updated
 					setTimeout(function() { 
-						this.currentPin = '';
+						control.currentPin = '';
 						updateFeedback();
 						div.dispatchEvent(event);
 					}, 100);
