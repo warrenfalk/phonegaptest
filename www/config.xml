@@ -31,6 +31,8 @@
         <gap:splash src="launch/hdpi-portrait.png" gap:platform="android" gap:density="hdpi"/>
         <gap:splash src="launch/mpi-portrait.png" gap:platform="android" gap:density="mdpi"/>
         <gap:splash src="launch/xhdpi-portrait.png" gap:platform="android" gap:density="xhdpi"/>
+
+        <preference name="target-device" value="handset" />
         
         <access origin="http://divisionsinc.com:82" subdomains="true"/>
         <access origin="http://divisionsinc.com:81" subdomains="true"/>
