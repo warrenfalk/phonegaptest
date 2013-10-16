@@ -1080,29 +1080,6 @@ function ViewModel() {
 	};
 }
 
-Handlebars.registerHelper('hasMultiple', function(item, options) {
-	return (item.length && item.length > 1) ? options.fn(this) : options.inverse(this);
-});
-
-Handlebars.registerHelper('getStatus', function(item, options) {
-	if (item.length == 1)
-		return item[0].status;
-});
-
-//  format an ISO date using Moment.js
-//  http://momentjs.com/
-//  moment syntax example: moment(Date("2011-07-18T15:50:52")).format("MMMM YYYY")
-//  usage: {{dateFormat creation_date format="MMMM YYYY"}}
-Handlebars.registerHelper('dateFormat', function(context, block) {
-  if (window.moment) {
-	var f = block.hash.format || "MMM Do, YYYY";
-	return moment(Date(context)).format(block.hash.format || "MMM Do, YYYY");
-  }
-  else {
-	return context;   //  moment plugin not available. return data as is.
-  }
-});
-
 function switchToPng() {
 	style = document.createElement('style');
 	$style = $(style);
