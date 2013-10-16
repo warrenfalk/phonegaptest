@@ -34,10 +34,9 @@ http.createServer(function (req, res) {
 				seg = seg.slice(1);
 				reqpath = seg.join('/');
 				var headers = req.headers;
-				headers['host'] = 'localhost:81';
 				var proxy_options = {
-					hostname: '10.10.11.6',
-					port: 82,
+					hostname: 'localhost',
+					port: 81,
 					path: '/' + reqpath,
 					method: req.method,
 					headers: headers

@@ -296,6 +296,14 @@ function ViewModel() {
 		var company = auth.company();
 		var login = auth.login();
 		var password = auth.password();
+		if (company.indexOf('/') !== -1) {
+			// this is the user protocol to enable test mode,
+			// pass in host/companyid instead of companyid (i.e. testwebservices.divisionsinc.com/DBGR110)
+			var divider = company.indexOf('/');
+			var host = company.substring(0, divider);
+			company = company.substring(divider + 1, company.length);
+			model.config.server = 'http://' + host + '/ServiceVerificationApp.svc';
+		}
 		auth.status('requested');
 		model.post({
 			noToken: true,
