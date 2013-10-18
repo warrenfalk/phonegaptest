@@ -1,6 +1,8 @@
 (function(){
 "use strict";
 var ON_DEVICE = document.URL.indexOf('http://') === -1;
+var API_VERSION = "1";
+var API_NAME = "MobileTechnician";
 
 function ViewModel() {
 	var model = this;
@@ -10,7 +12,7 @@ function ViewModel() {
 		imgcapturequality: 40,
 		imgcapturewidth: 1080,
 		imgcaptureheight: 1080,
-		server: 'http://webservices.divisionsinc.com/ServiceVerificationApp.svc',
+		server: 'http://webservices.divisionsinc.com/' + API_NAME + '_v' + API_VERSION + '.svc',
 	};
 	this.locations = ko.observableArray();
 	this.filter = ko.observable('');
@@ -184,7 +186,7 @@ function ViewModel() {
 
 	this.serverUrl = function(relpath) {
 		if (!ON_DEVICE)
-			return '/test/webservice/ServiceVerificationApp.svc' + relpath;
+			return '/test/webservice/' + API_NAME + '_v' + API_VERSION + '.svc',
 		return model.getConfig('server') + relpath;
 	}
 
@@ -222,8 +224,9 @@ function ViewModel() {
 
 	this.postPinChange = function(onsuccess, onfail) {
 		model.authRequest.status('requested');
+		var spec = model.parseCompany(model.authRequest.company());
 		model.post({
-			path: '/changepass/' + model.authRequest.company() + '/' + model.authRequest.login(),
+			path: '/changepass/' + spec.company + '/' + model.authRequest.login(),
 			payload: { newpass: model.pinCandidate, oldpass: model.authRequest.password() },
 			success: function(response) {
 				if (response.errors)
@@ -285,18 +288,26 @@ function ViewModel() {
 		});
 	};
 
-	this.postLogin = function(auth, data, onsuccess, onfail) {
-		var company = auth.company();
-		var login = auth.login();
-		var password = auth.password();
+	// User protocol to enter test mode is to prefix the company with a server and a URL
+	this.parseCompany = function(company) {
+		var server;
 		if (company.indexOf('/') !== -1) {
-			// this is the user protocol to enable test mode,
-			// pass in host/companyid instead of companyid (i.e. testwebservices.divisionsinc.com/DBGR110)
 			var divider = company.indexOf('/');
 			var host = company.substring(0, divider);
 			company = company.substring(divider + 1, company.length);
-			model.config.server = 'http://' + host + '/ServiceVerificationApp.svc';
+			server = 'http://' + host + '/' + API_NAME + '_v' + API_VERSION + '.svc';
 		}
+		return {company: company, server: server};
+	}
+
+	this.postLogin = function(auth, data, onsuccess, onfail) {
+		// allow user to specify test mode
+		var spec = model.parseCompany(auth.company());
+		var company = spec.company;
+		if (spec.server)
+			model.config.server = spec.server;
+		var login = auth.login();
+		var password = auth.password();
 		auth.status('requested');
 		model.post({
 			noToken: true,
