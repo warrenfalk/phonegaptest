@@ -227,13 +227,13 @@
    fit-margin-left="0"
    fit-margin-right="0"
    fit-margin-bottom="0"
-   inkscape:zoom="0.34756786"
-   inkscape:cx="1460.6078"
-   inkscape:cy="468.47619"
+   inkscape:zoom="1.6339705"
+   inkscape:cx="382.43999"
+   inkscape:cy="1179.7731"
    inkscape:window-x="-8"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
-   inkscape:current-layer="svg2"
+   inkscape:current-layer="g289"
    borderlayer="true" />
 <rect
    style="color:#000000;fill:#1b3461;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.0999999;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
@@ -328,6 +328,7 @@
 
 
 
+
 	</g>
 	<g
    display="inline"
@@ -359,6 +360,7 @@
 
 
 
+
 		</g>
 		<g
    id="g45">
@@ -382,6 +384,7 @@
    font-size="8.7664"
    id="text55"
    style="font-size:8.76640034px;fill:#f8971d;font-family:CenturyGothic-Bold">IN</text>
+
 
 
 
@@ -1346,47 +1349,4 @@
            d="m 106.581,97.493 h 1.721 l 4.033,6.203 v -6.203 h 1.794 v 9.425 h -1.726 l -4.028,-6.183 v 6.183 h -1.794 v -9.425 z"
            id="path323"
            inkscape:connector-curvature="0"
-           style="fill:#f8971d" /></g></g><g
-       id="g325-5"
-       style="opacity:0.87000002"><defs
-         id="defs327"><filter
-           id="filter3361"
-           filterUnits="userSpaceOnUse"
-           x="159.705"
-           y="127.937"
-           width="18.237"
-           height="4.3759999"
-           color-interpolation-filters="sRGB"><feFlood
-             result="back"
-             id="feFlood3363" /><feBlend
-             in="SourceGraphic"
-             in2="back"
-             mode="normal"
-             id="feBlend3365" /></filter></defs><mask
-         maskUnits="userSpaceOnUse"
-         x="159.705"
-         y="127.937"
-         width="18.237"
-         height="4.376"
-         id="mask3367"><g
-           id="g3369"
-           style="filter:url(#Adobe_OpacityMaskFilter_1_-8)"><image
-             overflow="visible"
-             width="93"
-             height="35"
-             xlink:href="data:image/jpeg;base64,/9j/4AAQSkZJRgABAgEBLAEsAAD/7AARRHVja3kAAQAEAAAAHgAA/+4AIUFkb2JlAGTAAAAAAQMA EAMCAwYAAAHFAAACGAAAAs7/2wCEABALCwsMCxAMDBAXDw0PFxsUEBAUGx8XFxcXFx8eFxoaGhoX Hh4jJSclIx4vLzMzLy9AQEBAQEBAQEBAQEBAQEABEQ8PERMRFRISFRQRFBEUGhQWFhQaJhoaHBoa JjAjHh4eHiMwKy4nJycuKzU1MDA1NUBAP0BAQEBAQEBAQEBAQP/CABEIACoAZAMBIgACEQEDEQH/ xACBAAEBAAMBAQAAAAAAAAAAAAAABwEFBggCAQEAAAAAAAAAAAAAAAAAAAAAEAABAwMFAQAAAAAA AAAAAAAABRYXIBEHEDBABDUGEQAABAUDBAMBAAAAAAAAAAAAAwQ1AtKT46QwARESE7N0ECEUUhIB AAAAAAAAAAAAAAAAAAAAQP/aAAwDAQACEQMRAAAA3Gn1/HlAT8UBPxQE/FAT8UBPx6ABL+P7Djxn A+mBlgGAB6ABOeVuAh64CHrgIeuAh64CHrgAP//aAAgBAgABBQDi/wD/2gAIAQMAAQUA4v8A/9oA CAEBAAEFAPp/tW/35UJUJUJUJUJUJUJUJUJUJU0yd725k73qrVZO97W5cuXL05ES1PuLbfXhvrw3 14b68N9eG+vDfXhvrw314b68N9e3/wD/2gAIAQICBj8AL//aAAgBAwIGPwAv/9oACAEBAQY/AC0X 4v09wmE7r7vb46oo4Onjtx/wGvIshryLIa8iyGvIshryLIa8iyGvIshryLIa8iyGvIshryLPwn9S DyHaqf1IPIdqp/Ug8h2qQajRnqC9ksEO8ZRUZkO0Wxhu/HMG2/39hsV0DJQ2K6BkobFdAyUNiugZ KGxXQMlDYroGShsV0DJQ2K6BkobFdAyUNiugZKGxXQMl1//Z"
-             transform="matrix(0.24,0,0,0.24,157.7046,125.937)"
-             id="image3371"
-             style="overflow:visible" /></g></mask><g
-         mask="url(#SVGID_5_-9)"
-         id="g339"><ellipse
-           cx="168.823"
-           cy="130.125"
-           rx="9.1190004"
-           ry="2.188"
-           id="ellipse341"
-           d="m 177.942,130.125 c 0,1.2084 -4.08272,2.188 -9.119,2.188 -5.03629,0 -9.119,-0.9796 -9.119,-2.188 0,-1.2084 4.08271,-2.188 9.119,-2.188 5.03628,0 9.119,0.9796 9.119,2.188 z"
-           sodipodi:cx="168.823"
-           sodipodi:cy="130.125"
-           sodipodi:rx="9.1190004"
-           sodipodi:ry="2.188" /></g></g></g></g></svg>
+           style="fill:#f8971d" /></g></g></g></g></svg>
