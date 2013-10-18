@@ -33,7 +33,7 @@ function ViewModel() {
 	this.authStatus = ko.observable();
 	this.selectionStack = [];
 	this.currentLocation = ko.observable();
-	this.currentPo = ko.observable();
+	this.currentItem = ko.observable();
 	this.overallStatus = ko.computed(function() {
 		var locs = this.locations();
 		if (!locs || locs.length === 0)
@@ -52,13 +52,6 @@ function ViewModel() {
 	];
 	this.currentSorter = ko.observable('dist');
 	this.searchText = ko.observable('');
-	this.uiphase = ko.computed(function() {
-		if (model.currentPo())
-			return 'po';
-		if (model.currentLocation())
-			return 'location';
-		return 'locations';
-	}, model);
 	this.noteDraft = ko.observable('');
 	this.editingNote = ko.observable(false);
 	this.sendingNote = ko.observable(false);
@@ -164,7 +157,7 @@ function ViewModel() {
 			model.authToken(false);
 		if (!model.authToken())
 			return;
-		model.poManager.sendSyncRequest();
+		model.itemManager.sendSyncRequest();
 	};
 	
 	this.logout = function() {
@@ -249,7 +242,7 @@ function ViewModel() {
 	this.postSync = function(hashes, onsuccess, onfail) {
 		model.syncStatus('waiting');
 		model.post({
-			path: '/purchaseorders/sync',
+			path: '/items/sync',
 			payload: { hashes: hashes },
 			success: function(response) {
 				model.syncStatus('ok');
@@ -263,24 +256,24 @@ function ViewModel() {
 		});
 	};
 
-	this.postNote = function(po, note, onsuccess, onfail) {
+	this.postNote = function(item, note, onsuccess, onfail) {
 		model.post({
-			path: '/purchaseorders/' + po.id + '/notes',
+			path: '/items/' + item.typeid + '/' + item.id + '/notes',
 			payload: { note: note },
 			success: onsuccess,
 			error: onfail,
 		});
 	};
 
-	this.postCheckin = function(po, onsuccess, onfail) {
-		return model.postStatus(po, 'checkedin', onsuccess, onfail);
+	this.postCheckin = function(item, onsuccess, onfail) {
+		return model.postStatus(item, 'checkedin', onsuccess, onfail);
 	};
 
-	this.postStatus = function(po, status, onsuccess, onfail) {
-		var pos = model.lastPosition();
+	this.postStatus = function(item, status, onsuccess, onfail) {
+		var position = model.lastPosition();
 		model.post({
-			path: '/purchaseorders/' + po.id + '/status',
-			payload: { hash: po.hash, newStatus: status, latitude: pos.latitude, longitude: pos.longitude, accuracy: pos.accuracy },
+			path: '/items/' + item.typeid + '/' + item.id + '/status',
+			payload: { hash: item.hash, newStatus: status, latitude: position.latitude, longitude: position.longitude, accuracy: position.accuracy },
 			success: function(syncData) {
 				model.receiveSync(syncData);
 				if (syncData.errors && syncData.errors.length)
@@ -350,11 +343,11 @@ function ViewModel() {
 		});
 	};
 
-	this.checkinCurrentPo = function(onsuccess, onfail) {
-		model.postStatus(model.currentPo(), 'checkedin', onsuccess, onfail);
+	this.checkinCurrentItem = function(onsuccess, onfail) {
+		model.postStatus(model.currentItem(), 'checkedin', onsuccess, onfail);
 	};
 	
-	this.tryCheckinCurrentPo = function(event) {
+	this.tryCheckinCurrentItem = function(event) {
 		var slider = event.detail.control;
 		model.waitForBestPosition(
 			function() {
@@ -372,12 +365,12 @@ function ViewModel() {
 					slider.direction(event.detail.direction);
 					slider.enable();
 				}
-				model.checkinCurrentPo(success, fail)
+				model.checkinCurrentItem(success, fail)
 			});
 	}
 	
-	this.checkoutCurrentPo = function(status, onsuccess, onfail) {
-		model.postStatus(model.currentPo(), status, onsuccess, onfail);
+	this.checkoutCurrentItem = function(status, onsuccess, onfail) {
+		model.postStatus(model.currentItem(), status, onsuccess, onfail);
 	};
 
 	this.waitForBestPosition = function waitForBestPosition(ifwait, oncomplete, since) {
@@ -403,7 +396,7 @@ function ViewModel() {
 		}, 2000);
 	};
 
-	this.tryCheckoutCurrentPo = function(event) {
+	this.tryCheckoutCurrentItem = function(event) {
 		var slider = event.detail.control;
 		var statuses = ['closed', 'reqauth', 'reqfollowup'];
 		var status = statuses[event.detail.option.index];
@@ -416,16 +409,16 @@ function ViewModel() {
 			function() {
 				slider.disableWith("Checking out...");
 				var updateSlider = function() {
-					slider.direction(model.currentPo().status() == 'checkedin' ? -1 : 1);
+					slider.direction(model.currentItem().status() == 'checkedin' ? -1 : 1);
 				}
 				var success = function(syncData) {
 					slider.enable();
-					if (model.currentPo().status() == 'reqauth') {
+					if (model.currentItem().status() == 'reqauth') {
 						model.prompt("You will now be connected to Divisions customer service by phone to provide additional information.", 'Checkout', 'Continue', function() {
 							model.callCustService();
 						});
 					}
-					else if (model.currentPo().status() == 'reqfollowup') {
+					else if (model.currentItem().status() == 'reqfollowup') {
 						model.prompt("You will now be connected to Divisions customer service by phone to provide additional information.", 'Checkout', 'Continue', function() {
 							model.callCustService();
 						});
@@ -442,7 +435,7 @@ function ViewModel() {
 					slider.enable();
 					updateSlider();
 				}
-				model.checkoutCurrentPo(status, success, fail);
+				model.checkoutCurrentItem(status, success, fail);
 			});
 	}
 	
@@ -623,7 +616,7 @@ function ViewModel() {
 	
 	this.takePic = function() {
 		navigator.camera.getPicture(function(filename) {
-			var url = '/' + model.token + '/purchaseorders/' + model.currentPo().id + '/pic';
+			var url = '/' + model.token + '/items/' + model.currentItem().typeid + '/' + model.currentItem().id + '/pic';
 			var options = new FileUploadOptions();
 			options.fileKey = "image";
 			options.fileName = filename.substr(filename.lastIndexOf('/') + 1);
@@ -679,7 +672,7 @@ function ViewModel() {
 				model.sendingNote(false);
 				model.prompt('There was a problem encountered while sending your note.  Check that you have a signal and a data connection', 'Notice', 'OK');
 			};
-			model.postNote(model.currentPo(), note, success, fail);
+			model.postNote(model.currentItem(), note, success, fail);
 		}
 	};
 	
@@ -756,23 +749,23 @@ function ViewModel() {
 			return mi + '.' + tenths + ' mi';
 	};
 	
-	function PoManager() {
+	function ItemManager() {
 		var mgr = this;
 		
-		this.poByHash = {};
-		this.poById = {};
+		this.itemByHash = {};
+		this.itemById = {};
 		
 		this.sendSyncRequest = function() {
 			// Do Sync
-			// get hashes for current POs
+			// get hashes for current items
 			var hashes = [];
 			var locs = model.locations();
 			for (var i = 0; i < locs.length; i++) {
 				var loc = locs[i];
-				var pos = loc.pos();
-				for (var j = 0; j < pos.length; j++) {
-					var po = pos[j];
-					hashes.push(po.hash);
+				var items = loc.items();
+				for (var j = 0; j < items.length; j++) {
+					var item = items[j];
+					hashes.push(item.hash);
 				}
 			}
 			
@@ -785,12 +778,12 @@ function ViewModel() {
 			var db = model.db();
 			db.transaction(
 				function(tx) {
-					tx.executeSql('SELECT data FROM PURCHORD', [],
+					tx.executeSql('SELECT data FROM ITEM', [],
 						function(tx, results) {
 							var syncData = { minus: [], plus: [] };
 							for (var i = 0; i < results.rows.length; i++) {
-								var po = JSON.parse(results.rows.item(i).data);
-								syncData.plus.push(po);
+								var item = JSON.parse(results.rows.item(i).data);
+								syncData.plus.push(item);
 							}
 							console.log("database read complete, applying...");
 							mgr.sync(syncData);
@@ -824,59 +817,59 @@ function ViewModel() {
 			// remove old hashes
 			for (var i = 0; i < syncData.minus.length; i++) {
 				var hash = syncData.minus[i];
-				delete this.poByHash[hash];
+				delete this.itemByHash[hash];
 			}
 			
-			// process new+modified POs from sync data
+			// process new+modified items from sync data
 			var plus = syncData.plus;
 			for (var i = 0; i < plus.length; i++) {
-				var syncPo = plus[i];
-				var po;
-				if (syncPo.id in this.poById) {
-					// update existing PO
-					po = this.poById[syncPo.id];
-					model.map(model.maps.po, syncPo, po);
-					this.poByHash[po.hash] = po;
-					results.upd.push(syncPo);
-					console.log('updated po ' + po.number);
+				var syncItem = plus[i];
+				var item;
+				if (syncItem.id in this.itemById) {
+					// update existing item
+					item = this.itemById[syncItem.id];
+					model.map(model.maps.item, syncItem, item);
+					this.itemByHash[item.hash] = item;
+					results.upd.push(syncItem);
+					console.log('updated item ' + item.number);
 				}
 				else {
-					// insert new PO
-					po = {};
-					model.map(model.maps.po, syncPo, po);
-					this.poById[syncPo.id] = po;
-					this.poByHash[syncPo.hash] = po;
-					results.ins.push(syncPo);
-					if (!(po.lochash in locsByLocHash)) {
-						model.locations.push(locsByLocHash[po.lochash] = model.createLocation(po));
-						console.log('added location ' + locsByLocHash[po.lochash].name);
+					// insert new item
+					item = {};
+					model.map(model.maps.item, syncItem, item);
+					this.itemById[syncItem.id] = item;
+					this.itemByHash[syncItem.hash] = item;
+					results.ins.push(syncItem);
+					if (!(item.lochash in locsByLocHash)) {
+						model.locations.push(locsByLocHash[item.lochash] = model.createLocation(item));
+						console.log('added location ' + locsByLocHash[item.lochash].name);
 					}
-					var loc = locsByLocHash[po.lochash];
-					// add PO to its location
-					loc.pos.push(po);
-					console.log('added po ' + po.number + ' with hash ' + syncPo.hash);
+					var loc = locsByLocHash[item.lochash];
+					// add item to its location
+					loc.items.push(item);
+					console.log('added item ' + item.number + ' with hash ' + syncItem.hash);
 				}
 			}
 
-			// remove any POs whose hash no longer exists
-			for (var poId in this.poById) {
-				var po = this.poById[poId];
-				if (!(po.hash in this.poByHash)) {
-					delete this.poById[poId];
-					results.del.push(poId);
-					console.log('removed po ' + po.number + ', ' + po.hash + ' no longer exists');
+			// remove any items whose hash no longer exists
+			for (var itemId in this.itemById) {
+				var item = this.itemById[itemId];
+				if (!(item.hash in this.itemByHash)) {
+					delete this.itemById[itemId];
+					results.del.push(itemId);
+					console.log('removed item ' + item.number + ', ' + item.hash + ' no longer exists');
 				}
 			}
 			
 			// also remove them from their locations, and remove empty locations
 			for (var i = model.locations().length - 1; i >= 0; i--) {
 				var loc = model.locations()[i];
-				for (var j = loc.pos().length - 1; j >= 0; j--) {
-					var po = loc.pos()[j];
-					if (!(po.hash in this.poByHash)) {
-						loc.pos.splice(j, 1);
-						console.log('removed po ' + po.number + ' from loc');
-						if (loc.pos().length === 0) {
+				for (var j = loc.items().length - 1; j >= 0; j--) {
+					var item = loc.items()[j];
+					if (!(item.hash in this.itemByHash)) {
+						loc.items.splice(j, 1);
+						console.log('removed item ' + item.number + ' from loc');
+						if (loc.items().length === 0) {
 							model.locations.splice(i, 1);
 							console.log('removed loc ' + loc.name);
 						}
@@ -892,16 +885,16 @@ function ViewModel() {
 			db.transaction(
 				function(tx) {
 					for (var i = 0; i < operations.ins.length; i++) {
-						var po = operations.ins[i];
-						tx.executeSql('INSERT OR REPLACE INTO PURCHORD (id, data) VALUES (?, ?)', [po.id, JSON.stringify(po)]);
+						var item = operations.ins[i];
+						tx.executeSql('INSERT OR REPLACE INTO ITEM (id, data) VALUES (?, ?)', [item.id, JSON.stringify(item)]);
 					}
 					for (var i = 0; i < operations.upd.length; i++) {
-						var po = operations.upd[i];
-						tx.executeSql('INSERT OR REPLACE INTO PURCHORD (id, data) VALUES (?, ?)', [po.id, JSON.stringify(po)]);
+						var item = operations.upd[i];
+						tx.executeSql('INSERT OR REPLACE INTO ITEM (id, data) VALUES (?, ?)', [item.id, JSON.stringify(item)]);
 					}
 					for (var i = 0; i < operations.del.length; i++) {
 						var id = operations.del[i];
-						tx.executeSql('DELETE FROM PURCHORD WHERE id = ?', [id]);
+						tx.executeSql('DELETE FROM ITEM WHERE id = ?', [id]);
 					}
 				},
 				function(err) {
@@ -913,13 +906,14 @@ function ViewModel() {
 		};
 	};
 
-	this.poManager = new PoManager();
+	this.itemManager = new ItemManager();
 	
 	this.db = function() {
 		if (!('dbhandle' in model)) {
 			var db = model.dbhandle = window.openDatabase("localstore", "1.0", "Local Store", 1048576);
 			db.transaction(function(tx) {
-				tx.executeSql('CREATE TABLE IF NOT EXISTS PURCHORD (id unique, data)');
+				tx.executeSql('DROP TABLE IF EXISTS PURCHORD');
+				tx.executeSql('CREATE TABLE IF NOT EXISTS ITEM (id unique, data)');
 				tx.executeSql('CREATE TABLE IF NOT EXISTS TOKEN (token unique, expires)');
 				tx.executeSql('CREATE TABLE IF NOT EXISTS CONFIG (configname unique, configval)');
 			},
@@ -935,20 +929,20 @@ function ViewModel() {
 	
 	this.receiveSync = function(syncData) {
 		console.log("Sync data received");
-		var results = model.poManager.sync(syncData);
-		model.poManager.updateDb(results);
+		var results = model.itemManager.sync(syncData);
+		model.itemManager.updateDb(results);
 	};
 	
-	this.createLocation = function(po) {
-		var dist = model.myDistanceTo(po.latitude, po.longitude);
+	this.createLocation = function(item) {
+		var dist = model.myDistanceTo(item.latitude, item.longitude);
 		var location = {
-			hash: po.lochash,
-			name: po.locName,
-			address: po.locAddress,
-			latitude: po.latitude,
-			longitude: po.longitude,
-			radius: po.radius,
-			pos: ko.observableArray(),
+			hash: item.lochash,
+			name: item.locName,
+			address: item.locAddress,
+			latitude: item.latitude,
+			longitude: item.longitude,
+			radius: item.radius,
+			items: ko.observableArray(),
 		};
 		location.dist = ko.computed(function() {
 			return model.myDistanceTo(this.latitude, this.longitude)
@@ -957,34 +951,34 @@ function ViewModel() {
 			return model.formatDistance(this.dist());
 		}, location);
 		location.status = ko.computed(function() {
-			if (!this.pos)
+			if (!this.items)
 				return 'undefined';
-			var pos = this.pos();
-			if (pos.length == 1)
-				return pos[0].status();
-			else if (pos.length === 0)
+			var items = this.items();
+			if (items.length == 1)
+				return items[0].status();
+			else if (items.length === 0)
 				return 'closed';
-			// if any PO is checked in, then the status is checked in
+			// if any item is checked in, then the status is checked in
 			// if all are closed, then status is closed
 			var closed = true;
-			for (var i = 0; i < pos.length; i++) {
-				var po = pos[i];
-				if (po.status() == 'checkedin')
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				if (item.status() == 'checkedin')
 					return 'checkedin';
 			}
-			for (var i = 0; i < pos.length; i++) {
-				var po = pos[i];
-				if (po.status() == 'reqauth')
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				if (item.status() == 'reqauth')
 					return 'reqauth';
 			}
-			for (var i = 0; i < pos.length; i++) {
-				var po = pos[i];
-				if (po.status() == 'reqfollowup')
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				if (item.status() == 'reqfollowup')
 					return 'reqfollowup';
 			}
-			for (var i = 0; i < pos.length; i++) {
-				var po = pos[i];
-				if (po.status() != 'closed')
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				if (item.status() != 'closed')
 					closed = false;
 			}
 			if (closed)
@@ -994,9 +988,9 @@ function ViewModel() {
 			if (typeof f === 'undefined' || f === '')
 				return true;
 			f = f.toLowerCase();
-			for (var i = 0; i < this.pos().length; i++) {
-				var po = this.pos()[i];
-				if (po.number.toLowerCase().indexOf(f) != -1)
+			for (var i = 0; i < this.items().length; i++) {
+				var item = this.items()[i];
+				if (item.number.toLowerCase().indexOf(f) != -1)
 					return true;
 			}
 			if (-1 != this.name.toLowerCase().indexOf(f))
@@ -1019,26 +1013,26 @@ function ViewModel() {
 	this.selectLocation = function(location) {
 		console.log("Select Location: " + location.name);
 		model.currentLocation(location);
-		var pos = model.currentLocation().pos();
-		if (pos.length == 1)
-			model.currentPo(pos[0]);
+		var items = model.currentLocation().items();
+		if (items.length == 1)
+			model.currentItem(items[0]);
 	};
 	
 	this.checkin = function() {
-		model.currentPo().status('checkedin');
-		model.currentPo(null);
+		model.currentItem().status('checkedin');
+		model.currentItem(null);
 		var screen = Screens.pop();
 	};
 	
 	this.completeJob = function() {
-		model.currentPo().status('closed');
-		model.currentPo(null);
+		model.currentItem().status('closed');
+		model.currentItem(null);
 		var screen = Screens.pop();
 	};
 	
 	this.incompleteJob = function() {
-		model.currentPo().status('incomplete');
-		model.currentPo(null);
+		model.currentItem().status('incomplete');
+		model.currentItem(null);
 		var screen = Screens.pop();
 	};
 	
@@ -1046,16 +1040,17 @@ function ViewModel() {
 		model.currentLocation(null);
 	};
 
-	this.cancelPo = function() {
-		model.currentPo(null);
-		if (model.currentLocation().pos().length == 1)
+	this.cancelItem = function() {
+		model.currentItem(null);
+		if (model.currentLocation().items().length == 1)
 			model.currentLocation(null);
 	}
 	
-	this.selectPo = function(po) {
-		model.currentPo(po);
+	this.selectItem = function(item) {
+		model.currentItem(item);
 	};
 	
+	// map from a javscript object to a model object
 	this.map = function(map, jso, modelo) {
 		var rules = map.rules;
 		var stat = map['static'];
@@ -1078,8 +1073,10 @@ function ViewModel() {
 	};
 
 	this.maps = {
-		po: {
+		item: {
 			'static': {
+				'typeid': 'purchaseorder',
+				'typename': 'PO',
 			},
 			'rules': {
 				'status': function (val) { if (!this.status) { this.status = ko.observable(val); } else { this.status(val); }},
@@ -1144,8 +1141,8 @@ var init = function() {
 		console.log("DEVICE BACK BUTTON");
 		if (model.editingNote())
 			return model.cancelNote();
-		if (model.currentPo())
-			return model.cancelPo();
+		if (model.currentItem())
+			return model.cancelItem();
 		if (model.currentLocation())
 			return model.cancelLocation();
 		stopBackground();
@@ -1179,7 +1176,7 @@ var init = function() {
 		this.initStep = function() {
 			if (model.authRequest.login() && model.authRequest.company() && model.authRequest.status() == 'need login')
 				model.authRequest.status('need pin');
-			model.poManager.requestDbLoad();
+			model.itemManager.requestDbLoad();
 			model.doAppAuth(function() { model.initializing(false); });
 		};
 		this.run = function() {

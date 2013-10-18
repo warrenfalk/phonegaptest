@@ -585,18 +585,18 @@ body {
 	font-weight: bold;
 	padding-right: 1.5em;
 }
-.locrecord .ponum {
+.locrecord .itemnum {
 	position: absolute;
 	right: 30px;
 	top: 2px;
 	font-size: 22px;
 	margin: 3px;
 }
-.locrecord .ponum.mult {
+.locrecord .itemnum.mult {
 	font-size: 18px;
 	color: #606060;
 }
-.locrecord .ponum.mult .count {
+.locrecord .itemnum.mult .count {
 	font-weight: bolder;
 	color: #1259c2;
 }
@@ -607,7 +607,7 @@ body {
 }
 
 @media screen and (max-width:330px) {
-	.locrecord .ponum {
+	.locrecord .itemnum {
 		top: 6px;
 		font-size: 18px;
 	}
@@ -621,7 +621,7 @@ body {
 
 /* PO LIST PAGE */
 
-#polist .body {
+#itemlist .body {
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -629,28 +629,28 @@ body {
 	bottom: 0;
 	overflow: auto;
 }
-#polist .heading .location {
+#itemlist .heading .location {
 	background-color: #e9e9e9;
 	padding: 2px 5px;
 	height: 36px;
 }
-.porecord {
+.itemrecord {
 	height: 50px;
 }
-.porecord .po {
+.itemrecord .item {
 	position: absolute;
 	left: 28px;
 	top: 14px;
 	font-size: 18px;
 }
-.porecord .type {
+.itemrecord .type {
 	position: absolute;
 	right: 20px;
 	top: 4px;
 	font-size: 15px;
 	min-width: 43%;
 }
-.porecord .due {
+.itemrecord .due {
 	position: absolute;
 	right: 20px;
 	top: 25px;
@@ -685,52 +685,52 @@ body {
 
 /* PO DETAILS PAGE */
 
-#podetails .body {
+#itemdetails .body {
 	position: absolute;
 	left: 0;
 	top: 44px;
 	right: 0;
 	overflow: auto;
 }
-#podetails .body {
+#itemdetails .body {
 	bottom: 206px;
 }
-#podetails.closed .body {
+#itemdetails.closed .body {
 	bottom: 128px;
 }
-#podetails .podata {
+#itemdetails .itemdata {
 	position: relative;
 	font-size: 15px;
 }
-#podetails .podata .ponum {
+#itemdetails .itemdata .itemnum {
 	float: right;
 	font-size: 15px;
 	font-weight: bold;
 }
-#podetails .podata .location {
+#itemdetails .itemdata .location {
 }
-#podetails .podata .location .locname {
+#itemdetails .itemdata .location .locname {
 	font-weight: bold;
 }
-#podetails .podata .location .name {
+#itemdetails .itemdata .location .name {
 	display: none;
 }
-#podetails .podata .location .value {
+#itemdetails .itemdata .location .value {
 	padding-left: 35px;
 	font-weight: bold;
 	min-height: 34px;
 	background: url('../img/svg/pin.svg') no-repeat;
 }
-#podetails .podata .servicetype {
+#itemdetails .itemdata .servicetype {
 }
-#podetails > .actions {
+#itemdetails > .actions {
 	background-color: #e0e0e0;
 	position: fixed;
 	width: 100%;
 	bottom: 0px;
 	border-top: solid 1px #b0b0b0;
 }
-#podetails #noteform {
+#itemdetails #noteform {
 	background-color: #e0e0e0;
 	position: fixed;
 	width: 100%;
@@ -751,7 +751,7 @@ body {
 #noteform .note .caption {
 	margin: 5px 0;
 }
-#podetails #noteform textarea {
+#itemdetails #noteform textarea {
 	width: 100%;
 	height: 140px;
 	border: solid 2px #b0b0b0;
@@ -765,7 +765,7 @@ body {
 	margin: 4px 12px 14px 12px;
 	height: 54px;
 }
-#podetails section {
+#itemdetails section {
 	padding: 10px;
 	border-top: solid 1px #e0e0e0;
 }
@@ -793,15 +793,15 @@ body {
 	background-image: url(../img/svg/btn-note.svg);
 	background-repeat: no-repeat;
 }
-#podetails .slider {
+#itemdetails .slider {
 	margin: 18px 37px 10px 37px;
 	height: 50px;
 }
-.podata .name {
+.itemdata .name {
 	color: #134a82;
 	font-weight: normal;
 }
-.podata .value {
+.itemdata .value {
 	color: black;
 	font-weight: bold;
 }

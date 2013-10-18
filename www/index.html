@@ -65,11 +65,11 @@
 		        					<div class="locname" data-bind="text: name"></div>
 				        			<div class="locaddr" data-bind="text: address"></div>
 		        					<div class="dist">(<span class="disttext" data-bind="text: distance"></span>)</div>
-		        					<div class="ponum" data-bind="if: pos().length == 1">
-										<span class="number" data-bind="text: pos()[0].number"></span>
+		        					<div class="itemnum" data-bind="if: items().length == 1">
+										<span class="number" data-bind="text: items()[0].number"></span>
 		        					</div>
-									<div class="ponum mult" data-bind="if: pos().length > 1">
-										(<span class="count" data-bind="text: pos().length"></span> POs)
+									<div class="itemnum mult" data-bind="if: items().length > 1">
+										(<span class="count" data-bind="text: items().length"></span> items)
 									</div>
 		      						<div class="rtarrow"></div>
 		        				</div>
@@ -78,11 +78,11 @@
 					</div>
 				</div>
 				<div class="container" data-bind="with: currentLocation">
-					<div class="page" id="polist" data-bind="css: { current: !$root.currentPo() }">
+					<div class="page" id="itemlist" data-bind="css: { current: !$root.currentItem() }">
 		    			<div class="heading">
 				    		<div class="ibar">
-		    					<div class="left"><button class="ibtn left" id="polist_cancel" data-bind="click: $root.cancelLocation">Cancel</button></div>
-		    					<div class="title">Select PO</div>
+		    					<div class="left"><button class="ibtn left" id="itemlist_cancel" data-bind="click: $root.cancelLocation">Cancel</button></div>
+		    					<div class="title">Select Item</div>
 		    				</div>
 							<div class="location" data-bind="with: $root.currentLocation">
 								<div class="value">
@@ -92,11 +92,11 @@
 							</div>
 		    			</div>
 		    			<div class="body">
-		    				<div data-bind="iscroll: pos">
-				    			<div class="polist list" data-bind="foreach: pos">
-									<div class="record porecord" data-bind="css: status(), click: $root.selectPo">
+		    				<div data-bind="iscroll: items">
+				    			<div class="itemlist list" data-bind="foreach: items">
+									<div class="record itemrecord" data-bind="css: status(), click: $root.selectItem">
 										<div class="indicators"></div>
-										<div class="po"><span class="number" data-bind="text: number"></span></div>
+										<div class="item"><span class="number" data-bind="text: number"></span></div>
 				    					<div class="type" data-bind="text: serviceType"></div>
 				    					<div class="due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(followUpBy)).format('MM/DD')"></span></div>
 										<div class="rtarrow"></div>
@@ -106,18 +106,18 @@
 		    			</div>
 					</div>
 				</div>
-				<div class="container" data-bind="with: currentPo">
-					<div class="page current" id="podetails" data-bind="css: status()">
+				<div class="container" data-bind="with: currentItem">
+					<div class="page current" id="itemdetails" data-bind="css: status()">
 						<div class="heading">
 					    	<div class="ibar">
-					    		<div class="left"><button class="ibtn left" id="detail_cancel" data-bind="click: $root.cancelPo">Cancel</button></div>
-					    		<div class="title">PO Details</div>
+					    		<div class="left"><button class="ibtn left" id="detail_cancel" data-bind="click: $root.cancelItem">Cancel</button></div>
+					    		<div class="title"><span data-bind="text: typename"></span> Details</div>
 					    	</div>
 					    </div>
 			    		<div class="body">
-							<div class="podata">
+							<div class="itemdata">
 								<section>
-									<div class="ponum"><span class="value" data-bind="text: number"></span></div>
+									<div class="itemnum"><span class="value" data-bind="text: number"></span></div>
 									<div class="location" data-bind="with: $root.currentLocation">
 										<span class="name">Location:</span>
 										<div class="value">
@@ -134,9 +134,9 @@
 								</section>
 							</div>
 			        	</div>
-						<div class="actions" data-bind="with: $root.currentPo">
+						<div class="actions" data-bind="with: $root.currentItem">
 							<div data-bind="ifnot: ['closed', 'locked'].indexOf(status()) != -1">
-								<div id="checkinout" data-bind="Slider: { slideleft: $root.tryCheckinCurrentPo, slideright: $root.tryCheckoutCurrentPo, reverse: status() != 'checkedin' }"
+								<div id="checkinout" data-bind="Slider: { slideleft: $root.tryCheckinCurrentItem, slideright: $root.tryCheckoutCurrentItem, reverse: status() != 'checkedin' }"
 									data-right-options='["Job Complete", "Requires Authorization", "Follow-up Required"]'
 									data-left="slide to check out"
 									data-right="slide to check in">
@@ -145,9 +145,9 @@
 							<button id="takepictures" data-bind="click: $root.takePic">Take Pictures</button>
 							<button id="addnote" data-bind="click: $root.addNote">Add Note</button>
 						</div>
-						<div id="noteform" data-bind="fade: $root.editingNote, with: $root.currentPo">
+						<div id="noteform" data-bind="fade: $root.editingNote, with: $root.currentItem">
 							<div class="note">
-								<label for="notebox" class="caption">Note for <span data-bind="text: number">this PO</span></p>
+								<label for="notebox" class="caption">Note for <span data-bind="text: number">this item</span></p>
 								<textarea id="notebox" data-bind="value: $root.noteDraft, disable: $root.sendingNote"></textarea>
 							</div>
 							<div class="actions">
