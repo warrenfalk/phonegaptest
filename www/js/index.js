@@ -1176,7 +1176,7 @@ var init = function() {
 				if (!model.serverConfigLoaded) {
 					model.prompt('Unable to reach server, please make sure you have a signal and a data connection.  Some features may not work correctly', 'No Connection', 'OK', function() {
 						if (!model.getConfig('fromserver')) {
-							setTimeout(function() { initializer.configStep(); }, 1000);
+							setTimeout(function() { initializer.configStep(); }, 30000);
 						}
 						initializer.initStep();
 					});
