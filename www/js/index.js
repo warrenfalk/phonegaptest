@@ -201,12 +201,13 @@ function ViewModel() {
 	}
 
 	this.request = function(options) {
-		var event = "POST[" + options.path + "]"; 
+		var url = options.url || model.serverUrl(((!model.authToken() || options.noToken) ? '' : '/' + model.authToken().token) + options.path);
+		var event = "POST[" + url + "]"; 
 		console.log(event);
 		try {
 			var $req = $.ajax({
 				type: options.method,
-				url: options.url || model.serverUrl(((!model.authToken() || options.noToken) ? '' : '/' + model.authToken().token) + options.path),
+				url: url,
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
 				data: options.payload ? JSON.stringify(options.payload) : null,
