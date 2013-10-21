@@ -1,29 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<widget xmlns = "http://www.w3.org/ns/widgets"
-        xmlns:gap = "http://phonegap.com/ns/1.0"
-        id        = "com.divisionsinc.InPosition"
+<widget xmlns="http://www.w3.org/ns/widgets" 
+	xmlns:gap="http://phonegap.com/ns/1.0"
+	id="com.divisionsinc.InPosition" 
         versionCode="12" 
-        version   = "1.0.2">
+	version="1.0.2" >
         <name>In Position</name>
         <description>Service verification made easy.  By Divisions Inc.</description>
-        <preference name="phonegap-version" value="2.7.0" />
+	<preference name="phonegap-version" value="3.0.0" />
+
+	<icon src="res/icon/ios.png" />
+        <icon src="res/icon/ios/inpos-ios-57.png" gap:platform="ios" width="57" height="57"/>
+        <icon src="res/icon/ios/inpos-ios-72.png" gap:platform="ios" width="72" height="72"/>
+        <icon src="res/icon/ios/inpos-ios-114.png" gap:platform="ios" width="114" height="114"/>
+        <icon src="res/icon/ios/inpos-ios-144.png" gap:platform="ios" width="144" height="144"/>
         
-        <icon src="icons/ios/inpos-ios-57.png" gap:platform="ios" width="57" height="57"/>
-        <icon src="icons/ios/inpos-ios-72.png" gap:platform="ios" width="72" height="72"/>
-        <icon src="icons/ios/inpos-ios-114.png" gap:platform="ios" width="114" height="114"/>
-        <icon src="icons/ios/inpos-ios-144.png" gap:platform="ios" width="144" height="144"/>
-        
-        <icon src="icons/android/inpos-android-36.png" gap:platform="android" gap:density="ldpi" />
-        <icon src="icons/android/inpos-android-48.png" gap:platform="android" gap:density="mdpi" />
-        <icon src="icons/android/inpos-android-72.png" gap:platform="android" gap:density="hdpi" />
-        <icon src="icons/android/inpos-android-96.png" gap:platform="android" gap:density="xhdpi" />
+        <icon src="res/icon/android/inpos-android-36.png" gap:platform="android" gap:density="ldpi" />
+        <icon src="res/icon/android/inpos-android-48.png" gap:platform="android" gap:density="mdpi" />
+        <icon src="res/icon/android/inpos-android-72.png" gap:platform="android" gap:density="hdpi" />
+        <icon src="res/icon/android/inpos-android-96.png" gap:platform="android" gap:density="xhdpi" />
         <icon src="icons/android/inpos-android-144.png" gap:platform="android" gap:density="xxhdpi" />
-				
+
         <author href="http://www.divisionsinc.com/" email="wfalk@divisionsinc.com">Warren Falk</author>
-        <preference name="orientation" value="portrait"/>
+	<preference name="permissions" value="none" />
+	<preference name="orientation" value="portrait" />
+	<preference name="fullscreen" value="false" />
         <preference name="webviewbounce" value="false" />
-        <preference name="prerendered-icon" value="true" />
-        
+	<preference name="prerendered-icon" value="true" />
+	<preference name="stay-in-webview" value="false" />
+	<preference name="ios-statusbarstyle" value="black-opaque" />
+	<preference name="detect-data-types" value="true" />
+	<preference name="exit-on-suspend" value="false" />
+	<preference name="show-splash-screen-spinner" value="true" />
+	<preference name="auto-hide-splash-screen" value="true" />
+	<preference name="disable-cursor" value="false" />
+	<preference name="android-minSdkVersion" value="7" />
+	<preference name="android-installLocation" value="auto" />
+	<preference name="target-device" value="handset" />
+
         <gap:splash src="launch/320x480.png" gap:platform="ios" width="320" height="480"/>
         <gap:splash src="launch/640x960.png" gap:platform="ios" width="640" height="960"/>
         <gap:splash src="launch/640x1136.png" gap:platform="ios" width="640" height="1136"/>
@@ -31,25 +44,25 @@
         <gap:splash src="launch/hdpi-portrait.png" gap:platform="android" gap:density="hdpi"/>
         <gap:splash src="launch/mpi-portrait.png" gap:platform="android" gap:density="mdpi"/>
         <gap:splash src="launch/xhdpi-portrait.png" gap:platform="android" gap:density="xhdpi"/>
-
-        <preference name="target-device" value="handset" />
-        
+	
         <access origin="http://divisionsinc.com:82" subdomains="true"/>
         <access origin="http://divisionsinc.com:81" subdomains="true"/>
         <access origin="http://divisionsinc.com" subdomains="true"/>
         <access origin="http://testwebservices.divisionsinc.com"/>
         <access origin="http://webservices.divisionsinc.com"/>
         <access origin="http://mydivisions.com"/>
-        <access origin="*"/>
         <access origin="http://divisions.asp:82" subdomains="true"/>
         <access origin="http://divisions.asp:81" subdomains="true"/>
         <access origin="http://divisions.asp" subdomains="true"/>
         <access origin="http://localhost*"/>
         <access origin=".*"/>
-
+	
+	<content src="index.html" />
+	
         <feature name="http://api.phonegap.com/1.0/camera"/>
         <feature name="http://api.phonegap.com/1.0/file"/>
         <feature name="http://api.phonegap.com/1.0/geolocation"/>
         <feature name="http://api.phonegap.com/1.0/network"/>
         <feature name="http://api.phonegap.com/1.0/notification"/>
+	<feature name="http://api.phonegap.com/1.0/device" />
 </widget>

@@ -186,7 +186,7 @@ function ViewModel() {
 
 	this.serverUrl = function(relpath) {
 		if (!ON_DEVICE)
-			return '/test/webservice/' + API_NAME + '_v' + API_VERSION + '.svc',
+			return '/test/webservice/' + API_NAME + '_v' + API_VERSION + '.svc' + relpath;
 		return model.getConfig('server') + relpath;
 	}
 
@@ -210,6 +210,7 @@ function ViewModel() {
 				contentType: 'application/json; charset=UTF-8',
 				dataType: 'json',
 				data: options.payload ? JSON.stringify(options.payload) : null,
+				processData: false,
 				success: function(a,b) { console.log(event + " success"); options.success(a,b); },
 				error: function(a,b,c) { console.log(event + " error " + b); options.error(a,b,c); },
 				timeout: options.timeout || 30000,
