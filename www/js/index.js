@@ -1306,7 +1306,7 @@ ko.bindingHandlers.iscroll = {
 		var $e = $(element);
 		$e.addClass('iscroll');
 		$e.height($e.parent().height());
-		var control = new iScroll($e.get(0));
+		var control = new iScroll($e.get(0), { handleClick: false });
 		$e.data('control', control);
 	},
 	update: function(element, valueAccessor) {
