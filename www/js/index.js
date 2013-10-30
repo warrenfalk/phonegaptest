@@ -157,15 +157,14 @@ function ViewModel() {
 
 	this.doSync = function() {
 		if (model.authToken() && model.authToken.expires < model.rightNow())
-			model.authToken(false);
+			model.deleteToken();
 		if (!model.authToken())
 			return;
 		model.itemManager.sendSyncRequest();
 	};
-	
-	this.logout = function() {
+
+	this.deleteToken = function() {
 		model.authToken(false);
-		model.authRequest.status('need login');
 		var db = model.db();
 		db.transaction(
 			function(tx) {
@@ -184,6 +183,11 @@ function ViewModel() {
 				// success
 			}
 		);
+	}
+	
+	this.logout = function() {
+		model.deleteToken();
+		model.authRequest.status('need login');
 	};
 
 	this.serverUrl = function(relpath) {
@@ -252,6 +256,11 @@ function ViewModel() {
 			path: '/items/sync',
 			payload: { hashes: hashes },
 			success: function(response) {
+				if (response.errors && response.errors.length) {
+					if ($.inArray(response.errors, "reauthenticate"))
+						model.deleteToken();
+					return;
+				}
 				model.syncStatus('ok');
 				model.receiveSync(response);
 				if (onsuccess)
@@ -608,9 +617,9 @@ function ViewModel() {
 							var recheck = (r.expires * 1000) - now;
 							if (recheck <= 0)
 								recheck = 1;
-							setTimeout(function() {
-								model.doAppAuth(function() {});
-							}, recheck);
+							//setTimeout(function() {
+							//	model.doAppAuth(function() {});
+							//}, recheck);
 							model.doSync();
 						}
 						else {
