@@ -1117,8 +1117,6 @@ function ViewModel() {
 	this.maps = {
 		item: {
 			'static': {
-				'typeid': 'purchaseorder',
-				'typename': 'PO',
 				'canCheckin': function() { 
 					return this.checkinEnabled && (['closed', 'locked'].indexOf(this.status()) == -1); 
 				},

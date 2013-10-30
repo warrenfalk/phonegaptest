@@ -97,8 +97,8 @@
 									<div class="record itemrecord" data-bind="css: status(), click: $root.selectItem">
 										<div class="indicators"></div>
 										<div class="item"><span class="number" data-bind="text: number"></span></div>
-				    					<div class="type" data-bind="text: serviceType"></div>
-				    					<div class="due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(followUpBy)).format('MM/DD')"></span></div>
+				    					<div class="type" data-bind="text: subtype"></div>
+				    					<div class="due" data-bind="if: due"><span class="name">due:</span> <span class="value" data-bind="text: moment(Date(due)).format('MM/DD')"></span></div>
 										<div class="rtarrow"></div>
 									</div>
 				    			</div>
@@ -126,12 +126,11 @@
 										</div>
 									</div>
 								</section>
-								<section>
-									<div class="servicetype"><span class="name">Contract Type:</span> <span class="value" data-bind="text: serviceType"></span></div>
+								<!-- ko foreach: details -->
+								<section data-bind="css: style">
+									<div><span class="name" data-bind="text: title"></span> <span class="value" data-bind="text: value"></span></div>
 								</section>
-								<section>
-									<div class="section notes"><span class="name">Scope:</span> <div class="value" data-bind="text: scope"></span></div>
-								</section>
+								<!-- /ko -->
 							</div>
 			        	</div>
 						<div class="actions" data-bind="with: $root.currentItem">
