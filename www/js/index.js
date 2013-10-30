@@ -234,8 +234,8 @@ function ViewModel() {
 		model.authRequest.status('requested');
 		var spec = model.parseCompany(model.authRequest.company());
 		model.post({
-			path: '/changepass/' + spec.company + '/' + model.authRequest.login(),
-			payload: { newpass: model.pinCandidate, oldpass: model.authRequest.password() },
+			path: '/changepin/' + spec.company + '/' + model.authRequest.login(),
+			payload: { newpin: model.pinCandidate, oldpin: model.authRequest.password() },
 			success: function(response) {
 				if (response.errors)
 					return onfail(null, response.errors[0], null);
@@ -325,7 +325,7 @@ function ViewModel() {
 		model.post({
 			noToken: true,
 			path: '/auth/' + company + '/' + login,
-			payload: {password: password, data: data},
+			payload: {pin: password, data: data},
 			success: function(response) {
 				var token = response.token;
 				var authStatus = token.status.split(/ /);
