@@ -563,7 +563,7 @@ body {
 	left: 28px;
 	top: 9px;
 	font-size: 18px;
-	right: 150px;
+	right: 34px;
 	overflow: hidden;
 	white-space: nowrap;
 }
@@ -592,6 +592,12 @@ body {
 	top: 2px;
 	font-size: 22px;
 	margin: 3px;
+	background-color: white;
+	padding-left: 0.3em;
+	text-align: right;	
+}
+.locrecord:active .itemnum {
+	background-color: #8cc0f5;
 }
 .locrecord .itemnum.mult {
 	font-size: 18px;
@@ -805,6 +811,10 @@ body {
 .itemdata .value {
 	color: black;
 	font-weight: bold;
+}
+.itemdata .multi .name {
+	display: block;
+	margin-bottom: 3px;
 }
 
 
