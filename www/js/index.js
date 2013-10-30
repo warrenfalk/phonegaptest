@@ -61,7 +61,7 @@ function ViewModel() {
 	this.appwait = ko.computed(function() {
 		return model.initializing() || model.authRequest.status() == 'requested';
 	});
-	this.rightNow = function() { return (new Date().getTime() / 1000); }
+	this.rightNow = function() { return Math.floor(new Date().getTime() / 1000); }
 
 	this.setConfig = function(name, val, fromdb) {
 		if (fromdb && model.serverConfigLoaded && name in model.config)
@@ -83,7 +83,7 @@ function ViewModel() {
 				tx.executeSql('INSERT OR REPLACE INTO CONFIG (configname, configval) VALUES (?, ?)', [name, JSON.stringify(val)]);
 			},
 			function(err) {
-				console.log("db store save config value failed: " + err);
+				console.error("db store save config value failed: " + err);
 			}
 		);
 	};
@@ -114,18 +114,19 @@ function ViewModel() {
 						complete();
 					},
 					function(err) {
-						console.log("db store config read failed: " + err);
+						console.error("db store config read failed: " + err);
 						dbwait = false;
 						complete();
 					}
 				);
 			},
 			function(err) {
-				console.log("db store config read tx failed: " + err);
+				console.error("db store config read tx failed: " + err);
 				dbwait = false;
 				complete();
 			},
 			function() {
+				// success
 			}
 		);
 		// also call out to the web service
@@ -168,18 +169,19 @@ function ViewModel() {
 		var db = model.db();
 		db.transaction(
 			function(tx) {
-				tx.executeSql('DELETE FROM TOKEN', [],
+				tx.executeSql('DELETE FROM USERTOKEN', [],
 					function(tx, results) {
 					},
 					function(err) {
-						console.log("db store auth data failed: " + err);
+						console.error("db store auth data failed: " + err);
 					}
 				);
 			},
 			function(err) {
-				console.log("db store auth data failed: " + JSON.stringify(err));
+				console.error("db store auth data failed: " + JSON.stringify(err));
 			},
 			function() {
+				// success
 			}
 		);
 	};
@@ -316,15 +318,16 @@ function ViewModel() {
 			path: '/auth/' + company + '/' + login,
 			payload: {password: password, data: data},
 			success: function(response) {
-				var authStatus = response.status.split(/ /);
+				var token = response.token;
+				var authStatus = token.status.split(/ /);
 				if (authStatus.indexOf("Authorized") != -1) {
+					var expiry = Math.floor(parseFloat(token.expires)) + model.rightNow();
 					var finalAuth = function() { 
 						auth.status('ready');
-						model.onAuthenticated(response.token, expiry);
-						onsuccess(response.token, expiry);
+						model.onAuthenticated(token.token, expiry, login.toLowerCase());
+						onsuccess(token.token, expiry);
 					};
-					var expiry = Math.round(parseFloat(response.expires)) + Math.round((new Date().getTime() / 1000));
-					console.log("Received token: " + response.token + " expires in: " + response.expires + ": absolute: " + expiry);
+					console.log("Received token: " + token.token + " expires in: " + token.expires + ": absolute: " + expiry);
 					if (authStatus.indexOf('PinChangeRequired') != -1) {
 						auth.status('change pin');
 						model.prompt('Please create a new pin for ' + auth.login());
@@ -339,7 +342,7 @@ function ViewModel() {
 					if (authStatus[0] == "Unauthorized")
 						onfail("Authorization failed, please try again");
 					else
-						onfail(response.status);
+						onfail(token.status);
 				}
 			},
 			error: function(jqXHR, textStatus, e) {
@@ -452,24 +455,25 @@ function ViewModel() {
 			});
 	}
 	
-	this.onAuthenticated = function(token, expires) {
-		model.authToken({token: token, expires: expires});
+	this.onAuthenticated = function(token, expires, user) {
+		model.authToken({token: token, expires: expires, user: user});
 		model.doSync();
 		var db = model.db();
 		db.transaction(
 			function(tx) {
-				tx.executeSql('INSERT INTO TOKEN (token, expires) VALUES (?, ?)', [token, expires],
+				tx.executeSql('INSERT INTO USERTOKEN (token, expires, user) VALUES (?, ?, ?)', [token, expires, user],
 					function(tx, results) {
 					},
 					function(err) {
-						console.log("db store auth data failed: " + err);
+						console.error("db store auth data failed: " + err);
 					}
 				);
 			},
 			function(err) {
-				console.log("db store auth data failed: " + JSON.stringify(err));
+				console.error("db store auth data failed: " + JSON.stringify(err));
 			},
 			function() {
+				// success
 			}
 		);
 	};
@@ -593,13 +597,13 @@ function ViewModel() {
 		var expiry = model.rightNow() + 60;
 		db.transaction(
 			function(tx) {
-				tx.executeSql('DELETE FROM TOKEN WHERE expires <= ?', [expiry]);
-				tx.executeSql('SELECT token FROM TOKEN WHERE expires > ? ORDER BY expires DESC', [expiry],
+				tx.executeSql('DELETE FROM USERTOKEN WHERE expires <= ?', [expiry]);
+				tx.executeSql('SELECT token, expires, user FROM USERTOKEN WHERE expires > ? ORDER BY expires DESC', [expiry],
 					function(tx, results) {
 						done();
 						if (results.rows.length > 0) {
 							var r = results.rows.item(0);
-							model.authToken({token: r.token, expires: r.expires});
+							model.authToken({token: r.token, expires: r.expires, user: r.user});
 							var now = new Date().getTime();
 							var recheck = (r.expires * 1000) - now;
 							if (recheck <= 0)
@@ -607,6 +611,7 @@ function ViewModel() {
 							setTimeout(function() {
 								model.doAppAuth(function() {});
 							}, recheck);
+							model.doSync();
 						}
 						else {
 							model.authToken(false);
@@ -614,15 +619,16 @@ function ViewModel() {
 					},
 					function(err) {
 						done();
-						console.log("db get auth data failed: " + err);
+						console.error("db get auth data failed: " + err);
 					}
 				);
 			},
 			function(err) {
 				done();
-				console.log("db get auth data failed: " + JSON.stringify(err));
+				console.error("db get auth data failed: " + JSON.stringify(err));
 			},
 			function() {
+				// success
 			}
 		);
 	};
@@ -787,11 +793,11 @@ function ViewModel() {
 			model.postSync(hashes);
 		};
 		
-		this.requestDbLoad = function() {
+		this.requestDbLoad = function(user) {
 			var db = model.db();
 			db.transaction(
 				function(tx) {
-					tx.executeSql('SELECT data FROM ITEM', [],
+					tx.executeSql('SELECT data FROM USERITEM WHERE user = ?', [user],
 						function(tx, results) {
 							var syncData = { minus: [], plus: [] };
 							for (var i = 0; i < results.rows.length; i++) {
@@ -803,15 +809,15 @@ function ViewModel() {
 							console.log("database read application complete");
 						},
 						function(err) {
-							console.log("db get data failed: " + err);
+							console.error("db get data failed: " + err);
 						}
 					);
 				},
 				function(err) {
-					
+					console.error('db get data transaction failed: ' + err);
 				},
 				function() {
-					
+					// success
 				}
 			);
 		};
@@ -899,21 +905,22 @@ function ViewModel() {
 				function(tx) {
 					for (var i = 0; i < operations.ins.length; i++) {
 						var item = operations.ins[i];
-						tx.executeSql('INSERT OR REPLACE INTO ITEM (id, data) VALUES (?, ?)', [item.id, JSON.stringify(item)]);
+						tx.executeSql('INSERT OR REPLACE INTO USERITEM (id, user, data) VALUES (?, ?, ?)', [item.id, model.authToken().user, JSON.stringify(item)]);
 					}
 					for (var i = 0; i < operations.upd.length; i++) {
 						var item = operations.upd[i];
-						tx.executeSql('INSERT OR REPLACE INTO ITEM (id, data) VALUES (?, ?)', [item.id, JSON.stringify(item)]);
+						tx.executeSql('INSERT OR REPLACE INTO USERITEM (id, user, data) VALUES (?, ?, ?)', [item.id, model.authToken().user, JSON.stringify(item)]);
 					}
 					for (var i = 0; i < operations.del.length; i++) {
 						var id = operations.del[i];
-						tx.executeSql('DELETE FROM ITEM WHERE id = ?', [id]);
+						tx.executeSql('DELETE FROM USERITEM WHERE id = ? AND user = ?', [id, model.authToken().user]);
 					}
 				},
 				function(err) {
-					console.log("db transaction failed: " + err);
+					console.error("db transaction failed: " + err);
 				},
 				function() {
+					// success
 				}
 			);
 		};
@@ -926,12 +933,14 @@ function ViewModel() {
 			var db = model.dbhandle = window.openDatabase("localstore", "1.0", "Local Store", 1048576);
 			db.transaction(function(tx) {
 				tx.executeSql('DROP TABLE IF EXISTS PURCHORD');
-				tx.executeSql('CREATE TABLE IF NOT EXISTS ITEM (id unique, data)');
-				tx.executeSql('CREATE TABLE IF NOT EXISTS TOKEN (token unique, expires)');
+				tx.executeSql('DROP TABLE IF EXISTS TOKEN');
+				tx.executeSql('DROP TABLE IF EXISTS ITEM');
+				tx.executeSql('CREATE TABLE IF NOT EXISTS USERITEM (id unique, user, data)');
+				tx.executeSql('CREATE TABLE IF NOT EXISTS USERTOKEN (token unique, expires, user)');
 				tx.executeSql('CREATE TABLE IF NOT EXISTS CONFIG (configname unique, configval)');
 			},
 			function(err) {
-				console.log("db open failed: " + err);
+				console.error("db open failed: " + err);
 			},
 			function() {
 				console.log("db opened");
@@ -1192,7 +1201,7 @@ var init = function() {
 		this.initStep = function() {
 			if (model.authRequest.login() && model.authRequest.company() && model.authRequest.status() == 'need login')
 				model.authRequest.status('need pin');
-			model.itemManager.requestDbLoad();
+			model.itemManager.requestDbLoad(model.authRequest.login());
 			model.doAppAuth(function() { model.initializing(false); });
 		};
 		this.run = function() {
@@ -1316,7 +1325,6 @@ ko.bindingHandlers.iscroll = {
 		ko.utils.unwrapObservable(valueAccessor());
 		var $e = $(element);
 		var control = $e.data('control');
-		console.log('REFRESHING...' + control);
 		setTimeout(function() {
 			control.refresh();
 		}, 100);
