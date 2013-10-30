@@ -1090,6 +1090,9 @@ function ViewModel() {
 			'static': {
 				'typeid': 'purchaseorder',
 				'typename': 'PO',
+				'canCheckin': function() { 
+					return this.checkinEnabled && (['closed', 'locked'].indexOf(this.status()) == -1); 
+				},
 			},
 			'rules': {
 				'status': function (val) { if (!this.status) { this.status = ko.observable(val); } else { this.status(val); }},

@@ -135,7 +135,7 @@
 							</div>
 			        	</div>
 						<div class="actions" data-bind="with: $root.currentItem">
-							<div data-bind="ifnot: ['closed', 'locked'].indexOf(status()) != -1">
+							<div data-bind="if: canCheckin()">
 								<div id="checkinout" data-bind="Slider: { slideleft: $root.tryCheckinCurrentItem, slideright: $root.tryCheckoutCurrentItem, reverse: status() != 'checkedin' }"
 									data-right-options='["Job Complete", "Requires Authorization", "Follow-up Required"]'
 									data-left="slide to check out"
