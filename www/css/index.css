@@ -247,6 +247,7 @@ body {
 	right: 0;
 }
 #pinform .login {
+	border-radius: 15px 15px 0px 0px;
 	font-size: 20px;
 	color: white;
 	text-shadow: 0px -1px #4f6c8b;
@@ -299,9 +300,9 @@ body {
 .pinkeypad .key8 { left: 33%; width: 33%; top: 50%; height: 25%; }
 .pinkeypad .key9 { left: 66%; width: 34%; top: 50%; height: 25%; }
 
-.pinkeypad .keyL { left:   0; width: 33%; top: 75%; height: 25%; }
+.pinkeypad .keyL { left:   0; width: 33%; top: 75%; height: 25%; border-radius: 0 0 0 15px; }
 .pinkeypad .key0 { left: 33%; width: 33%; top: 75%; height: 25%; }
-.pinkeypad .keyR { left: 66%; width: 34%; top: 75%; height: 25%; }
+.pinkeypad .keyR { left: 66%; width: 34%; top: 75%; height: 25%; border-radius: 0 0 15px 0; }
 
 .pinkeypad .key .text {
 	font-size: 20px;
