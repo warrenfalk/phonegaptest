@@ -643,17 +643,28 @@ function ViewModel() {
 	};
 	
 	this.takePic = function() {
+		console.log('take pic');
 		navigator.camera.getPicture(function(filename) {
-			var url = '/' + model.token + '/items/' + model.currentItem().typeid + '/' + model.currentItem().id + '/pic';
+			console.log('got picture, filename = ' + filename);
+			var url = '/' + model.authToken().token + '/items/pic/' + model.currentItem().typeid + '/' + model.currentItem().id
 			var options = new FileUploadOptions();
 			options.fileKey = "image";
 			options.fileName = filename.substr(filename.lastIndexOf('/') + 1);
 			options.mimeType = "image/jpeg";
 			options.params = {};
 			var deleteFile = function(filename) {
-				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs) {
-					fs.root.remove(filename, function() { console.log("local pic deleted"); }, function(err) { console.log("local pic delete failed: " + err); });
-				}, null);
+				window.resolveLocalFileSystemURI(filename, 
+					function(entry) {
+						entry.remove(function(entry) {
+							console.log('local pic file deleted');
+						},
+						function(err) {
+							console.error('local pic file delete failed: ' + JSON.stringify(err));
+						});
+					},
+					function(err) {
+						console.error('get file failed: ' + JSON.stringify(err));
+					});
 			};
 			var success = function(r) {
 				console.log("Code = " + r.responseCode);
@@ -663,8 +674,8 @@ function ViewModel() {
 			};
 			var fail = function(error) {
 				model.prompt("Uploading the image has failed: Code = " + error.code, "Photo Upload");
-				console.log("upload error source " + error.source);
-				console.log("upload error target " + error.target);
+				console.error("upload error source " + error.source);
+				console.error("upload error target " + error.target);
 				deleteFile(filename);
 			};
 			var ft = new FileTransfer();
