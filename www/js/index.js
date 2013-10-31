@@ -848,6 +848,12 @@ function ViewModel() {
 				var loc = model.locations()[i];
 				locsByLocHash[loc.lochash] = loc;
 			}
+
+			if (!syncData.minus)
+				syncData.minus = [];
+			if (!syncData.plus)
+				syncData.plus = [];
+
 			
 			// remove old hashes
 			for (var i = 0; i < syncData.minus.length; i++) {
