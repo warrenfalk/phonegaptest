@@ -430,7 +430,7 @@ function ViewModel() {
 			function() {
 				slider.disableWith("Checking out...");
 				var updateSlider = function() {
-					slider.direction(model.currentItem().status() == 'checkedin' ? -1 : 1);
+					slider.direction(model.currentItem().status() == 'checkedin' ? 1 : -1);
 				}
 				var success = function(syncData) {
 					slider.enable();
