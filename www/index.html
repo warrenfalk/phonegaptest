@@ -147,11 +147,11 @@
 						<div id="noteform" data-bind="fade: $root.editingNote, with: $root.currentItem">
 							<div class="note">
 								<label for="notebox" class="caption">Note for <span data-bind="text: number">this item</span></p>
-								<textarea id="notebox" data-bind="value: $root.noteDraft, disable: $root.sendingNote"></textarea>
+								<textarea id="notebox" data-bind="value: $root.noteDraft, disable: $root.sendingNote()"></textarea>
 							</div>
 							<div class="actions">
-								<button id="cancelnote" data-bind="click: $root.cancelNote">Cancel</button>
-								<button id="sendnote" data-bind="click: $root.sendNote">Send</button>
+								<button id="cancelnote" data-bind="click: $root.cancelNote, disable: $root.sendingNote()">Cancel</button>
+								<button id="sendnote" data-bind="click: $root.sendNote, disable: $root.sendingNote()">Send</button>
 							</div>
 						</div>
 			        </div>
