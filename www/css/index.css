@@ -839,8 +839,9 @@ body {
 }
 .slider.optionsmode {
 	background: white;
-	border: solid 1px black;
+	border: solid 0px transparent;
 	border-radius: 12px;
+	border-image: none;
 	-webkit-border-image: none;
 }
 .slider > .handle {
@@ -925,8 +926,9 @@ body {
     -webkit-animation-timing-function: ease-in-out;   
 }
 .slider.disabled {
-	border: solid 1px black;
+	border: solid 0px transparent;
 	border-radius: 12px;
+	border-image: none;
 	-webkit-border-image: none;
 	background: #808080;
 }
