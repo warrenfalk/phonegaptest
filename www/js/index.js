@@ -93,14 +93,39 @@ function ViewModel() {
 	};
 
 	this.requestConfig = function(oncomplete) {
-		// go ahead and start the load from the database
+		// load configuration from the database
 		var db = model.db();
-		var dbwait = true;
-		var getwait = true;
-		var complete = function() {
-			if (dbwait || getwait)
-				return;
-			oncomplete();
+		var dbfinally = function() {
+			// after db config loaded, go out to web service
+			// first, if the lastcompanyid from the config has a server url, use it
+			if (model.config.lastcompanyid) {
+				var spec = model.parseCompany(model.config.lastcompanyid);
+				if (spec.server) {
+					console.log("Setting server to " + spec.server)
+					model.config.server = spec.server;
+				}
+			}
+			var d = window.device;
+			if (!d)
+				d = { platform: 'unknown', version: '0' };
+			model.get({
+				//url: ON_DEVICE ? 'http://mydivisions.com/js/inposition.js' : model.serverUrl('/config'), 
+				path: '/config',
+				noToken: true, 
+				payload: { platform: d.platform, version: d.version},
+				success: function(payload) {
+					model.serverConfigLoaded = true;
+					model.setConfig('fromserver', true, false);
+					if (payload && payload.config)
+						for (var i = 0; i < payload.config.length; i++)
+							model.setConfig(payload.config[i].name, payload.config[i].value, false);
+					oncomplete();
+				},
+				error: function(jqXHR, textStatus, e) {
+					console.log("WARNING: unable to get updated config from server: " + textStatus);
+					oncomplete();
+				},
+			})
 		}
 		db.transaction(
 			function(tx) {
@@ -110,49 +135,20 @@ function ViewModel() {
 							var item = results.rows.item(i);
 							model.setConfig(item.configname, JSON.parse(item.configval), true);
 						}
-						dbwait = false;
-						complete();
 					},
 					function(err) {
 						console.error("db store config read failed: " + err);
-						dbwait = false;
-						complete();
 					}
 				);
 			},
 			function(err) {
 				console.error("db store config read tx failed: " + err);
-				dbwait = false;
-				complete();
+				dbfinally();
 			},
 			function() {
-				// success
+				dbfinally();
 			}
 		);
-		// also call out to the web service
-		var d = window.device;
-		if (!d)
-			d = { platform: 'unknown', version: '0' };
-		model.get({
-			//url: ON_DEVICE ? 'http://mydivisions.com/js/inposition.js' : model.serverUrl('/config'), 
-			path: '/config',
-			noToken: true, 
-			payload: { platform: d.platform, version: d.version},
-			success: function(payload) {
-				model.serverConfigLoaded = true;
-				model.setConfig('fromserver', true, false);
-				if (payload && payload.config)
-					for (var i = 0; i < payload.config.length; i++)
-						model.setConfig(payload.config[i].name, payload.config[i].value, false);
-				getwait = false;
-				complete();
-			},
-			error: function(jqXHR, textStatus, e) {
-				console.log("WARNING: unable to get updated config from server: " + textStatus);
-				getwait = false;
-				complete();
-			},
-		})
 	};
 
 	this.doSync = function() {
